@@ -25,3 +25,7 @@ body {
     text-wrap: balance;
   }
 }
+
+.font-myFontCustom {
+  font-family: var(--myFontCustom);
+}

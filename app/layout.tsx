@@ -1,5 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import Header from "./components/header";
+import Footer from "./components/footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -12,6 +14,12 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const myFontCustom = localFont({
+  src: "./fonts/Merienda-VariableFont_wght.ttf",
+  variable: "--myFontCustom",
+  weight: "100 900",
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -20,10 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${myFontCustom.variable} antialiased min-h-screen flex flex-col`}
       >
-        {children}
+        <Header />
+        <main className="flex-grow">{children}</main>
+        <Footer />
       </body>
     </html>
   );
 }
+

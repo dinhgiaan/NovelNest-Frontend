@@ -1,4 +1,3 @@
-import Header from "./components/header";
 import Heading from "./utils/heading";
 
 const HomePage = () => {
@@ -10,8 +9,7 @@ const HomePage = () => {
           description="NovelNest, nơi lựa chọn tốt nhất cho việc đọc sách của bạn."
           keyword="NovelNest, Book, Book Store, Dinhgiaan, Dinhgiaandev"
         />
-        <Header />
-        hello
+        <div>Hello, this is home page</div>
       </div>
     </>
   );

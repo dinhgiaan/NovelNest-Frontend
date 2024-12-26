@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, BookOpen, Menu } from 'lucide-react';
+import { User, Menu } from 'lucide-react';
 
 const Header = () => {
       const pathname = usePathname();
@@ -15,9 +15,11 @@ const Header = () => {
                   <div className="backdrop-blur-sm bg-white/90">
                         <nav className="max-w-7xl mx-auto px-4">
                               <div className="flex justify-between h-16 items-center">
-                                    <div className="flex items-center space-x-2">
-                                          <BookOpen className="h-6 w-6 text-blue-600" />
-                                          <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-cyan-700 transition-all">
+                                    <div className="flex flex-col items-start space-y-1">
+                                          <Link
+                                                href="/"
+                                                className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-cyan-700 transition-all font-myFontCustom"
+                                          >
                                                 NovelNest
                                           </Link>
                                     </div>
@@ -48,7 +50,7 @@ const Header = () => {
                                                 <div className="flex items-center space-x-3 px-4 py-2 bg-blue-50 rounded-full">
                                                       <User className="h-5 w-5 text-blue-500" />
                                                       <span className="text-sm font-medium text-gray-700">
-                                                            Đinh Gia Ân
+                                                            Xin chào: Đinh Gia Ân
                                                       </span>
                                                 </div>
                                           </div>
