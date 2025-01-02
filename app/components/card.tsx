@@ -10,7 +10,7 @@ const CardBook = () => {
       ];
 
       return (
-            <div className="w-full px-4">
+            <div className="w-full px-4 mb-24">
                   <div>
                         <p className="text-[23px] dark:text-white text-black text-center mb-10">
                               Những Cuốn Sách Bán Chạy Nhất
@@ -26,16 +26,14 @@ const CardBook = () => {
                                                 : 'border-gray-300 bg-white'
                                                 }`}
                                     >
-                                          {/* Tag nổi bật cho cuốn sách 1st */}
                                           {book.rank === 1 && (
-                                                <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 text-xs font-bold rounded-full">
+                                                <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 text-[8px] font-bold rounded-full">
                                                       BÁN CHẠY
                                                 </div>
                                           )}
 
-                                          {/* Hiển thị thứ hạng */}
                                           <div
-                                                className={`text-lg font-bold mb-2 ${book.rank === 1
+                                                className={`text-sm font-bold mb-2 ${book.rank === 1
                                                       ? 'text-yellow-600'
                                                       : 'text-gray-700'
                                                       }`}
@@ -47,7 +45,6 @@ const CardBook = () => {
                                                             : '3rd'}
                                           </div>
 
-                                          {/* Ảnh sách */}
                                           <Image
                                                 src={book.image}
                                                 alt={`Book: ${book.name}`}
@@ -57,9 +54,8 @@ const CardBook = () => {
                                                 priority
                                           />
 
-                                          {/* Thông tin sách */}
                                           <div className="mt-2 text-center">
-                                                <div className="text-sm font-medium text-black">
+                                                <div className="text-xs font-medium text-black">
                                                       {book.name}
                                                 </div>
                                                 <div className="text-xs text-gray-500">

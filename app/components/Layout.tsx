@@ -68,7 +68,6 @@ const Layout = () => {
       ];
 
       return (
-            // Div cha bọc lại toàn bộ nội dung
             <div className="min-h-screen bg-white dark:bg-[#233b57]">
                   <div className="w-full">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -77,10 +76,10 @@ const Layout = () => {
                                     {/* Content Section */}
                                     <div className="flex-1 space-y-8">
                                           <div className="space-y-4">
-                                                <h1 className="text-[200px] md:text-3xl dark:text-white text-black font-bold tracking-tight">
+                                                <h1 className="text-[30px] md:text-[43px] dark:text-white text-black w-[530px] font-bold tracking-tight">
                                                       Khám phá thế giới qua từng trang sách
                                                 </h1>
-                                                <p className="text-[16px] dark:text-yellow-400 leading-relaxed">
+                                                <p className="text-[14px] dark:text-yellow-400 leading-relaxed w-[530px]">
                                                       NovelNest - Nền tảng đọc sách số hàng đầu Việt Nam, nơi tri thức và cảm xúc hòa quyện trong từng trang sách điện tử.
                                                 </p>
                                           </div>
@@ -90,7 +89,7 @@ const Layout = () => {
                                           </blockquote>
                                     </div>
 
-                                    <div className="flex-1">
+                                    <div className="flex-2">
                                           <div className="relative overflow-hidden">
                                                 <Image
                                                       src={image}
@@ -104,18 +103,18 @@ const Layout = () => {
                                     </div>
                               </div>
                         </div>
-                        <Divider variant="middle" sx={{ marginX: 25, marginY: 10 }} />
+                        <Divider variant="middle" sx={{ marginX: 25, marginY: 10 }} color='white' />
                   </div>
 
                   {/* ---------- Services ---------- */}
                   <Services />
 
-                  <Divider variant="middle" sx={{ marginX: 25, marginY: 10 }} />
+                  <Divider variant="middle" sx={{ marginX: 25, marginY: 10 }} color='white' />
 
                   {/* ---------- Discover Books ---------- */}
                   <CarouselGeneBooks slides={slides} />
 
-                  <Divider variant="middle" sx={{ marginX: 25, marginY: 10 }} />
+                  <Divider variant="middle" sx={{ marginX: 25, marginY: 10 }} color='white' />
 
                   {/* ---------- Best Seller ---------- */}
                   <BestSeller />

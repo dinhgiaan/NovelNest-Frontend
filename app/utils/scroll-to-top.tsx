@@ -35,21 +35,21 @@ const ScrollToTop = () => {
             <button
                   onClick={scrollToTop}
                   className={`
-            fixed 
-            bottom-8 
-            right-8 
-            bg-blue-500 
-            hover:bg-blue-700 
-            text-white 
-            w-12 
-            h-12 
-            rounded-full 
-            flex 
-            items-center 
-            justify-center 
+            fixed
+            bottom-7
+            right-6
+            bg-blue-500
+            hover:bg-blue-700
+            text-white
+            w-10
+            h-10
+            rounded-full
+            flex
+            items-center
+            justify-center
             shadow-lg
-            transition-all 
-            duration-300 
+            transition-all
+            duration-300
             ease-in-out
             cursor-pointer
             ${showButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}

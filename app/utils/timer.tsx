@@ -9,9 +9,9 @@ interface TimeUnitProps {
 
 // Tách thành component con để tránh re-render không cần thiết
 const TimeUnit: React.FC<TimeUnitProps> = memo(({ value, label }) => (
-      <div className="flex flex-col items-center p-4 bg-blue-100 rounded-lg shadow-xl hover:bg-blue-200 transition-colors duration-300">
-            <p className="text-4xl font-semibold text-blue-800">{value}</p>
-            <p className="text-sm text-gray-600">{label}</p>
+      <div className="flex flex-col items-center w-12 py-1 bg-blue-100 rounded-2xl shadow-xl hover:bg-blue-200 transition-colors duration-300">
+            <p className="text-xl font-semibold text-blue-800">{value}</p>
+            <p className="text-xs text-gray-600">{label}</p>
       </div>
 ));
 

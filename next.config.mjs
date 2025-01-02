@@ -10,7 +10,8 @@ const nextConfig = {
                         protocol: 'https',
                         hostname: 'lh3.githubusercontent.com'
                   }
-            ]
+            ],
+            unoptimized: true,
       },
 };
 
