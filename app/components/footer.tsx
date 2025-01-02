@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FaFacebook, FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaGithub, FaLinkedin } from "react-icons/fa";
 import { IoIosCall, IoIosMail } from 'react-icons/io';
 import { style } from '../styles/style';
 import { FaMapLocation } from 'react-icons/fa6';

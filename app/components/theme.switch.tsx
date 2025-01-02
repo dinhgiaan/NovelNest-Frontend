@@ -17,12 +17,12 @@ const ThemeSwitch = () => {
             <div className="flex items-center space-x-2">
                   {theme === 'dark' ? (
                         <FaMoon
-                              className="text-gray-400 cursor-pointer text-xl"
+                              className="text-gray-400 cursor-pointer text-base"
                               onClick={() => setTheme('light')}
                         />
                   ) : (
                         <IoSunnyOutline
-                              className="text-yellow-500 cursor-pointer text-xl"
+                              className="text-yellow-500 cursor-pointer text-base"
                               onClick={() => setTheme('dark')}
                         />
                   )}

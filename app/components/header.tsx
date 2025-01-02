@@ -56,23 +56,35 @@ const Header = () => {
                               <div className="flex items-center space-x-4">
                                     <ThemeSwitch />
                               </div>
-                              <div className="flex items-center px-4 py-2 border dark:!bg-gray-200 bg-gray-700 rounded-lg">
-                                    {session ?
-                                          (
-                                                <>
-                                                      <Image src={session.user?.image as string} className='rounded-full' width={20} height={20} alt='avatar' />
-                                                      <span className="ml-2 text-[10px] font-medium dark:text-black text-white">Xin chào: {session.user?.name}</span>
-                                                </>
-                                          )
-                                          :
-                                          (
-                                                <>
-                                                      <FaRegUserCircle className="text-blue-600" />
-                                                      <span className="ml-2 text-[10px] font-medium dark:text-black text-white">Xin chào: Đinh Gia Ân</span>
-                                                </>
-                                          )
-                                    }
+                              <div className="flex items-center px-4 py-2 border rounded-lg dark:bg-gray-800 bg-white dark:text-white text-gray-800 dark:border-gray-700 border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-300">
+
+                                    {session ? (
+                                          <>
+                                                <Image
+                                                      src={session.user?.image as string}
+                                                      className="rounded-full border-2 dark:border-blue-400 border-blue-600"
+                                                      width={25}
+                                                      height={25}
+                                                      alt="avatar"
+                                                />
+                                                <span className="ml-3 text-xs font-semibold">
+                                                      <span className="dark:text-[#ccc] text-[#242323]">Xin chào:</span>
+                                                      <span className="ml-1 dark:text-[#7ee1ee] text-[#b28a39]">{session.user?.name}</span>
+                                                </span>
+
+                                          </>
+                                    ) : (
+                                          <>
+                                                <FaRegUserCircle
+                                                      className="text-xl dark:text-gray-400 text-blue-600"
+                                                />
+                                                <span className="ml-3 text-xs font-medium dark:text-gray-400 text-gray-800">
+                                                      Xin chào: Đinh Gia Ân
+                                                </span>
+                                          </>
+                                    )}
                               </div>
+
                               <div className="flex items-center space-x-2">
                                     <Image src={langVI} width={20} height={20} alt="Tiếng Việt" className="cursor-pointer" />
                                     <Image src={langEN} width={20} height={20} alt="English" className="cursor-pointer" />
