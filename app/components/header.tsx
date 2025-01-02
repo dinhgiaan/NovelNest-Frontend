@@ -1,67 +1,107 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, Menu } from 'lucide-react';
+import { useState } from 'react';
+import Image from 'next/image';
+import langVI from '../public/lang-vi.png';
+import langEN from '../public/lang-en.png';
+import { FaRegUserCircle } from 'react-icons/fa';
+import logo from '../public/logo.png';
+import logoDark from '../public/logoDark.png';
+import { IoMdClose, IoMdMenu } from 'react-icons/io';
+import ThemeSwitch from './theme.switch';
+import { useSession } from 'next-auth/react';
 
 const Header = () => {
+      const { data: session } = useSession();
       const pathname = usePathname();
+      const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-      const isActive = (path: string) => {
-            return pathname === path;
-      };
+      const isActive = (path: string) => pathname === path;
+
+      const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
       return (
-            <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-500 to-cyan-500">
-                  <div className="backdrop-blur-sm bg-white/90">
-                        <nav className="max-w-7xl mx-auto px-4">
-                              <div className="flex justify-between h-16 items-center">
-                                    <div className="flex flex-col items-start space-y-1">
-                                          <Link
-                                                href="/"
-                                                className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-cyan-700 transition-all font-myFontCustom"
-                                          >
-                                                NovelNest
-                                          </Link>
-                                    </div>
+            <header className="sticky top-0 z-50 dark:bg-[#181818] bg-[#b6f2fe] shadow-md">
+                  <nav className="max-w-7xl mx-auto px-6 py-1 flex items-center justify-between">
+                        <Link href="/">
+                              <Image
+                                    src={logoDark}
+                                    width={55}
+                                    height={55}
+                                    alt="Logo NovelNest"
+                                    className="hidden dark:block"
+                              />
+                              <Image
+                                    src={logo}
+                                    width={55}
+                                    height={55}
+                                    alt="Logo NovelNest"
+                                    className="block dark:hidden"
+                              />
+                        </Link>
 
-                                    <div className="hidden lg:flex lg:items-center">
-                                          <div className="flex space-x-1">
-                                                {[
-                                                      { name: 'Trang chủ', href: '/' },
-                                                      { name: 'Sách', href: '/books' },
-                                                      { name: 'Về chúng tôi', href: '/about' },
-                                                      { name: 'Chính sách', href: '/policy' },
-                                                      { name: 'FAQ', href: '/faq' },
-                                                ].map((item) => (
-                                                      <Link
-                                                            key={item.name}
-                                                            href={item.href}
-                                                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${isActive(item.href)
-                                                                        ? 'bg-blue-100 text-blue-600'
-                                                                        : 'text-gray-600 hover:bg-gray-100'
-                                                                  }`}
-                                                      >
-                                                            {item.name}
-                                                      </Link>
-                                                ))}
-                                          </div>
 
-                                          <div className="flex items-center ml-8 pl-8 border-l border-gray-200">
-                                                <div className="flex items-center space-x-3 px-4 py-2 bg-blue-50 rounded-full">
-                                                      <User className="h-5 w-5 text-blue-500" />
-                                                      <span className="text-sm font-medium text-gray-700">
-                                                            Xin chào: Đinh Gia Ân
-                                                      </span>
-                                                </div>
-                                          </div>
-                                    </div>
-
-                                    <button className="lg:hidden p-2 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100">
-                                          <Menu className="h-6 w-6" />
-                                    </button>
+                        {/* Desktop Menu */}
+                        <div className="hidden lg:flex items-center space-x-6">
+                              {[{ name: 'Trang chủ', href: '/' }, { name: 'Sách', href: '/books' }, { name: 'Về chúng tôi', href: '/about' }, { name: 'Chính sách', href: '/policy' }, { name: 'FAQ', href: '/faq' }].map((item) => (
+                                    <Link
+                                          key={item.name}
+                                          href={item.href}
+                                          className={`text-[13px] font-medium transition-colors ${isActive(item.href) ? 'text-blue-600' : 'dark:text-white text-black hover:text-blue-600'}`}
+                                    >
+                                          {item.name}
+                                    </Link>
+                              ))}
+                              <div className="flex items-center space-x-4">
+                                    <ThemeSwitch />
                               </div>
-                        </nav>
-                  </div>
+                              <div className="flex items-center px-4 py-2 border dark:!bg-gray-200 bg-gray-700 rounded-lg">
+                                    {session ?
+                                          (
+                                                <>
+                                                      <Image src={session.user?.image as string} className='rounded-full' width={20} height={20} alt='avatar' />
+                                                      <span className="ml-2 text-[10px] font-medium dark:text-black text-white">Xin chào: {session.user?.name}</span>
+                                                </>
+                                          )
+                                          :
+                                          (
+                                                <>
+                                                      <FaRegUserCircle className="text-blue-600" />
+                                                      <span className="ml-2 text-[10px] font-medium dark:text-black text-white">Xin chào: Đinh Gia Ân</span>
+                                                </>
+                                          )
+                                    }
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                    <Image src={langVI} width={20} height={20} alt="Tiếng Việt" className="cursor-pointer" />
+                                    <Image src={langEN} width={20} height={20} alt="English" className="cursor-pointer" />
+                              </div>
+                        </div>
+
+                        {/* Mobile Menu Button */}
+                        <button
+                              onClick={toggleMenu}
+                              className="lg:hidden p-2 rounded-md text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                              {isMenuOpen ? <IoMdClose className="h-6 w-6" /> : <IoMdMenu className="h-6 w-6" />}
+                        </button>
+                  </nav>
+
+                  {/* Mobile Menu */}
+                  {isMenuOpen && (
+                        <div className="lg:hidden px-6 py-4 space-y-2 bg-gray-50 shadow-md">
+                              {[{ name: 'Trang chủ', href: '/' }, { name: 'Sách', href: '/books' }, { name: 'Về chúng tôi', href: '/about' }, { name: 'Chính sách', href: '/policy' }, { name: 'FAQ', href: '/faq' }].map((item) => (
+                                    <Link
+                                          key={item.name}
+                                          href={item.href}
+                                          className={`block text-sm font-medium py-2 px-3 rounded-md transition-colors ${isActive(item.href) ? 'bg-blue-100 text-blue-600' : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'}`}
+                                    >
+                                          {item.name}
+                                    </Link>
+                              ))}
+                        </div>
+                  )}
             </header>
       );
 };

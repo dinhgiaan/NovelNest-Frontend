@@ -1,7 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
-import Header from "./components/header";
-import Footer from "./components/footer";
+import Providers from "./provider";
+import SessionWrapper from "./components/SessionWrapper";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,15 +26,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${myFontCustom.variable} antialiased min-h-screen flex flex-col`}
-      >
-        <Header />
-        <main className="flex-grow">{children}</main>
-        <Footer />
-      </body>
-    </html>
+    <SessionWrapper>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} ${myFontCustom.variable} antialiased`}
+        >
+          <Providers>
+            <main> {children}</main>
+          </Providers>
+        </body>
+      </html>
+    </SessionWrapper>
   );
 }
 

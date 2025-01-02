@@ -29,3 +29,55 @@ body {
 .font-myFontCustom {
   font-family: var(--myFontCustom);
 }
+
+/* Tùy chỉnh cho Webkit browsers (Chrome, Safari, newer versions of Opera) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 8px;
+  border: 3px solid #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Tùy chỉnh cho Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+/* Tùy chỉnh cho Edge và IE */
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: thin;
+}
+
+/* Tùy chỉnh cho dark mode */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-track {
+    background: #2d2d2d;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #666;
+    border: 3px solid #2d2d2d;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #808080;
+  }
+
+  * {
+    scrollbar-color: #666 #2d2d2d;
+  }
+}
