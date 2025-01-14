@@ -1,17 +1,15 @@
 import Link from 'next/link';
-import { FaFacebook, FaGithub, FaLinkedin } from "react-icons/fa";
-import { IoIosCall, IoIosMail } from 'react-icons/io';
 import { style } from '../styles/style';
-import { FaMapLocation } from 'react-icons/fa6';
+import { Facebook, Github, Linkedin, Mail, MapPinned, Phone } from 'lucide-react';
 
 const Footer = () => {
       return (
             <footer className="bg-gray-900 text-white w-full py-10">
                   <div className="container mx-auto px-6 lg:px-20">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                               <div>
                                     <h3 className={`${style.titleFooter}`}>NovelNest</h3>
-                                    <p className={`${style.labelFooter}`}>
+                                    <p className={`${style.labelFooter} w-56`}>
                                           Nơi những câu chuyện và hành trình mới bắt đầu. Tham gia cộng đồng của chúng tôi để khám phá thế giới văn học đa dạng.
                                     </p>
                               </div>
@@ -20,15 +18,15 @@ const Footer = () => {
                                     <h3 className={`${style.titleFooter}`}>Liên hệ</h3>
                                     <ul className="text-sm space-y-3 text-gray-400">
                                           <li className="flex items-center space-x-3">
-                                                <IoIosCall size={20} />
+                                                <Phone size={20} />
                                                 <span className={`${style.labelFooter}`}>+84 856 562 424</span>
                                           </li>
                                           <li className="flex items-center space-x-3">
-                                                <IoIosMail size={20} />
+                                                <Mail size={20} />
                                                 <span className={`${style.labelFooter}`}>novelnest@contact.com</span>
                                           </li>
                                           <li className="flex items-center space-x-4">
-                                                <FaMapLocation size={20} />
+                                                <MapPinned size={35} />
                                                 <span className={`${style.labelFooter}`}>
                                                       Chung cư Bộ công an, Block A, Đường số 3, phường An Khánh, TP.Thủ Đức
                                                 </span>
@@ -43,18 +41,38 @@ const Footer = () => {
                                     </p>
                                     <ul className="flex space-x-6 mt-3">
                                           <li>
-                                                <Link href={'https://www.facebook.com/dgiaan04'} passHref>
-                                                      <FaFacebook size={20} className="hover:text-blue-400" />
+                                                <Link rel="preload"
+                                                      as={""} href={'https://www.facebook.com/dgiaan04'} passHref>
+                                                      <Facebook size={20} className="hover:text-blue-400" />
                                                 </Link>
                                           </li>
                                           <li>
-                                                <Link href={'https://github.com/dinhgiaandev'} passHref>
-                                                      <FaGithub size={20} className="hover:text-gray-300" />
+                                                <Link rel="preload"
+                                                      as={""} href={'https://github.com/dinhgiaandev'} passHref>
+                                                      <Github size={20} className="hover:text-gray-300" />
                                                 </Link>
                                           </li>
                                           <li>
-                                                <Link href={'https://www.linkedin.com/in/dinhgiaan'} passHref>
-                                                      <FaLinkedin size={20} className="hover:text-blue-600" />
+                                                <Link rel="preload"
+                                                      as={""} href={'https://www.linkedin.com/in/dinhgiaan'} passHref>
+                                                      <Linkedin size={20} className="hover:text-blue-600" />
+                                                </Link>
+                                          </li>
+                                    </ul>
+                              </div>
+                              <div>
+                                    <h3 className={`${style.titleFooter}`}>Tìm hiểu những phần khác</h3>
+                                    <ul className=" mt-3">
+                                          <li className={`${style.labelFooter} hover:text-blue-400`}>
+                                                <Link rel="preload"
+                                                      as={""} href={'/policy'} passHref>
+                                                      Chính sách
+                                                </Link>
+                                          </li>
+                                          <li className={`${style.labelFooter} hover:text-blue-400 mt-3`}>
+                                                <Link rel="preload"
+                                                      as={""} href={'/privacy'} passHref>
+                                                      Quyền riêng tư
                                                 </Link>
                                           </li>
                                     </ul>

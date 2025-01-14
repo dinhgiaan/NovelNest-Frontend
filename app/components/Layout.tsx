@@ -1,12 +1,9 @@
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import image from '../public/banner2.png';
+import image from '../public/banner.webp';
 import Services from './home/services';
 import CarouselGeneBooks from './home/discover.books';
 import BestSeller from './home/best.seller';
 import Timer from './home/subscribe';
-
-const Divider = dynamic(() => import('@mui/material/Divider'), { ssr: false });
 
 
 const Layout = () => {
@@ -76,15 +73,15 @@ const Layout = () => {
                                     {/* Content Section */}
                                     <div className="flex-1 space-y-8">
                                           <div className="space-y-4">
-                                                <h1 className="text-[30px] md:text-[43px] dark:text-white text-black w-[530px] font-bold tracking-tight">
+                                                <h1 className="text-3xl md:text-4xl dark:text-white text-black w-2/3 font-bold tracking-tight">
                                                       Khám phá thế giới qua từng trang sách
                                                 </h1>
-                                                <p className="text-[14px] dark:text-yellow-400 leading-relaxed w-[530px]">
+                                                <p className="text-sm dark:text-yellow-400 leading-relaxed w-2/3">
                                                       NovelNest - Nền tảng đọc sách số hàng đầu Việt Nam, nơi tri thức và cảm xúc hòa quyện trong từng trang sách điện tử.
                                                 </p>
                                           </div>
 
-                                          <blockquote className="text-[17px] text-gray-600 dark:text-gray-400 italic border-l-4 border-blue-500 pl-4">
+                                          <blockquote className="text-base text-gray-600 dark:text-gray-400 italic border-l-4 border-blue-500 pl-4">
                                                 &quot;Sách là cửa sổ nhìn ra thế giới, là người bạn đồng hành trên hành trình khám phá tri thức vô tận.&quot;
                                           </blockquote>
                                     </div>
@@ -103,18 +100,13 @@ const Layout = () => {
                                     </div>
                               </div>
                         </div>
-                        <Divider variant="middle" sx={{ marginX: 25, marginY: 10 }} color='white' />
                   </div>
 
                   {/* ---------- Services ---------- */}
                   <Services />
 
-                  <Divider variant="middle" sx={{ marginX: 25, marginY: 10 }} color='white' />
-
                   {/* ---------- Discover Books ---------- */}
                   <CarouselGeneBooks slides={slides} />
-
-                  <Divider variant="middle" sx={{ marginX: 25, marginY: 10 }} color='white' />
 
                   {/* ---------- Best Seller ---------- */}
                   <BestSeller />

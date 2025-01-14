@@ -1,9 +1,24 @@
-import Footer from "../components/footer"
-import Header from "../components/header"
+'use client'
+
+import useSWR from "swr";
+import ErrorAPI from "../components/error.api";
 import Heading from "../utils/heading"
+import Loading from "../utils/loading";
 import FAQPage from "./FAQ"
 
 const page = () => {
+      const fetcher = (url: string) => fetch(url).then((res) => res.json());
+      const { data, error, isLoading } = useSWR('http://localhost:8888/api/v1/faqs', fetcher,
+            {
+                  revalidateIfStale: false,
+                  revalidateOnFocus: false,
+                  revalidateOnReconnect: false
+            }
+      );
+
+      if (error) return <ErrorAPI />;
+      if (isLoading) return <Loading />;
+
       return (
             <>
                   <Heading
@@ -11,9 +26,7 @@ const page = () => {
                         description="NovelNest, nơi lựa chọn tốt nhất cho việc đọc sách của bạn."
                         keyword="NovelNest, Book, Book Store, Dinhgiaan, Dinhgiaandev"
                   />
-                  <Header />
-                  <FAQPage />
-                  <Footer />
+                  <FAQPage faqData={data?.data} />
             </>
       )
 }

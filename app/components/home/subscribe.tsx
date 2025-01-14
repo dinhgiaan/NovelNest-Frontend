@@ -1,13 +1,17 @@
-import Timer from "@/app/utils/timer";
+import Timer from "../../utils/timer";
+import '../../styles/subscribe.css'
 
 const Subscribe = () => {
+
       return (
             <div className="w-full p-8">
                   <div className="max-w-6xl mx-auto">
-                        <div className="backdrop-blur-sm dark:bg-white/10 bg-[#b8e6ea] rounded-lg p-6 shadow-xl">
+                        <div className="backdrop-blur-sm dark:bg-white/10 bg-[#b8e6ea] rounded-lg p-6 shadow-xl border-gradient">
                               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                                     <div className="flex-1 text-center md:text-left">
-                                          <h2 className="text-xl font-bold mb-2 dark:text-white/90 text-black/65">Ưu đãi đặc biệt</h2>
+                                          <h2 className="text-xl font-bold mb-2 dark:text-white/90 text-black/65">
+                                                Ưu đãi đặc biệt
+                                          </h2>
                                           <p className="dark:text-white/70 text-black/45 text-sm mb-2">Còn lại:</p>
                                           <div className="text-3xl font-bold text-yellow-300">
                                                 <Timer />
