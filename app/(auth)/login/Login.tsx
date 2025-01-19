@@ -25,17 +25,21 @@ const LoginPage = () => {
                   setLoading(true);
 
                   const res = await loginAPI({ email, password });
-                  // console.log('--> check res login: ', res)
+                  console.log('--> check res login: ', res)
                   if (res) {
-                        localStorage.setItem("access_token", res.data?.access_token);
-                        toast.success(`Chào mừng ${res.data.data.name} trở lại NovelNest`, { className: 'text-xs' });
+                        localStorage.setItem("access_token", res.access_token);
+                        toast.success(`Chào mừng ${res.user?.name} trở lại NovelNest`, { className: 'text-xs' });
 
                         setUserInfo({
                               isAuthenticated: true,
                               user: {
-                                    email: res.data.data.email,
-                                    name: res.data.data.name,
-                                    role: res.data.data.role
+                                    _id: res.user?._id,
+                                    email: res.user?.email,
+                                    name: res.user?.name,
+                                    role: res.user?.role,
+                                    phone: res.user?.phone,
+                                    address: res.user?.address,
+                                    avatar: res.user?.avatar,
                               }
                         });
                         navigate.push('/');
@@ -47,14 +51,13 @@ const LoginPage = () => {
             }
       }
 
-      useEffect(() => {
-            console.log('--> check info after update: ', userInfo);
-      }, [userInfo]);
+      // useEffect(() => {
+      //       console.log('--> check info after update: ', userInfo);
+      // }, [userInfo]);
 
       return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
                   <div className="w-full max-w-4xl flex bg-white rounded-xl shadow-lg overflow-hidden">
-                        {/* Left Panel - keeping the same */}
                         <div className="hidden lg:flex lg:w-2/5 bg-gradient-to-br from-blue-500 to-cyan-400 p-8 flex-col justify-between relative">
                               <div className="relative z-10">
                                     <div className="mb-8">
@@ -73,7 +76,6 @@ const LoginPage = () => {
                               </div>
                         </div>
 
-                        {/* Right Panel - Updated with Material-UI TextField */}
                         <div className="w-full lg:w-3/5 p-6">
                               <div className="max-w-sm mx-auto">
                                     <h2 className="text-xl font-bold text-gray-900 mb-2">Chào mừng trở lại!</h2>

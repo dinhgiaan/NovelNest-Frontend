@@ -1,5 +1,5 @@
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
-import { ArrowDown } from "lucide-react";
+import { Accordion, AccordionDetails, AccordionSummary, Divider, Typography } from "@mui/material";
+import { ArrowDown, MoveRight } from "lucide-react";
 import React from "react";
 
 interface IProps {
@@ -7,11 +7,12 @@ interface IProps {
 }
 
 const FAQPage = ({ faqData }: IProps) => {
+
       return (
             <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
                   <div className="max-w-4xl mx-auto p-6">
-                        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-gray-100">
-                              Frequently Asked Questions
+                        <h1 className="text-3xl font-bold text-center mb-20 text-gray-800 dark:text-gray-100">
+                              Những Câu Hỏi Thường Gặp
                         </h1>
                         <div className="space-y-6">
                               {faqData.map((item) => (
@@ -21,10 +22,11 @@ const FAQPage = ({ faqData }: IProps) => {
                                                 aria-controls={`panel-${item._id}-content`}
                                                 id={`panel-${item._id}-header`}
                                           >
-                                                <Typography component="span" className="dark:text-white text-black">{item.question}</Typography>
+                                                <Typography component="span" className="dark:text-[#49daeb] text-[#94b94f]" fontSize={17}>{item.question}</Typography>
                                           </AccordionSummary>
-                                          <AccordionDetails>
-                                                <Typography className="dark:text-white text-black">{item.answer}</Typography>
+                                          <Divider sx={{ bgcolor: '#ccc' }} />
+                                          <AccordionDetails className="flex items-center">
+                                                <Typography className="dark:text-white text-black flex" fontSize={13}><MoveRight className="mr-2" /> {item.answer}</Typography>
                                           </AccordionDetails>
                                     </Accordion>
                               ))}

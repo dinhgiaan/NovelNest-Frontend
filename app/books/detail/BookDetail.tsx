@@ -19,7 +19,6 @@ const BookDetail = ({ book, error, isLoading }: IProps) => {
       if (error) return <ErrorAPI />;
       if (isLoading) return <Loading />;
 
-
       if (!book) {
             return <div className="p-2">Không tìm thấy sách</div>;
       }
@@ -68,7 +67,7 @@ const BookDetail = ({ book, error, isLoading }: IProps) => {
                                     <div className='mt-3'>
                                           <div>
                                                 <div className='text-center'>
-                                                      <span className='dark:bg-[#adadad] bg-[#30abc1] dark:text-[#9effc1] text-[#f9f48e] px-3 py-1 rounded-sm text-xs font-serif'>
+                                                      <span className='dark:bg-[#693169] bg-[#30abc1] dark:text-[#e57fd9] text-[#f9f48e] px-3 py-1 rounded-md text-xs font-extralight cursor-pointer'>
                                                             Xem trước
                                                       </span>
                                                 </div>
@@ -120,7 +119,7 @@ const BookDetail = ({ book, error, isLoading }: IProps) => {
                                                       <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
                                                             Mô tả
                                                       </h2>
-                                                      <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed">
+                                                      <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed overflow-hidden max-h-[58.5px] line-clamp-3">
                                                             {book.description}
                                                       </p>
                                                 </div>

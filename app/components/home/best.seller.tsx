@@ -15,16 +15,23 @@ const BestSeller = () => {
             revalidateOnReconnect: true,
       });
 
+      // console.log('--> check data: ', data)
+
       if (error) return <ErrorAPI />;
       if (isLoading) return <Loading />;
 
 
-      // // Lấy danh sách sách và sắp xếp lại
-      // let books = data.data?.sort((a, b) => b.sold - a.sold).slice(0, 3);
+      // Access the books array correctly
+      let books = Array.isArray(data.data?.books) ? data.data.books.sort((a, b) => b.sold - a.sold).slice(0, 3) : [];
 
-      // // Di chuyển sách có sold lớn nhất vào vị trí thứ 2
-      // const maxSoldBook = books[0];
-      // books = [books[1], maxSoldBook, books[2]];
+      // Handle case when there are no books
+      if (books.length === 0) {
+            return <p>No books available.</p>;
+      }
+
+      // cho 1st đứng giữa
+      const maxSoldBook = books[0];
+      books = [books[1], maxSoldBook, books[2]];
 
       return (
             <div className="w-full px-4 mb-24">
@@ -33,14 +40,14 @@ const BestSeller = () => {
                               Những Cuốn Sách Bán Chạy Nhất
                         </p>
 
-                        {/* <div className="flex items-end justify-center space-x-8">
+                        <div className="flex items-end justify-center space-x-8">
                               {books.map((item: any, index: number) => (
                                     <Link key={item.slug} href={`/books/detail/${item.slug}`} rel="preload"
                                           as={""}>
                                           <div
 
                                                 className={` shadow-md rounded-md p-4 flex flex-col items-center transition-all ${index === 1
-                                                      ? 'bg-[#59b8c3] dark:bg-[#dbbd89] w-48 h-80 md:w-60 md:h-96 transform scale-110 z-10]' // Tăng chiều cao của phần tử ở giữa
+                                                      ? 'bg-[#95e3ec] dark:bg-[#905fb0] w-48 h-80 md:w-60 md:h-96 transform scale-110 z-10]' // Tăng chiều cao của phần tử ở giữa
                                                       : 'bg-white dark:bg-gray-800 w-40 h-80 md:w-48 md:h-96' // Tăng chiều cao cho các phần tử còn lại
                                                       }`}
                                           >
@@ -75,7 +82,7 @@ const BestSeller = () => {
                                           </div>
                                     </Link>
                               ))}
-                        </div> */}
+                        </div>
                   </div>
             </div>
       );

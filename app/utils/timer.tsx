@@ -17,8 +17,8 @@ const TimeUnit: React.FC<TimeUnitProps> = memo(({ value, label }) => (
 
 TimeUnit.displayName = 'TimeUnit';
 
-const Timer: React.FC = () => {
-      const targetDate: Date = new Date(2025, 0, 12, 0, 0, 0);
+const Timer = () => {
+      const targetDate: Date = new Date(2025, 0, 29, 0, 0, 0);
 
       const [days, setDays] = useState<number>(0);
       const [hours, setHours] = useState<number>(0);

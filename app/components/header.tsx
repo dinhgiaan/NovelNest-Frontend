@@ -18,12 +18,11 @@ const Header = () => {
       const [isMenuOpen, setIsMenuOpen] = useState(false);
       const [openUser, setOpenUser] = useState(false);
       const { userInfo } = useContext(AuthContext);
+      // console.log('--> check log userInfo: ', userInfo)
 
       const isActive = useMemo(() => (path: string) => pathname === path, [pathname]);
 
       const toggleMenu = () => setIsMenuOpen((prev) => !prev);
-
-      // console.log('--> check log userInfo: ', userInfo)
 
       return (
             <header className="sticky top-0 z-50 dark:bg-[#181818] bg-[#b6f2fe] shadow-md">
@@ -114,7 +113,9 @@ const Header = () => {
                                           <Link
                                                 rel="preload"
                                                 as={""}
-                                                href={'/profile'} className="text-black text-xs hover:text-[#e7ef76] hover:font-semibold dark:hover:text-[#6fc9e1] dark:hover:font-semibold">
+                                                href={`/profile/${userInfo.user?._id}`}
+                                                className="text-black text-xs hover:text-[#e7ef76] hover:font-semibold dark:hover:text-[#6fc9e1] dark:hover:font-semibold cursor-pointer"
+                                          >
                                                 Thông tin độc giả
                                           </Link>
                                           <Link

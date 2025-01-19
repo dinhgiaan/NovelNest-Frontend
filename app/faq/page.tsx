@@ -6,7 +6,7 @@ import Heading from "../utils/heading"
 import Loading from "../utils/loading";
 import FAQPage from "./FAQ"
 
-const page = () => {
+const Page = () => {
       const fetcher = (url: string) => fetch(url).then((res) => res.json());
       const { data, error, isLoading } = useSWR('http://localhost:8888/api/v1/faqs', fetcher,
             {
@@ -26,9 +26,9 @@ const page = () => {
                         description="NovelNest, nơi lựa chọn tốt nhất cho việc đọc sách của bạn."
                         keyword="NovelNest, Book, Book Store, Dinhgiaan, Dinhgiaandev"
                   />
-                  <FAQPage faqData={data?.data} />
+                  <FAQPage faqData={data.data?.faq} />
             </>
       )
 }
 
-export default page
+export default Page;

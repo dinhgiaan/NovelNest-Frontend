@@ -66,54 +66,55 @@ const Layout = () => {
 
       return (
             <div className="min-h-screen bg-white dark:bg-[#233b57]">
-                  <div className="w-full">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                              {/* Main Hero Section */}
-                              <div className="flex flex-col lg:flex-row items-center gap-12">
-                                    {/* Content Section */}
-                                    <div className="flex-1 space-y-8">
-                                          <div className="space-y-4">
-                                                <h1 className="text-3xl md:text-4xl dark:text-white text-black w-2/3 font-bold tracking-tight">
-                                                      Khám phá thế giới qua từng trang sách
-                                                </h1>
-                                                <p className="text-sm dark:text-yellow-400 leading-relaxed w-2/3">
-                                                      NovelNest - Nền tảng đọc sách số hàng đầu Việt Nam, nơi tri thức và cảm xúc hòa quyện trong từng trang sách điện tử.
-                                                </p>
+                  <div className='mx-40'>
+                        <div className="w-full">
+                              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                    {/* Main Hero Section */}
+                                    <div className="flex flex-col lg:flex-row items-center gap-12">
+                                          {/* Content Section */}
+                                          <div className="flex-1 space-y-8">
+                                                <div className="space-y-4">
+                                                      <h1 className="text-3xl md:text-4xl dark:text-white text-black w-2/3 font-bold tracking-tight">
+                                                            Khám phá thế giới qua từng trang sách
+                                                      </h1>
+                                                      <p className="text-sm dark:text-yellow-400 leading-relaxed w-2/3">
+                                                            NovelNest - Nền tảng đọc sách số hàng đầu Việt Nam, nơi tri thức và cảm xúc hòa quyện trong từng trang sách điện tử.
+                                                      </p>
+                                                </div>
+
+                                                <blockquote className="text-base text-gray-600 dark:text-gray-400 italic border-l-4 border-blue-500 pl-4">
+                                                      &quot;Sách là cửa sổ nhìn ra thế giới, là người bạn đồng hành trên hành trình khám phá tri thức vô tận.&quot;
+                                                </blockquote>
                                           </div>
 
-                                          <blockquote className="text-base text-gray-600 dark:text-gray-400 italic border-l-4 border-blue-500 pl-4">
-                                                &quot;Sách là cửa sổ nhìn ra thế giới, là người bạn đồng hành trên hành trình khám phá tri thức vô tận.&quot;
-                                          </blockquote>
-                                    </div>
-
-                                    <div className="flex-2">
-                                          <div className="relative overflow-hidden">
-                                                <Image
-                                                      src={image}
-                                                      alt="NovelNest Reading Experience"
-                                                      width={400}
-                                                      height={200}
-                                                      className="object-cover rounded-lg"
-                                                      priority
-                                                />
+                                          <div className="flex-2">
+                                                <div className="relative overflow-hidden">
+                                                      <Image
+                                                            src={image}
+                                                            alt="NovelNest Reading Experience"
+                                                            width={400}
+                                                            height={200}
+                                                            className="object-cover rounded-lg"
+                                                            priority
+                                                      />
+                                                </div>
                                           </div>
                                     </div>
                               </div>
                         </div>
+
+                        {/* ---------- Services ---------- */}
+                        <Services />
+
+                        {/* ---------- Discover Books ---------- */}
+                        <CarouselGeneBooks slides={slides} />
+
+                        {/* ---------- Best Seller ---------- */}
+                        <BestSeller />
+
+                        {/* ---------- Subscribe ---------- */}
+                        <Timer />
                   </div>
-
-                  {/* ---------- Services ---------- */}
-                  <Services />
-
-                  {/* ---------- Discover Books ---------- */}
-                  <CarouselGeneBooks slides={slides} />
-
-                  {/* ---------- Best Seller ---------- */}
-                  <BestSeller />
-
-                  {/* ---------- Subscribe ---------- */}
-                  <Timer />
-
             </div>
       );
 };

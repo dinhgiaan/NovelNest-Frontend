@@ -32,6 +32,8 @@ const BookPage = ({ data }: IProps) => {
             );
       }
 
+      // console.log('--> check data book: ', data)
+
       return (
             <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
                   <div className="max-w-screen-xl mx-auto px-4 py-10 flex gap-4">
@@ -76,11 +78,11 @@ const BookPage = ({ data }: IProps) => {
                                                             </p>
 
                                                             <div className="flex justify-between items-center mt-0.5">
-                                                                  <span className="text-green-600 dark:text-green-400">
+                                                                  <span className="text-green-600 dark:text-green-400 font-semibold">
                                                                         {convertPriceToVND(book.price)}
                                                                   </span>
                                                                   <span>
-                                                                        <ShoppingCart size={17} />
+                                                                        <ShoppingCart size={17} className="dark:text-white text-black" />
                                                                   </span>
                                                             </div>
                                                       </div>

@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import convertPriceToVND from '@/app/utils/convert.price';
 import ErrorAPI from '../error.api';
 import Loading from '@/app/utils/loading';
-import { Banknote, Barcode, BookOpenText, Calendar, MapPin, Ruler, Tag } from 'lucide-react';
+import { Banknote, Barcode, BookOpenText, Calendar, MapPin, Ruler } from 'lucide-react';
 import { Divider } from '@mui/material';
 
 const InfoDetail = () => {
@@ -46,9 +46,8 @@ const InfoDetail = () => {
       if (isLoading) return <Loading />;
 
       return (
-            <div className="max-w-4xl mx-auto mt-14 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+            <div className="max-w-4xl mx-auto mt-14 rounded-lg shadow-md">
                   <Box sx={{ width: '100%' }}>
-                        {/* Tabs Header */}
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }} className="bg-gray-100 dark:bg-gray-700 rounded-t-lg">
                               <Tabs
                                     value={value}
@@ -63,46 +62,47 @@ const InfoDetail = () => {
                               </Tabs>
                         </Box>
 
-                        <div className="dark:text-gray-300 text-gray-800">
+                        <div>
                               <TabPanel index={0}>
                                     <div className="space-y-10">
                                           <div>
-                                                <Typography variant="h6" className="font-bold mb-2 text-">
+                                                <Typography variant="h6" className="font-bold mb-2 dark:text-[#c7c54a] text-[#eca874]">
                                                       Thông tin chung về sách
                                                 </Typography>
                                                 <div className="mt-3 space-y-2">
                                                       <Typography className='flex items-center'>
-                                                            <Calendar className="mr-2" size={14} />
-                                                            <span className='text-sm'>Ngày xuất bản: {formatDate(data.data?.publicDate)}</span>
+                                                            <Calendar className="mr-2" size={14} color='#a935db' />
+                                                            <span className='text-sm dark:text-gray-300 text-gray-800'>Ngày xuất bản: {formatDate(data.data?.publicDate)}</span>
                                                       </Typography>
                                                       <Typography className='flex items-center'>
-                                                            <Ruler className="mr-2" size={14} />
-                                                            <span className='text-sm'>Kích thước sách: {data.data?.size}</span>
+                                                            <Ruler className="mr-2" size={14} color='#a935db' />
+                                                            <span className='text-sm dark:text-gray-300 text-gray-800'>Kích thước sách: {data.data?.size}</span>
                                                       </Typography>
                                                       <Typography className='flex items-center'>
-                                                            <Barcode className='mr-2' size={14} />
-                                                            <span className='text-sm'> ISBN: {data.data?.isbn}</span>
+                                                            <Barcode className='mr-2' size={14} color='#a935db' />
+                                                            <span className='text-sm dark:text-gray-300 text-gray-800'> ISBN: {data.data?.isbn}</span>
                                                       </Typography>
                                                       <Typography className='flex items-center'>
-                                                            <BookOpenText className='mr-2' size={14} />
-                                                            <span className='text-sm'>Số trang: {data.data?.page}</span>
+                                                            <BookOpenText className='mr-2' size={14} color='#a935db' />
+                                                            <span className='text-sm dark:text-gray-300 text-gray-800'>Số trang: {data.data?.page}</span>
                                                       </Typography>
                                                 </div>
                                           </div>
 
-                                          <Divider />
+                                          <Divider sx={{ bgcolor: '#ccc' }} />
 
                                           <div>
-                                                <Typography variant="h6" className="font-bold mb-2">
+                                                <Typography variant="h6" className="font-bold mb-2 dark:text-[#c7c54a] text-[#eca874]">
                                                       Thông tin thuê sách
                                                 </Typography>
                                                 <div className="mt-3 space-y-2">
                                                       <Typography className="flex items-center text-sm">
-                                                            <Banknote size={14} className='mr-2' />
-                                                            <span className='text-sm'>Giá: {convertPriceToVND(data.data?.price)}</span>
+                                                            <Banknote size={14} className='mr-2' color='#a935db' />
+                                                            <span className='text-sm dark:text-gray-300 text-gray-800'>Giá: {convertPriceToVND(data.data?.price)}</span>
                                                       </Typography>
                                                       <Typography className="flex items-center text-sm">
-                                                            <MapPin className="mr-2" size={16} /> Địa chỉ cho thuê: 123 Đường ABC, TP. HCM
+                                                            <MapPin className="mr-2" size={14} color='#a935db' />
+                                                            <span className='text-sm dark:text-gray-300 text-gray-800'>Địa chỉ cho thuê: 123 Đường ABC, TP. HCM</span>
                                                       </Typography>
                                                 </div>
                                           </div>
