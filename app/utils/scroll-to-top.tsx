@@ -1,11 +1,12 @@
 'use client'
-import React from "react";
+
+import { useEffect, useState } from "react";
 
 const ScrollToTop = () => {
-      const [showButton, setShowButton] = React.useState(false);
+      const [showButton, setShowButton] = useState(false);
 
       // Xử lý hiện/ẩn button khi scroll
-      React.useEffect(() => {
+      useEffect(() => {
             const handleScroll = () => {
                   // Hiển thị button khi scroll xuống 300px
                   if (window.scrollY > 300) {

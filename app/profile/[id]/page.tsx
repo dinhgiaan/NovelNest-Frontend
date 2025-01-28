@@ -11,7 +11,7 @@ const Page = () => {
       return (
             <>
                   <Heading
-                        title={`Hồ sơ của: ${userInfo.user?.name}`}
+                        title={`Hồ sơ của ${userInfo.user?.name}`}
                         description="NovelNest, nơi lựa chọn tốt nhất cho việc đọc sách của bạn."
                         keyword="NovelNest, Book, Book Store, Dinhgiaan, Dinhgiaandev"
                   />

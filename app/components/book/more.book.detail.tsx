@@ -10,8 +10,11 @@ import Typography from '@mui/material/Typography';
 import convertPriceToVND from '@/app/utils/convert.price';
 import ErrorAPI from '../error.api';
 import Loading from '@/app/utils/loading';
-import { Banknote, Barcode, BookOpenText, Calendar, MapPin, Ruler } from 'lucide-react';
 import { Divider } from '@mui/material';
+import { MdDateRange } from 'react-icons/md';
+import { SlSizeFullscreen } from 'react-icons/sl';
+import { AiOutlineBarcode } from 'react-icons/ai';
+import { GiMoneyStack, GiSpellBook } from 'react-icons/gi';
 
 const InfoDetail = () => {
       const [value, setValue] = useState(0);
@@ -71,19 +74,19 @@ const InfoDetail = () => {
                                                 </Typography>
                                                 <div className="mt-3 space-y-2">
                                                       <Typography className='flex items-center'>
-                                                            <Calendar className="mr-2" size={14} color='#a935db' />
+                                                            <MdDateRange className="mr-2" size={14} color='#a935db' />
                                                             <span className='text-sm dark:text-gray-300 text-gray-800'>Ngày xuất bản: {formatDate(data.data?.publicDate)}</span>
                                                       </Typography>
                                                       <Typography className='flex items-center'>
-                                                            <Ruler className="mr-2" size={14} color='#a935db' />
+                                                            <SlSizeFullscreen className="mr-2" size={14} color='#a935db' />
                                                             <span className='text-sm dark:text-gray-300 text-gray-800'>Kích thước sách: {data.data?.size}</span>
                                                       </Typography>
                                                       <Typography className='flex items-center'>
-                                                            <Barcode className='mr-2' size={14} color='#a935db' />
+                                                            <AiOutlineBarcode className='mr-2' size={14} color='#a935db' />
                                                             <span className='text-sm dark:text-gray-300 text-gray-800'> ISBN: {data.data?.isbn}</span>
                                                       </Typography>
                                                       <Typography className='flex items-center'>
-                                                            <BookOpenText className='mr-2' size={14} color='#a935db' />
+                                                            <GiSpellBook className='mr-2' size={14} color='#a935db' />
                                                             <span className='text-sm dark:text-gray-300 text-gray-800'>Số trang: {data.data?.page}</span>
                                                       </Typography>
                                                 </div>
@@ -97,12 +100,8 @@ const InfoDetail = () => {
                                                 </Typography>
                                                 <div className="mt-3 space-y-2">
                                                       <Typography className="flex items-center text-sm">
-                                                            <Banknote size={14} className='mr-2' color='#a935db' />
+                                                            <GiMoneyStack size={14} className='mr-2' color='#a935db' />
                                                             <span className='text-sm dark:text-gray-300 text-gray-800'>Giá: {convertPriceToVND(data.data?.price)}</span>
-                                                      </Typography>
-                                                      <Typography className="flex items-center text-sm">
-                                                            <MapPin className="mr-2" size={14} color='#a935db' />
-                                                            <span className='text-sm dark:text-gray-300 text-gray-800'>Địa chỉ cho thuê: 123 Đường ABC, TP. HCM</span>
                                                       </Typography>
                                                 </div>
                                           </div>

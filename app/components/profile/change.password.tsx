@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import { TextField, Button, Card, CardContent } from '@mui/material'
-import { Eye, EyeOff, KeyRound } from 'lucide-react'
 import { AuthContextType } from '@/app/context/auth.context'
 import { changePasswordAPI } from '@/app/lib/api'
 import { toast } from 'react-hot-toast'
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa'
+import { ImKey2 } from 'react-icons/im'
 
 interface IProps {
       userInfo: AuthContextType
@@ -55,8 +56,6 @@ const ChangePassword = ({ userInfo }: IProps) => {
                         confirmNewPassword
                   })
 
-                  console.log('---> check response change: ', res)
-
                   if (res?.success == false) {
                         return toast.error(res?.message)
                   } else {
@@ -70,9 +69,9 @@ const ChangePassword = ({ userInfo }: IProps) => {
       }
 
       return (
-            <div className='bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800'>
+            <div className='bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 w-max'>
                   <Card className='w-[550px]'>
-                        <CardContent className='dark:bg-[#ca9ec7] bg-[#fcf6f6]'>
+                        <CardContent className='dark:bg-[#474d63] bg-[#ebf1fa]'>
                               <div className="relative">
                                     <TextField
                                           fullWidth
@@ -83,6 +82,12 @@ const ChangePassword = ({ userInfo }: IProps) => {
                                           variant="outlined"
                                           margin="normal"
                                           size="small"
+                                          InputProps={{
+                                                className: 'dark:text-white text-black',
+                                          }}
+                                          InputLabelProps={{
+                                                className: 'dark:text-white text-black',
+                                          }}
                                           sx={{
                                                 '& .MuiInputBase-root': {
                                                       height: '1.875rem', // Đảm bảo chiều cao input đúng
@@ -97,12 +102,13 @@ const ChangePassword = ({ userInfo }: IProps) => {
                                           }}
                                     />
 
+
                                     <button
                                           type="button"
                                           onClick={() => togglePasswordVisibility('old')}
                                           className="dark:text-white text-black absolute right-3 top-1/2 transform -translate-y-1/4"
                                     >
-                                          {showPassword.old ? <EyeOff size={18} /> : <Eye size={18} />}
+                                          {showPassword.old ? <FaRegEyeSlash size={18} /> : <FaRegEye size={18} />}
                                     </button>
                               </div>
                               <div className="relative">
@@ -115,6 +121,12 @@ const ChangePassword = ({ userInfo }: IProps) => {
                                           variant="outlined"
                                           margin="normal"
                                           size='small'
+                                          InputProps={{
+                                                className: 'dark:text-white text-black',
+                                          }}
+                                          InputLabelProps={{
+                                                className: 'dark:text-white text-black',
+                                          }}
                                           sx={{
                                                 '& .MuiInputBase-root': {
                                                       height: '1.875rem', // Đảm bảo chiều cao input đúng
@@ -133,7 +145,7 @@ const ChangePassword = ({ userInfo }: IProps) => {
                                           onClick={() => togglePasswordVisibility('new')}
                                           className="dark:text-white text-black absolute right-3 top-1/2 transform -translate-y-1/4"
                                     >
-                                          {showPassword.new ? <EyeOff size={18} /> : <Eye size={18} />}
+                                          {showPassword.new ? <FaRegEyeSlash size={18} /> : <FaRegEye size={18} />}
                                     </button>
                               </div>
                               <div className="relative">
@@ -146,6 +158,12 @@ const ChangePassword = ({ userInfo }: IProps) => {
                                           variant="outlined"
                                           margin="normal"
                                           size='small'
+                                          InputProps={{
+                                                className: 'dark:text-white text-black',
+                                          }}
+                                          InputLabelProps={{
+                                                className: 'dark:text-white text-black',
+                                          }}
                                           sx={{
                                                 '& .MuiInputBase-root': {
                                                       height: '1.875rem', // Đảm bảo chiều cao input đúng
@@ -164,7 +182,7 @@ const ChangePassword = ({ userInfo }: IProps) => {
                                           onClick={() => togglePasswordVisibility('confirm')}
                                           className="dark:text-white text-black absolute right-3 top-1/2 transform -translate-y-1/4"
                                     >
-                                          {showPassword.confirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                                          {showPassword.confirm ? <FaRegEye size={18} /> : <FaRegEye size={18} />}
                                     </button>
                               </div>
                               <Button
@@ -172,7 +190,7 @@ const ChangePassword = ({ userInfo }: IProps) => {
                                     color="primary"
                                     fullWidth
                                     onClick={handleChangePassword}
-                                    startIcon={<KeyRound size={18} />}
+                                    startIcon={<ImKey2 size={18} />}
                               >
                                     <span className='text-xs'>Đổi mật khẩu</span>
                               </Button>

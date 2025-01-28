@@ -27,7 +27,7 @@ const Page = () => {
                         keyword="NovelNest, Book, Book Store, Dinhgiaan, Dinhgiaandev"
                   />
                   <BookPage
-                        data={data?.data?.books || []}
+                        data={data?.data || []}
                   />
             </>
       );

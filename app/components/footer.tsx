@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { style } from '../styles/style';
-import { Facebook, Github, Linkedin, Mail, MapPinned, Phone } from 'lucide-react';
+import { MdOutlineMail, MdPhone } from 'react-icons/md';
+import { FaFacebook, FaGithub, FaLinkedin, FaMapMarkedAlt } from 'react-icons/fa';
 
 const Footer = () => {
       return (
@@ -18,15 +19,15 @@ const Footer = () => {
                                     <h3 className={`${style.titleFooter}`}>Liên hệ</h3>
                                     <ul className="text-sm space-y-3 text-gray-400">
                                           <li className="flex items-center space-x-3">
-                                                <Phone size={20} />
+                                                <MdPhone size={20} />
                                                 <span className={`${style.labelFooter}`}>+84 856 562 424</span>
                                           </li>
                                           <li className="flex items-center space-x-3">
-                                                <Mail size={20} />
+                                                <MdOutlineMail size={20} />
                                                 <span className={`${style.labelFooter}`}>novelnest@contact.com</span>
                                           </li>
                                           <li className="flex items-center space-x-4">
-                                                <MapPinned size={35} />
+                                                <FaMapMarkedAlt size={35} />
                                                 <span className={`${style.labelFooter}`}>
                                                       Chung cư Bộ công an, Block A, Đường số 3, phường An Khánh, TP.Thủ Đức
                                                 </span>
@@ -43,19 +44,19 @@ const Footer = () => {
                                           <li>
                                                 <Link rel="preload"
                                                       as={""} href={'https://www.facebook.com/dgiaan04'} passHref>
-                                                      <Facebook size={20} className="hover:text-blue-400" />
+                                                      <FaFacebook size={20} className="hover:text-blue-400" />
                                                 </Link>
                                           </li>
                                           <li>
                                                 <Link rel="preload"
                                                       as={""} href={'https://github.com/dinhgiaandev'} passHref>
-                                                      <Github size={20} className="hover:text-gray-300" />
+                                                      <FaGithub size={20} className="hover:text-gray-300" />
                                                 </Link>
                                           </li>
                                           <li>
                                                 <Link rel="preload"
                                                       as={""} href={'https://www.linkedin.com/in/dinhgiaan'} passHref>
-                                                      <Linkedin size={20} className="hover:text-blue-600" />
+                                                      <FaLinkedin size={20} className="hover:text-blue-600" />
                                                 </Link>
                                           </li>
                                     </ul>

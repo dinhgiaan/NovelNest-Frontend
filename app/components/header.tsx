@@ -5,12 +5,14 @@ import { useContext, useMemo, useState } from 'react';
 import Image from 'next/image';
 import langVI from '../public/lang-vi.png';
 import langEN from '../public/lang-en.png';
-import logoLight from '../public/logo-light.png';
-import logoDark from '../public/logo-dark.png';
+import logo from '@/app/public/logo.webp';
 import ThemeSwitch from './theme.switch';
 import { useSession } from 'next-auth/react';
-import { AlignJustify, ShoppingBag, User2, X } from 'lucide-react';
 import { AuthContext } from '../context/auth.context';
+import { IoMdList } from 'react-icons/io';
+import { BiX } from 'react-icons/bi';
+import { CiShoppingBasket } from 'react-icons/ci';
+import { FaUserCircle } from 'react-icons/fa';
 
 const Header = () => {
       const { data: session } = useSession();
@@ -29,22 +31,19 @@ const Header = () => {
                   <nav className="max-w-7xl mx-auto px-6 py-1 flex items-center justify-between">
                         <Link href="/" rel="preload"
                               as={""}>
-                              <Image
-                                    src={logoDark}
-                                    width={65}
-                                    height={65}
-                                    alt="Logo NovelNest"
-                                    className="hidden dark:block"
-                                    priority
-                              />
-                              <Image
-                                    src={logoLight}
-                                    width={65}
-                                    height={65}
-                                    alt="Logo NovelNest"
-                                    className="block dark:hidden"
-                                    priority
-                              />
+                              <div className='flex'>
+                                    <Image
+                                          src={logo}
+                                          width={128}
+                                          height={128}
+                                          alt="Logo NovelNest"
+                                          priority
+                                    />
+                                    <div className='dark:text-[#86eef1] text-[#dbb741] text-sm mt-6 ml-[-21] tracking-widest font-mono font-bold'>
+                                          <span className='block'>Novel</span>
+                                          <span>Nest</span>
+                                    </div>
+                              </div>
                         </Link>
 
                         {/* Desktop Menu */}
@@ -66,7 +65,7 @@ const Header = () => {
                               </div>
 
                               <div
-                                    className="flex items-center px-4 py-2 border rounded-lg dark:bg-gray-800 bg-white dark:text-white text-gray-800 dark:border-gray-700 border-gray-300 cursor-pointer"
+                                    className="cursor-pointer"
                                     onClick={() => setOpenUser((prev) => !prev)}
                               >
                                     {userInfo ? (
@@ -79,10 +78,6 @@ const Header = () => {
                                                       alt="avatar"
                                                       priority
                                                 />
-                                                <span className="ml-3 text-xs font-semibold">
-                                                      <span className="dark:text-[#ccc] text-[#242323]">Xin chào:</span>
-                                                      <span className="ml-1 dark:text-[#7ee1ee] text-[#b28a39]">{userInfo.user.name}</span>
-                                                </span>
                                           </>
                                     ) : session ? (
                                           <>
@@ -93,14 +88,10 @@ const Header = () => {
                                                       height={15}
                                                       alt="avatar"
                                                 />
-                                                <span className="ml-3 text-xs font-semibold">
-                                                      <span className="dark:text-[#ccc] text-[#242323]">Xin chào:</span>
-                                                      <span className="ml-1 dark:text-[#7ee1ee] text-[#b28a39]">{session.user?.name}</span>
-                                                </span>
                                           </>
                                     ) : (
                                           <>
-                                                <User2 className="text-x dark:text-gray-400 text-blue-600" />
+                                                <FaUserCircle className="text-x dark:text-gray-400 text-blue-600" />
                                                 <span className="ml-3 text-xs font-medium dark:text-gray-400 text-gray-800">
                                                       Xin chào: Đinh Gia Ân
                                                 </span>
@@ -131,7 +122,7 @@ const Header = () => {
                                     <Image src={langEN} width={20} height={20} alt="English" className="cursor-pointer" />
                               </div>
                               <div>
-                                    <ShoppingBag className='dark:text-white text-black' />
+                                    <CiShoppingBasket className='dark:text-white text-black' size={18} />
                               </div>
                         </div>
 
@@ -140,7 +131,7 @@ const Header = () => {
                               onClick={toggleMenu}
                               className="lg:hidden p-2 rounded-md text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                              {isMenuOpen ? <X className="h-6 w-6" /> : <AlignJustify className="h-6 w-6" />}
+                              {isMenuOpen ? <BiX className="h-6 w-6" /> : <IoMdList className="h-6 w-6" />}
                         </button>
                   </nav>
 

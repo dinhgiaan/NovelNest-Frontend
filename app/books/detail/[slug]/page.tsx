@@ -16,6 +16,8 @@ const Page = () => {
             fetcher
       );
 
+      // console.log('---> check data book detail: ', data)
+
       if (error) {
             return <div>Có lỗi xảy ra!</div>
       }

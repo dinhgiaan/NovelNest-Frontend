@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import Filter from "../components/book/filter";
-import { ShoppingCart } from "lucide-react";
 import convertPriceToVND from "../utils/convert.price";
+import { AiOutlineShoppingCart } from "react-icons/ai";
 
 interface Book {
       _id: string;
@@ -53,7 +53,7 @@ const BookPage = ({ data }: IProps) => {
                                           <div className="bg-white dark:bg-gray-800 rounded overflow-hidden shadow-sm hover:shadow transition-shadow duration-200">
                                                 <div className="relative aspect-[2/3] w-full overflow-hidden bg-gray-100 dark:bg-gray-700">
                                                       <Image
-                                                            src={book.thumbnail?.url}
+                                                            src={book?.thumbnail?.url}
                                                             alt={book.title}
                                                             fill
                                                             className="object-cover"
@@ -82,7 +82,7 @@ const BookPage = ({ data }: IProps) => {
                                                                         {convertPriceToVND(book.price)}
                                                                   </span>
                                                                   <span>
-                                                                        <ShoppingCart size={17} className="dark:text-white text-black" />
+                                                                        <AiOutlineShoppingCart size={17} className="dark:text-white text-black" />
                                                                   </span>
                                                             </div>
                                                       </div>

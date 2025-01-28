@@ -58,7 +58,6 @@ export const AuthWrapper: React.FC<AuthProviderProps> = ({ children }) => {
       const getMyInfo = async () => {
             try {
                   const res = await getInfo();
-                  console.log("--> check res getMyInfo: ", res);
 
                   if (res.data) {
                         const userData: AuthContextType = {

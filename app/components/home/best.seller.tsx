@@ -15,14 +15,14 @@ const BestSeller = () => {
             revalidateOnReconnect: true,
       });
 
-      // console.log('--> check data: ', data)
+      console.log('--> check data: ', data)
 
       if (error) return <ErrorAPI />;
       if (isLoading) return <Loading />;
 
 
       // Access the books array correctly
-      let books = Array.isArray(data.data?.books) ? data.data.books.sort((a, b) => b.sold - a.sold).slice(0, 3) : [];
+      let books = Array.isArray(data.data) ? data.data.sort((a, b) => b.sold - a.sold).slice(0, 3) : [];
 
       // Handle case when there are no books
       if (books.length === 0) {
@@ -36,7 +36,7 @@ const BestSeller = () => {
       return (
             <div className="w-full px-4 mb-24">
                   <div>
-                        <p className="text-2xl dark:text-white text-black text-center mb-10">
+                        <p className="text-2xl dark:text-white text-black text-center mb-16">
                               Những Cuốn Sách Bán Chạy Nhất
                         </p>
 
@@ -47,7 +47,7 @@ const BestSeller = () => {
                                           <div
 
                                                 className={` shadow-md rounded-md p-4 flex flex-col items-center transition-all ${index === 1
-                                                      ? 'bg-[#95e3ec] dark:bg-[#905fb0] w-48 h-80 md:w-60 md:h-96 transform scale-110 z-10]' // Tăng chiều cao của phần tử ở giữa
+                                                      ? 'bg-[#95e3ec] dark:bg-[#905fb0] w-48 h-80 md:w-60 md:h-96 transform hover:scale-125 scale-110 z-10]' // Tăng chiều cao của phần tử ở giữa
                                                       : 'bg-white dark:bg-gray-800 w-40 h-80 md:w-48 md:h-96' // Tăng chiều cao cho các phần tử còn lại
                                                       }`}
                                           >

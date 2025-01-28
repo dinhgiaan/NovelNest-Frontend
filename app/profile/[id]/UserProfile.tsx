@@ -11,7 +11,7 @@ interface IProps {
 }
 
 const UserProfile = ({ userInfo }: IProps) => {
-      const [active, setActive] = useState<number>(1);
+      const [active, setActive] = useState<number>(0);
 
 
       // console.log('--> check info: ', userInfo)

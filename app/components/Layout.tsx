@@ -1,119 +1,81 @@
+import React from 'react';
 import Image from 'next/image';
-import image from '../public/banner.webp';
+import banner from '../public/banner-homepage.webp';
 import Services from './home/services';
 import CarouselGeneBooks from './home/discover.books';
 import BestSeller from './home/best.seller';
 import Timer from './home/subscribe';
-
+import { GiOlive } from 'react-icons/gi';
 
 const Layout = () => {
-      const slides = [
-            {
-                  id: 1,
-                  icon: "M10 1L3 6l7 5 7-5-7-5zM3 11l7 5 7-5",
-                  title: "Văn học",
-                  bookCount: 150
-            },
-            {
-                  id: 2,
-                  icon: "M12 3L2 8l10 5 10-5-10-5zM2 16l10 5 10-5",
-                  title: "Khoa học",
-                  bookCount: 120
-            },
-            {
-                  id: 3,
-                  icon: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",
-                  title: "Lịch sử",
-                  bookCount: 100
-            },
-            {
-                  id: 4,
-                  icon: "M5 3l7 7-7 7",
-                  title: "Tâm lý",
-                  bookCount: 90
-            },
-            {
-                  id: 5,
-                  icon: "M12 5L2 12l10 5 10-5-10-5",
-                  title: "Hành động",
-                  bookCount: 200
-            },
-            {
-                  id: 6,
-                  icon: "M12 1L1 12h22L12 1z",
-                  title: "Kinh tế",
-                  bookCount: 75
-            },
-            {
-                  id: 7,
-                  icon: "M12 0L5 7l7 7 7-7L12 0z",
-                  title: "Văn hóa",
-                  bookCount: 80
-            },
-            {
-                  id: 8,
-                  icon: "M12 2L4 10h16L12 2z",
-                  title: "Phát triển bản thân",
-                  bookCount: 110
-            },
-            {
-                  id: 9,
-                  icon: "M10 3L2 12l8 7 8-7L10 3z",
-                  title: "Tiểu thuyết",
-                  bookCount: 250
-            }
-      ];
-
       return (
-            <div className="min-h-screen bg-white dark:bg-[#233b57]">
-                  <div className='mx-40'>
-                        <div className="w-full">
-                              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                    {/* Main Hero Section */}
-                                    <div className="flex flex-col lg:flex-row items-center gap-12">
-                                          {/* Content Section */}
-                                          <div className="flex-1 space-y-8">
-                                                <div className="space-y-4">
-                                                      <h1 className="text-3xl md:text-4xl dark:text-white text-black w-2/3 font-bold tracking-tight">
-                                                            Khám phá thế giới qua từng trang sách
-                                                      </h1>
-                                                      <p className="text-sm dark:text-yellow-400 leading-relaxed w-2/3">
-                                                            NovelNest - Nền tảng đọc sách số hàng đầu Việt Nam, nơi tri thức và cảm xúc hòa quyện trong từng trang sách điện tử.
-                                                      </p>
+            <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-[#233b57] dark:to-[#1a2a3e]">
+                  <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        <section className="mb-20">
+                              <div className="flex flex-col lg:flex-row items-center gap-12">
+                                    <div className="flex-1 space-y-8">
+                                          <div className="space-y-6">
+                                                <div className="relative inline-block">
+                                                      <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-blue-400 rounded-full blur opacity-30" />
+                                                      <GiOlive
+                                                            size={80}
+                                                            className="text-[#56f173] relative transform hover:scale-110 transition-all duration-300 cursor-pointer"
+                                                      />
                                                 </div>
 
-                                                <blockquote className="text-base text-gray-600 dark:text-gray-400 italic border-l-4 border-blue-500 pl-4">
-                                                      &quot;Sách là cửa sổ nhìn ra thế giới, là người bạn đồng hành trên hành trình khám phá tri thức vô tận.&quot;
-                                                </blockquote>
+                                                <h1 className="text-3xl lg:text-4xl dark:text-[#edd479] text-[#ee6c79] font-bold tracking-tight leading-tight">
+                                                      Khám phá thế giới
+                                                      <span className="block mt-2">qua từng trang sách</span>
+                                                </h1>
+
+                                                <p className="text-md dark:text-[#aed3e8] text-[#9bd6c2] leading-relaxed max-w-xl">
+                                                      NovelNest - Nền tảng đọc sách số hàng đầu Việt Nam, nơi tri thức và cảm xúc hòa quyện trong từng trang sách điện tử.
+                                                </p>
                                           </div>
 
-                                          <div className="flex-2">
-                                                <div className="relative overflow-hidden">
+                                          <div className="relative">
+                                                <blockquote className="text-sm text-gray-600 dark:text-gray-400 italic border-l-4 border-blue-500 pl-6 py-2">
+                                                      &quot;Nếu bạn không thích đọc sách, có lẽ bạn chưa tìm được cuốn sách phù hợp.&quot;
+                                                </blockquote>
+                                                <div className="mt-2 pl-6 text-gray-500 dark:text-gray-400 font-medium">
+                                                      - J. K. Rowling -
+                                                </div>
+                                          </div>
+                                    </div>
+
+                                    <div className="flex-1">
+                                          <div className="relative group">
+                                                <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-300" />
+                                                <div className="relative overflow-hidden rounded-lg shadow-xl">
                                                       <Image
-                                                            src={image}
+                                                            src={banner}
                                                             alt="NovelNest Reading Experience"
-                                                            width={400}
-                                                            height={200}
-                                                            className="object-cover rounded-lg"
+                                                            width={650}
+                                                            height={450}
+                                                            className="object-cover w-full h-full animate-gentle-float-swing"
                                                             priority
                                                       />
                                                 </div>
                                           </div>
                                     </div>
                               </div>
-                        </div>
+                        </section>
 
-                        {/* ---------- Services ---------- */}
-                        <Services />
+                        <section className="mb-20">
+                              <Services />
+                        </section>
 
-                        {/* ---------- Discover Books ---------- */}
-                        <CarouselGeneBooks slides={slides} />
+                        <section className="mb-20">
+                              <CarouselGeneBooks />
+                        </section>
 
-                        {/* ---------- Best Seller ---------- */}
-                        <BestSeller />
+                        <section className="mb-20">
+                              <BestSeller />
+                        </section>
 
-                        {/* ---------- Subscribe ---------- */}
-                        <Timer />
+                        <section className="mb-20">
+                              <Timer />
+                        </section>
                   </div>
             </div>
       );
