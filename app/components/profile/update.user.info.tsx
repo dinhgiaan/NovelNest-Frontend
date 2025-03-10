@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
 import Input from "@mui/material/Input"
 import Button from "@mui/material/Button"
-import { AuthContextType } from "@/app/context/auth.context"
-import { updateUserInfo } from "@/app/lib/api"
+import { AuthContext, AuthContextType } from "@/app/context/auth.context"
+import { getInfo, updateUserInfo } from "@/app/lib/api"
 import toast from "react-hot-toast"
 import { MdOutlineLocalPhone, MdOutlineMail } from "react-icons/md"
 import { FaMapMarkedAlt } from "react-icons/fa";
@@ -25,6 +25,7 @@ export function UpdateUserInfo({ isOpen, setIsOpen, userInfo }: UpdateUserInfoPr
       const [name, setName] = useState<string>('');
       const [phone, setPhone] = useState<string>('');
       const [address, setAddress] = useState<string>('');
+      const { setUserInfo } = useContext(AuthContext);
 
       useEffect(() => {
             if (isOpen) {
@@ -44,8 +45,21 @@ export function UpdateUserInfo({ isOpen, setIsOpen, userInfo }: UpdateUserInfoPr
                         address
                   });
 
+                  console.log('--> check res update: ', res)
+
                   if (res.success) {
                         toast.success(res.message);
+                        // Update the context with the new user information
+                        setUserInfo((prevState) => ({
+                              ...prevState,
+                              user: {
+                                    ...prevState.user,
+                                    ...res.user, // Use the updated user from the response
+                              },
+                        }))
+
+                        // Close the dialog after successful update
+                        setIsOpen(false)
                   }
                   console.log('--> check res update: ', res);
             } else {

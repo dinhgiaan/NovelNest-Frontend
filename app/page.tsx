@@ -1,5 +1,5 @@
 import Heading from "./utils/heading";
-import Layout from "./components/layout";
+import Layout from "./components/Layout";
 
 const HomePage = () => {
   return (

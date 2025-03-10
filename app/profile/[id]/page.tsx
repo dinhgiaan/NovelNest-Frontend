@@ -2,11 +2,12 @@
 
 import Heading from "@/app/utils/heading"
 import UserProfile from "./UserProfile"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { AuthContext } from "@/app/context/auth.context"
 
 const Page = () => {
       const { userInfo } = useContext(AuthContext);
+      console.log('--> check userInfo in profile: ', userInfo);
 
       return (
             <>

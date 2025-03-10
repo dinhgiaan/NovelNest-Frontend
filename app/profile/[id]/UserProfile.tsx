@@ -5,6 +5,7 @@ import SideBarUser from '@/app/components/side.bar.user';
 import InfoUser from '@/app/components/profile/info.user';
 import { AuthContextType } from '@/app/context/auth.context';
 import ChangePassword from '@/app/components/profile/change.password';
+import PurchasedBook from '@/app/components/profile/purchased.book';
 
 interface IProps {
       userInfo: AuthContextType;
@@ -12,9 +13,6 @@ interface IProps {
 
 const UserProfile = ({ userInfo }: IProps) => {
       const [active, setActive] = useState<number>(0);
-
-
-      // console.log('--> check info: ', userInfo)
 
       return (
             <div className='bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen'>
@@ -28,6 +26,7 @@ const UserProfile = ({ userInfo }: IProps) => {
                         <div className='w-3/4 ml-32'>
                               {active == 0 && <InfoUser userInfo={userInfo} />}
                               {active == 1 && <ChangePassword userInfo={userInfo} />}
+                              {active == 2 && <PurchasedBook userInfo={userInfo} />}
                         </div>
                   </div>
             </div>

@@ -50,7 +50,7 @@ const PurchaseType = ({ purchaseType, setPurchaseType }: IProps) => {
                         >
                               <MenuItem value="hardcopy">Mua bản cứng</MenuItem>
                               <MenuItem value="online">Mua bản mềm</MenuItem>
-                              <MenuItem value="both">Cả hai</MenuItem>
+                              <MenuItem value="both">Mua cả bản cứng và bản mềm</MenuItem>
                         </Select>
                   </FormControl>
 

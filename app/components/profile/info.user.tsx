@@ -40,16 +40,20 @@ const InfoUser = ({ userInfo }: IProps) => {
                         <div className="w-full">
                               <div className="dark:bg-[#474d63] bg-[#ebf1fa] rounded-sm">
                                     <div className="h-40 z-10">
-                                          <Image src={bannerProfile || "/placeholder.svg"} alt="Banner Profile User" width={1003} height={220} />
+                                          <Image src={bannerProfile} alt="Banner Profile User" width={1003} height={220} />
                                     </div>
 
-                                    <div className="dark:text-[#ccc] text-[#ccc] hover:text-[#d26767] cursor-pointer p-2" onClick={handleOpenUpdateInfo}>
-                                          <CiEdit size={18} />
+                                    <div
+                                          className="absolute top-60 right-72 dark:text-[#ccc] text-[#ccc] hover:text-[#d26767] cursor-pointer"
+                                          onClick={handleOpenUpdateInfo}>
+                                          <div>
+                                                <CiEdit size={18} />
+                                          </div>
                                     </div>
 
                                     <div className="p-8 mt-[-115]">
                                           <div className="flex flex-col items-center mb-6 z-50">
-                                                <div className="dark:bg-[#dbdac3] bg-[#f1f0f0] rounded-full w-28 h-28 flex items-center justify-center border border-[#000]">
+                                                <div className="dark:bg-[#dbdac3] bg-[#f1f0f0] rounded-full w-28 h-28 flex items-center justify-center">
                                                       <Image
                                                             alt="User Avatar Profile"
                                                             src="https://res.cloudinary.com/dovw8fqpp/image/upload/v1736577135/book_thumbnails/jfqfmqsddxvpjouxupqg.webp"
@@ -61,7 +65,7 @@ const InfoUser = ({ userInfo }: IProps) => {
                                                 <h1 className="text-xl font-bold dark:text-[#63d9e8] text-[#b5bc4b] mt-3 mb-1">
                                                       {userInfo.user?.name}
                                                 </h1>
-                                                <span className="text-xs dark:text-[#ccc] text-[#454343] tracking-wide font-medium">
+                                                <span className="text-xs dark:text-[#ccc] text-[#454343] tracking-wide font-medium italic">
                                                       {userInfo.user?.role}
                                                 </span>
                                           </div>

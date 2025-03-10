@@ -137,8 +137,8 @@ const Header = () => {
 
                   {/* Mobile Menu */}
                   {isMenuOpen && (
-                        <div className="lg:hidden px-6 py-4 space-y-2 bg-gray-50 shadow-md">
-                              {[{ name: 'Trang chủ', href: '/' }, { name: 'Sách', href: '/books' }, { name: 'Về chúng tôi', href: '/about' }, { name: 'Chính sách', href: '/policy' }, { name: 'FAQ', href: '/faq' }].map((item) => (
+                        <div className="lg:hidden px-6 py-4 space-y-2 bg-[#eae4e4] shadow-md">
+                              {[{ name: 'Trang chủ', href: '/' }, { name: 'Sách', href: '/books' }, { name: 'Về chúng tôi', href: '/about' }, { name: 'FAQ', href: '/faq' }, { name: 'Đăng nhập', href: '/login' }, { name: 'Đăng ký', href: '/register' }].map((item) => (
                                     <Link
                                           rel="preload"
                                           as={""}

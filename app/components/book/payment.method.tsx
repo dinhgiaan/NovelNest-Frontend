@@ -8,6 +8,9 @@ import { usePayOS } from '@payos/payos-checkout';
 import { AuthContext } from '@/app/context/auth.context';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { FaRegCheckCircle } from 'react-icons/fa';
+import { BiInfoCircle } from 'react-icons/bi';
+import { BsCash } from 'react-icons/bs';
 
 interface IProps {
       book: any;
@@ -20,6 +23,38 @@ const PaymentMethod = ({ book }: IProps) => {
       const [message, setMessage] = useState("");
       const [isCreatingLink, setIsCreatingLink] = useState(false);
       const { userInfo } = useContext(AuthContext);
+
+      const paymentMethods = [
+            {
+                  id: 'COD',
+                  name: 'Thanh toán khi nhận hàng (COD)',
+                  description: 'Thanh toán tiền mặt khi nhận được hàng tại địa chỉ của bạn',
+                  icon: <BsCash className="w-6 h-6 text-gray-600" />,
+                  image: cod,
+                  benefits: ['Kiểm tra hàng trước khi nhận', 'Không cần thanh toán trước']
+            },
+            {
+                  id: 'MoMo',
+                  name: 'Thanh toán với MoMo',
+                  description: 'Thanh toán nhanh chóng và an toàn qua ví điện tử MoMo',
+                  image: momo,
+                  benefits: ['Hoàn tiền lên đến 100k', 'Xử lý tức thì']
+            },
+            {
+                  id: 'PayOs',
+                  name: 'Quét mã QR',
+                  description: 'Hỗ trợ thanh toán qua thẻ ATM, Visa, Mastercard',
+                  image: payOs,
+                  benefits: ['Đa dạng phương thức', 'Bảo mật cao']
+            },
+            {
+                  id: 'ZaloPay',
+                  name: 'Thanh toán với ZaloPay',
+                  description: 'Thanh toán tiện lợi qua ví ZaloPay',
+                  image: zalopay,
+                  benefits: ['Ưu đãi người dùng mới', 'Hoàn tiền ZaloPay']
+            }
+      ];
 
       const handleSelect = (method: string) => {
             setSelectedMethod(method);
@@ -36,8 +71,12 @@ const PaymentMethod = ({ book }: IProps) => {
 
                   // After successful payment, redirect to success page
                   const params = new URLSearchParams(window.location.search);
-                  const userId = userInfo.user?._id
-                  const bookId = book._id
+                  const userId = userInfo.user?._id;
+                  const bookId = book._id;
+                  const title = book.tile;
+                  const author = book.author;
+                  const rating = book.rating;
+                  const thumbnail = book.thumbnail?._url;
                   const orderCode = params.get('orderCode');
 
                   if (userId && bookId && orderCode) {
@@ -112,73 +151,64 @@ const PaymentMethod = ({ book }: IProps) => {
       }, [payOSConfig]);
 
       return (
-            <div className='w-full mt-10 space-y-6 p-6 bg-white rounded-xl shadow-md max-w-lg mx-auto' >
-                  <h2 className='text-lg font-bold text-center mb-4 text-[#211f1f]'>Phương thức thanh toán</h2>
+            <div className="w-full max-w-2xl mx-auto mt-10 bg-white rounded-xl shadow-md p-6 mb-10">
+                  <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+                        Phương thức thanh toán
+                  </h2>
 
-                  {/* Phương thức COD */}
-                  <div
-                        className={`flex items-center space-x-4 p-4 rounded-lg transition duration-300 cursor-pointer border 
-                        ${selectedMethod === 'COD' ? 'bg-blue-100 border-blue-500' : 'bg-white border-gray-200 hover:bg-slate-50'}`}
-                        onClick={() => handleSelect('COD')}
-                  >
-                        <Image
-                              src={cod}
-                              className='w-12 h-12'
-                              alt='COD Method'
-                        />
-                        <span className='text-sm font-medium text-gray-700'>Thanh toán khi nhận hàng {'(COD)'}</span>
-                  </div >
+                  <div className="space-y-4">
+                        {paymentMethods.map((method) => (
+                              <div
+                                    key={method.id}
+                                    className={`relative rounded-lg transition-all duration-300 cursor-pointer
+              ${selectedMethod === method.id
+                                                ? 'bg-blue-50 border-2 border-blue-500'
+                                                : 'bg-white border border-gray-200 hover:border-blue-200 hover:shadow-md'
+                                          }`}
+                                    onClick={() => method.id === 'PayOs' ? handleGetPaymentLink() : handleSelect(method.id)}
+                              >
+                                    <div className="p-4">
+                                          <div className="flex items-start space-x-4">
+                                                <div className="flex-shrink-0">
+                                                      <Image
+                                                            src={method.image}
+                                                            className="w-14 h-14 object-contain"
+                                                            alt={`${method.name} icon`}
+                                                      />
+                                                </div>
 
-                  {/* Phương thức MoMo */}
-                  <div
-                        className={`flex items-center space-x-4 p-4 rounded-lg transition duration-300 cursor-pointer border 
-                        ${selectedMethod === 'MoMo' ? 'bg-blue-100 border-blue-500' : 'bg-white border-gray-200 hover:bg-slate-50'}`}
-                        onClick={() => handleSelect('MoMo')}
-                  >
-                        <Image
-                              src={momo}
-                              className='w-12 h-12'
-                              alt='MoMo Method'
-                        />
-                        <span className='text-sm font-medium text-gray-700'>Thanh toán với MoMo</span>
-                  </div >
+                                                <div className="flex-1 min-w-0">
+                                                      <div className="flex items-center justify-between">
+                                                            <h3 className="text-xs font-semibold text-gray-900">
+                                                                  {method.name}
+                                                            </h3>
+                                                            {selectedMethod === method.id && (
+                                                                  <FaRegCheckCircle className="w-5 h-5 text-blue-500" />
+                                                            )}
+                                                      </div>
 
-                  {/* Phương thức PayOs */}
-                  <div
-                        className={`flex items-center space-x-4 p-4 rounded-lg transition duration-300 cursor-pointer border 
-                        ${selectedMethod === 'PayOs' ? 'bg-blue-100 border-blue-500' : 'bg-white border-gray-200 hover:bg-slate-50'}`}
-                        onClick={() => handleSelect('PayOs')}
-                  >
-                        <div
-                              className='flex items-center space-x-4 p-4'
-                              onClick={(event) => {
-                                    event.preventDefault();
-                                    handleGetPaymentLink();
-                              }}
-                        >
-                              <Image
-                                    src={payOs}
-                                    className='w-12 h-12'
-                                    alt='PayOs Method'
-                              />
-                              <span className='text-sm font-medium text-gray-700'>Thanh toán với PayOs</span>
-                        </div>
-                  </div >
+                                                      <p className="mt-1 text-sm text-gray-500">
+                                                            {method.description}
+                                                      </p>
 
-                  {/* Phương thức ZaloPay */}
-                  <div
-                        className={`flex items-center space-x-4 p-4 rounded-lg transition duration-300 cursor-pointer border 
-                        ${selectedMethod === 'ZaloPay' ? 'bg-blue-100 border-blue-500' : 'bg-white border-gray-200 hover:bg-slate-50'}`}
-                        onClick={() => handleSelect('ZaloPay')}
-                  >
-                        <Image
-                              src={zalopay}
-                              className='w-12 h-12'
-                              alt='ZaloPay Method'
-                        />
-                        <span className='text-sm font-medium text-gray-700'>Thanh toán với ZaloPay</span>
-                  </div >
-            </div >
+                                                      <div className="mt-2 flex flex-wrap gap-2">
+                                                            {method.benefits.map((benefit, index) => (
+                                                                  <span
+                                                                        key={index}
+                                                                        className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-700 bg-blue-50 rounded-full"
+                                                                  >
+                                                                        <BiInfoCircle className="w-3 h-3 mr-1" />
+                                                                        {benefit}
+                                                                  </span>
+                                                            ))}
+                                                      </div>
+                                                </div>
+                                          </div>
+                                    </div>
+                              </div>
+                        ))}
+                  </div>
+            </div>
       );
 };
 

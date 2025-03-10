@@ -25,7 +25,7 @@ const InfoBuy = ({ book, userInfo }: IProps) => {
                                           </AccordionSummary>
                                           <Divider />
                                           <AccordionDetails className="p-4">
-                                                <div className="grid grid-cols-2 gap-4">
+                                                <div className="grid grid-cols gap-4">
                                                       <div className="flex items-center text-sm">
                                                             <span className="font-medium mr-1">Họ và tên:</span>
                                                             <span>{userInfo.user?.name}</span>
@@ -52,7 +52,7 @@ const InfoBuy = ({ book, userInfo }: IProps) => {
                                           </AccordionSummary>
                                           <Divider />
                                           <AccordionDetails className="p-4">
-                                                <div className="grid grid-cols-2 gap-4">
+                                                <div className="grid grid-cols gap-4">
                                                       <div className="flex items-center text-sm">
                                                             <span className="font-medium mr-1">Tiêu đề:</span>
                                                             <span>{book.title}</span>

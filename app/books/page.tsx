@@ -7,7 +7,7 @@ import useSWR from "swr"
 
 const Page = () => {
       const fetcher = (url: string) => fetch(url).then((res) => res.json());
-      const { data, error, isLoading } = useSWR('http://localhost:8888/api/v1/books', fetcher,
+      const { data, error, isLoading } = useSWR(process.env.NEXT_PUBLIC_BOOKS, fetcher,
             {
                   revalidateIfStale: false,
                   revalidateOnFocus: false,

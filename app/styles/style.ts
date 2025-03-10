@@ -5,7 +5,7 @@ export const style = {
       button: "flex flex-row justify-center items-center py-3 px-6 rounded-full cursor-pointer bg-[#2190ff] min-h-[45px] w-full text-[16px] font-Roboto font-semibold dark:text-white text-black",
 
       // footer
-      titleFooter: "text-base font-Roboto font-bold mb-4",
+      titleFooter: "text-base font-Roboto font-bold mb-4 text-[#93e5fa]",
       labelFooter: "text-xs font-Roboto text-[#ccc]",
 
       // header

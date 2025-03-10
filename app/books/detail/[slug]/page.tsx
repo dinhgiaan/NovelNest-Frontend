@@ -12,7 +12,7 @@ const Page = () => {
       const { slug } = useParams();
 
       const { data, error, isLoading } = useSWR(
-            slug ? `http://localhost:8888/api/v1/books/detail/${slug}` : null,
+            slug ? `${process.env.NEXT_PUBLIC_BOOKS}/detail/${slug}` : null,
             fetcher
       );
 

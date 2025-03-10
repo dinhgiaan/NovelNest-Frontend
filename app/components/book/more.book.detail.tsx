@@ -22,7 +22,7 @@ const InfoDetail = () => {
 
       const fetcher = (url: string) => fetch(url).then((res) => res.json());
       const { data, error, isLoading } = useSWR(
-            slug ? `http://localhost:8888/api/v1/books/detail/${slug}` : null,
+            slug ? `${process.env.NEXT_PUBLIC_BOOKS}/detail/${slug}` : null,
             fetcher
       );
 
@@ -108,7 +108,7 @@ const InfoDetail = () => {
                                     </div>
                               </TabPanel>
                               <TabPanel index={1}>
-                                    <Typography>Hiển thị các đánh giá tại đây.</Typography>
+                                    <Typography>Hiện tại chưa có đánh giá nào.</Typography>
                               </TabPanel>
                         </div>
                   </Box>

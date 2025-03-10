@@ -26,7 +26,8 @@ const LoginPage = () => {
                   setLoading(true);
 
                   const res = await loginAPI({ email, password });
-                  if (res) {
+                  console.log('--> check res: ', res)
+                  if (res?.success === true) {
                         localStorage.setItem("access_token", res.access_token);
                         toast.success(`Chào mừng ${res.user?.name} trở lại NovelNest`, { className: 'text-xs' });
 
@@ -43,6 +44,8 @@ const LoginPage = () => {
                               }
                         });
                         navigate.push('/');
+                  } else {
+                        toast.error(res.message)
                   }
                   setLoading(false);
             } catch (error) {
@@ -83,7 +86,7 @@ const LoginPage = () => {
                                           endAdornment: (
                                                 <InputAdornment position="end">
                                                       <IconButton onClick={handleClickShowPassword} edge="end">
-                                                            {showPassword ? <FaEye /> : <FaEyeSlash />}
+                                                            {showPassword ? <FaEye size={14} /> : <FaEyeSlash size={14} />}
                                                       </IconButton>
                                                 </InputAdornment>
                                           ),

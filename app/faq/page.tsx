@@ -8,7 +8,7 @@ import FAQPage from "./FAQ"
 
 const Page = () => {
       const fetcher = (url: string) => fetch(url).then((res) => res.json());
-      const { data, error, isLoading } = useSWR('http://localhost:8888/api/v1/faqs', fetcher,
+      const { data, error, isLoading } = useSWR(process.env.NEXT_PUBLIC_FAQ, fetcher,
             {
                   revalidateIfStale: false,
                   revalidateOnFocus: false,

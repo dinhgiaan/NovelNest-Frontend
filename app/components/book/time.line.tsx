@@ -54,12 +54,12 @@ const PurchaseTimeline = ({ book }: IProps) => {
                   </div>
 
                   <div className="flex-grow mt-7">
-                        {currentStep == 1 ? <PurchaseType purchaseType={purchaseType} setPurchaseType={setPurchaseType} /> : ""}
-                        {currentStep == 2 ? <InfoBuy book={book} userInfo={userInfo} /> : ""}
-                        {currentStep == 3 ? <PaymentMethod book={book} /> : ""}
+                        {currentStep == 0 ? <PurchaseType purchaseType={purchaseType} setPurchaseType={setPurchaseType} /> : ""}
+                        {currentStep == 1 ? <InfoBuy book={book} userInfo={userInfo} /> : ""}
+                        {currentStep == 2 ? <PaymentMethod book={book} /> : ""}
                   </div>
 
-                  <div className="sticky bottom-0 bg-white shadow-top p-4 flex justify-around">
+                  <div className="sticky bottom-0 bg-white shadow-top p-4 flex justify-around w-full">
                         <button
                               className={`flex justify-center items-center px-3 py-2 bg-gray-500 text-white rounded text-xs ${currentStep === 1 ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
@@ -94,7 +94,7 @@ const PurchaseTimeline = ({ book }: IProps) => {
                         >
                               {currentStep === steps.length ? (
                                     <>
-                                          <LuBan size={15} className="mr-1" /> Vô hiệu
+                                          <LuBan size={15} className="mr-1" /> Không còn bước tiếp theo
                                     </>
                               ) : (
                                     <>

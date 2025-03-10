@@ -9,13 +9,15 @@ const CarouselGeneBooks = () => {
       const [emblaRef] = useEmblaCarousel({ loop: true, align: 'start', slidesToScroll: 2 })
 
       const fetcher = (url: string) => fetch(url).then((res) => res.json());
-      const { data, error, isLoading } = useSWR('http://localhost:8888/api/v1/get-all-categories', fetcher,
+      const { data, error, isLoading } = useSWR(process.env.NEXT_PUBLIC_CATEGORIES, fetcher,
             {
                   revalidateIfStale: false,
                   revalidateOnFocus: false,
                   revalidateOnReconnect: false
             }
       )
+
+      console.log('--> check data gene book: ', data)
 
       if (error) return <ErrorAPI />;
       if (isLoading) return <Loading />;

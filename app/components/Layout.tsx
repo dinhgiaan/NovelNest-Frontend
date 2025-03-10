@@ -34,7 +34,7 @@ const Layout = () => {
                                           </div>
 
                                           <div className="relative">
-                                                <blockquote className="text-sm text-gray-600 dark:text-gray-400 italic border-l-4 border-blue-500 pl-6 py-2">
+                                                <blockquote className="text-xs text-gray-600 dark:text-gray-400 italic border-l-4 border-blue-500 pl-6 py-2">
                                                       &quot;Nếu bạn không thích đọc sách, có lẽ bạn chưa tìm được cuốn sách phù hợp.&quot;
                                                 </blockquote>
                                                 <div className="mt-2 pl-6 text-gray-500 dark:text-gray-400 font-medium">
@@ -54,6 +54,8 @@ const Layout = () => {
                                                             height={450}
                                                             className="object-cover w-full h-full animate-gentle-float-swing"
                                                             priority
+                                                            placeholder='blur'
+                                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                       />
                                                 </div>
                                           </div>
