@@ -4,11 +4,15 @@ import { IoIosArrowDropdown } from 'react-icons/io';
 
 
 interface IProps {
-      book: any;
-      userInfo: any
+      book: object;
+      userInfo: object;
 }
 
 const InfoBuy = ({ book, userInfo }: IProps) => {
+
+      // console.log('--> check userInfo: ', userInfo)
+      // console.log('---> check type: ', typeof (book));
+      // console.log('---> check type: ', typeof (userInfo));
 
       return (
             <div className="container mx-auto px-4">
@@ -33,6 +37,10 @@ const InfoBuy = ({ book, userInfo }: IProps) => {
                                                       <div className="flex items-center text-sm">
                                                             <span className="font-medium mr-1">Số điện thoại:</span>
                                                             <span>{userInfo.user?.phone}</span>
+                                                      </div>
+                                                      <div className="flex items-center text-sm">
+                                                            <span className="font-medium mr-1">Email:</span>
+                                                            <span>{userInfo.user?.email}</span>
                                                       </div>
                                                       <div className="flex items-center text-sm">
                                                             <span className="font-medium mr-1">Địa chỉ:</span>
@@ -62,8 +70,8 @@ const InfoBuy = ({ book, userInfo }: IProps) => {
                                                             <span>{formatPrice(book.price)}</span>
                                                       </div>
                                                       <div className="flex items-center text-sm">
-                                                            <span className="font-medium mr-1">Số lượng:</span>
-                                                            <span>1</span>
+                                                            <span className="font-medium mr-1">Số trang:</span>
+                                                            <span>{book.page}</span>
                                                       </div>
                                                 </div>
                                           </AccordionDetails>

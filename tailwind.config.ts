@@ -15,10 +15,21 @@ const config: Config = {
           '25%': { transform: 'translateY(-15px) rotate(-3deg)' },
           '50%': { transform: 'translateY(-15px) rotate(3deg)' },
           '75%': { transform: 'translateY(-15px) rotate(-3deg)' }
+        },
+        typing: {
+          'from': { width: '0' },
+          '40%, 60%': { width: '100%' },
+          '100%': { width: '0' }
+        },
+        blink: {
+          'from, to': { borderColor: 'transparent' },
+          '50%': { borderColor: 'orange' },
         }
       },
       animation: {
-        'gentle-float-swing': 'gentle-float-swing 3s ease-in-out infinite'
+        'gentle-float-swing': 'gentle-float-swing 3s ease-in-out infinite',
+        'typing': 'typing 3.5s steps(40, end), blink .75s step-end infinite',
+        'typing-loop': 'typing 3.5s steps(40, end) infinite',
       }
     },
   },

@@ -1,62 +1,53 @@
-import { Accordion, AccordionDetails, AccordionSummary, Checkbox, FormControl, FormControlLabel, Radio, Stack, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Checkbox, FormControlLabel, Slider, Stack, Typography } from '@mui/material';
 import { IoIosArrowDropdown } from 'react-icons/io';
+
+const filterOptions = [
+      {
+            title: 'Thể loại',
+            options: ['Kinh dị', 'Hành động', 'Hài hước'],
+      },
+      {
+            title: 'Đánh giá',
+            options: ['1 sao', '2 sao', '3 sao', '4 sao', '5 sao'],
+      },
+];
 
 const Filter = () => {
       return (
-            <div className="space-y-4">
-                  <div className='text-center text-base font-semibold uppercase'>Bộ lọc</div>
-                  <FormControl fullWidth>
-                        <Accordion>
-                              <AccordionSummary
-                                    expandIcon={<IoIosArrowDropdown size={15} />}
-                                    aria-controls="panel1-content"
-                                    id="panel1-header"
-                              >
-                                    <Typography className='text-xs text-gray-700'>Thể loại</Typography>
+            <div className="space-y-4 h-auto w-full">
+                  <div className="text-center text-base font-semibold uppercase text-black dark:text-white">Bộ lọc</div>
+                  {filterOptions.map((filter, index) => (
+                        <Accordion key={index} sx={{ backgroundColor: '#fff0f0' }}>
+                              <AccordionSummary expandIcon={<IoIosArrowDropdown size={15} />}>
+                                    <Typography className="text-sm text-gray-700">{filter.title}</Typography>
                               </AccordionSummary>
                               <AccordionDetails>
                                     <Stack>
-                                          <FormControlLabel value="kinh-di" control={<Checkbox size="small" />} label={<span className="text-xs">Kinh dị</span>} />
-                                          <FormControlLabel value="hanh-dong" control={<Checkbox size="small" />} label={<span className="text-xs">Hành động</span>} />
-                                          <FormControlLabel value="hai-huoc" control={<Checkbox size="small" />} label={<span className="text-xs">Hài hước</span>} />
+                                          {filter.options.map((option, idx) => (
+                                                <FormControlLabel
+                                                      key={idx}
+                                                      value={option.toLowerCase().replace(/\s+/g, '-')}
+                                                      control={<Checkbox size="small" />}
+                                                      label={<span className="text-xs">{option}</span>}
+                                                />
+                                          ))}
                                     </Stack>
                               </AccordionDetails>
                         </Accordion>
-
-                        <Accordion>
-                              <AccordionSummary
-                                    expandIcon={<IoIosArrowDropdown size={15} />}
-                                    aria-controls="panel2-content"
-                                    id="panel2-header"
-                              >
-                                    <Typography className="text-sm text-gray-700">Đánh giá</Typography>
-                              </AccordionSummary>
-                              <AccordionDetails>
-                                    <Stack>
-                                          <FormControlLabel value="kinh-di" control={<Radio size="small" />} label={<span className="text-xs">Kinh dị</span>} />
-                                          <FormControlLabel value="hanh-dong" control={<Radio size="small" />} label={<span className="text-xs">Hành động</span>} />
-                                          <FormControlLabel value="hai-huoc" control={<Radio size="small" />} label={<span className="text-xs">Hài hước</span>} />
-                                    </Stack>
-                              </AccordionDetails>
-                        </Accordion>
-
-                        <Accordion>
-                              <AccordionSummary
-                                    expandIcon={<IoIosArrowDropdown size={15} />}
-                                    aria-controls="panel3-content"
-                                    id="panel3-header"
-                              >
-                                    <Typography className="text-sm text-gray-700">Giá tiền</Typography>
-                              </AccordionSummary>
-                              <AccordionDetails>
-                                    <Stack>
-                                          <FormControlLabel value="kinh-di" control={<Radio size="small" />} label={<span className="text-sm">Kinh dị</span>} />
-                                          <FormControlLabel value="hanh-dong" control={<Radio size="small" />} label={<span className="text-sm">Hành động</span>} />
-                                          <FormControlLabel value="hai-huoc" control={<Radio size="small" />} label={<span className="text-sm">Hài hước</span>} />
-                                    </Stack>
-                              </AccordionDetails>
-                        </Accordion>
-                  </FormControl>
+                  ))}
+                  <Accordion sx={{ backgroundColor: '#fff0f0' }}>
+                        <AccordionSummary expandIcon={<IoIosArrowDropdown size={15} />}>
+                              <Typography className="text-sm text-gray-700">Giá tiền</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                              <Slider
+                                    size="small"
+                                    defaultValue={70}
+                                    aria-label="Small"
+                                    valueLabelDisplay="auto"
+                              />
+                        </AccordionDetails>
+                  </Accordion>
             </div>
       );
 };

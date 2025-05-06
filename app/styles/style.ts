@@ -10,4 +10,8 @@ export const style = {
 
       // header
       titleHeader: "text-[20px] font-Roboto text-black dark:text-white font-semibold border-b-4 text-center",
+
+      // icon book details
+      titleBookDetails: "font-bold mb-2 dark:text-[#15bd7c] text-[#eca874]",
+      iconBookDetails: "mr-2 dark:text-[#e6bd4c] text-[#ccc]"
 }

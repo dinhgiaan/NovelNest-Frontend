@@ -34,25 +34,11 @@ const PaymentMethod = ({ book }: IProps) => {
                   benefits: ['Kiểm tra hàng trước khi nhận', 'Không cần thanh toán trước']
             },
             {
-                  id: 'MoMo',
-                  name: 'Thanh toán với MoMo',
-                  description: 'Thanh toán nhanh chóng và an toàn qua ví điện tử MoMo',
-                  image: momo,
-                  benefits: ['Hoàn tiền lên đến 100k', 'Xử lý tức thì']
-            },
-            {
                   id: 'PayOs',
                   name: 'Quét mã QR',
                   description: 'Hỗ trợ thanh toán qua thẻ ATM, Visa, Mastercard',
                   image: payOs,
                   benefits: ['Đa dạng phương thức', 'Bảo mật cao']
-            },
-            {
-                  id: 'ZaloPay',
-                  name: 'Thanh toán với ZaloPay',
-                  description: 'Thanh toán tiện lợi qua ví ZaloPay',
-                  image: zalopay,
-                  benefits: ['Ưu đãi người dùng mới', 'Hoàn tiền ZaloPay']
             }
       ];
 

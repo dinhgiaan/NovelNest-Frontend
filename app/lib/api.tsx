@@ -54,7 +54,7 @@ const getInfo = async () => {
       return await axios.get(BACKEND_URL);
 }
 
-const getUserById = async ({ _id }: IUserData) => {
+const getUserById = async (_id: string) => {
       const BACKEND_URL = `/api/v1/users-by-id/${_id}`;
 
       return await axios.get(BACKEND_URL);

@@ -7,7 +7,7 @@ import { useState, useLayoutEffect, useRef, useEffect } from "react"
 import UpdateUserInfo from "./update.user.info"
 import { CiEdit } from "react-icons/ci"
 import { MdOutlineLocalPhone, MdOutlineMail } from "react-icons/md"
-import { FaMapMarkedAlt } from "react-icons/fa";
+import { FaMapMarkedAlt } from "react-icons/fa"
 
 interface IProps {
       userInfo: AuthContextType
@@ -15,13 +15,27 @@ interface IProps {
 
 const InfoUser = ({ userInfo }: IProps) => {
       const [isOpen, setIsOpen] = useState<boolean>(false)
+      const [localUserInfo, setLocalUserInfo] = useState(userInfo)
       const containerRef = useRef<HTMLDivElement>(null)
 
+      // Update local state whenever userInfo changes
       useEffect(() => {
+            setLocalUserInfo(userInfo)
       }, [userInfo])
 
       const handleOpenUpdateInfo = () => {
             setIsOpen(true)
+      }
+
+      // Callback function to update local state after successful API update
+      const onUserInfoUpdated = (updatedUser: any) => {
+            setLocalUserInfo((prev) => ({
+                  ...prev,
+                  user: {
+                        ...prev.user,
+                        ...updatedUser,
+                  },
+            }))
       }
 
       useLayoutEffect(() => {
@@ -37,15 +51,16 @@ const InfoUser = ({ userInfo }: IProps) => {
                   className="bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 w-[620px]"
             >
                   <div className="flex">
-                        <div className="w-full">
+                        <div className="w-full shadow-md">
                               <div className="dark:bg-[#474d63] bg-[#ebf1fa] rounded-sm">
                                     <div className="h-40 z-10">
-                                          <Image src={bannerProfile} alt="Banner Profile User" width={1003} height={220} />
+                                          <Image src={bannerProfile || "/placeholder.svg"} alt="Banner Profile User" width={1003} height={220} />
                                     </div>
 
                                     <div
                                           className="absolute top-60 right-72 dark:text-[#ccc] text-[#ccc] hover:text-[#d26767] cursor-pointer"
-                                          onClick={handleOpenUpdateInfo}>
+                                          onClick={handleOpenUpdateInfo}
+                                    >
                                           <div>
                                                 <CiEdit size={18} />
                                           </div>
@@ -62,42 +77,67 @@ const InfoUser = ({ userInfo }: IProps) => {
                                                             height={50}
                                                       />
                                                 </div>
-                                                <h1 className="text-xl font-bold dark:text-[#63d9e8] text-[#b5bc4b] mt-3 mb-1">
-                                                      {userInfo.user?.name}
+                                                <h1 className="text-xl font-bold dark:text-[#63d9e8] text-[#9087fb] mt-3 mb-1">
+                                                      {localUserInfo.user?.name}
                                                 </h1>
                                                 <span className="text-xs dark:text-[#ccc] text-[#454343] tracking-wide font-medium italic">
-                                                      {userInfo.user?.role}
+                                                      {localUserInfo.user?.role}
                                                 </span>
                                           </div>
 
-                                          <div className="relative border-2 dark:border-[#130f0f] border-[#5e5454] p-6 rounded-md space-y-2">
-                                                <span className="absolute -top-3 left-3 dark:bg-[#474d63] bg-[#ebf1fa] px-2 text-sm font-bold dark:text-[#b6cbfb] text-[#eda3f2]">
+                                          <div className="relative border dark:border-[#2a2a36] border-[#e0e0e0] p-7 rounded-lg shadow-sm bg-white/50 dark:bg-[#2d3142]/50 backdrop-blur-sm">
+                                                <div className="absolute -top-4 left-4 dark:bg-[#474d63] bg-[#6794d8] px-4 py-1 rounded-full text-sm font-bold dark:text-[#b6cbfb] text-[#ebf178] shadow-sm">
                                                       Thông tin cơ bản
-                                                </span>
-                                                <div className="flex items-center space-x-3">
-                                                      <div className="dark:bg-[#dfafdf] bg-[#e4d0e4] p-2 rounded-full">
-                                                            <MdOutlineMail className="w-3 h-3 dark:text-[#728bd8] text-[#85cc9f]" />
-                                                      </div>
-                                                      <span className="dark:text-[#ccc87e] text-[#887474] text-xs">{userInfo.user?.email}</span>
                                                 </div>
-                                                <div className="flex items-center space-x-3">
-                                                      <div className="dark:bg-[#dfafdf] bg-[#e4d0e4] p-2 rounded-full">
-                                                            <MdOutlineLocalPhone className="w-3 h-3 dark:text-[#8d9bc6] text-[#85cc9f]" />
+
+                                                <div className="space-y-2 mt-2">
+                                                      <div className="flex items-center gap-4 group">
+                                                            <div className="dark:bg-[#4b5270] bg-[#f5eaf5] p-3 rounded-full shadow-sm group-hover:shadow-md transition-all duration-300">
+                                                                  <MdOutlineMail className="w-5 h-5 dark:text-[#a2b8ff] text-[#d985e0]" />
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                  <span className="text-xs text-gray-500 dark:text-gray-400">Email</span>
+                                                                  <span className="dark:text-[#e9e9b0] text-[#6d5a5a] text-sm font-medium">
+                                                                        {localUserInfo.user?.email}
+                                                                  </span>
+                                                            </div>
                                                       </div>
-                                                      <span className="dark:text-[#ccc87e] text-[#887474]  text-xs">{userInfo.user?.phone}</span>
-                                                </div>
-                                                <div className="flex items-center space-x-3">
-                                                      <div className="dark:bg-[#dfafdf] bg-[#e4d0e4] p-2 rounded-full">
-                                                            <FaMapMarkedAlt className="w-3 h-3 dark:text-[#8d9bc6] text-[#85cc9f]" />
+
+                                                      <div className="flex items-center gap-4 group">
+                                                            <div className="dark:bg-[#4b5270] bg-[#f5eaf5] p-3 rounded-full shadow-sm group-hover:shadow-md transition-all duration-300">
+                                                                  <MdOutlineLocalPhone className="w-5 h-5 dark:text-[#a2b8ff] text-[#d985e0]" />
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                  <span className="text-xs text-gray-500 dark:text-gray-400">Điện thoại</span>
+                                                                  <span className="dark:text-[#e9e9b0] text-[#6d5a5a] text-sm font-medium">
+                                                                        {localUserInfo.user?.phone}
+                                                                  </span>
+                                                            </div>
                                                       </div>
-                                                      <span className="dark:text-[#ccc87e] text-[#887474]  text-xs">{userInfo.user?.address}</span>
+
+                                                      <div className="flex items-center gap-4 group">
+                                                            <div className="dark:bg-[#4b5270] bg-[#f5eaf5] p-3 rounded-full shadow-sm group-hover:shadow-md transition-all duration-300">
+                                                                  <FaMapMarkedAlt className="w-5 h-5 dark:text-[#a2b8ff] text-[#d985e0]" />
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                  <span className="text-xs text-gray-500 dark:text-gray-400">Địa chỉ</span>
+                                                                  <span className="dark:text-[#e9e9b0] text-[#6d5a5a] text-sm font-medium">
+                                                                        {localUserInfo.user?.address}
+                                                                  </span>
+                                                            </div>
+                                                      </div>
                                                 </div>
                                           </div>
                                     </div>
                               </div>
                         </div>
                   </div>
-                  <UpdateUserInfo isOpen={isOpen} setIsOpen={setIsOpen} userInfo={userInfo} />
+                  <UpdateUserInfo
+                        isOpen={isOpen}
+                        setIsOpen={setIsOpen}
+                        userInfo={localUserInfo}
+                        onUserInfoUpdated={onUserInfoUpdated}
+                  />
             </div>
       )
 }

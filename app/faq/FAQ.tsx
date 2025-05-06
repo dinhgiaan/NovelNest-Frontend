@@ -14,17 +14,18 @@ const FAQPage = ({ faqData }: IProps) => {
                               Những Câu Hỏi Thường Gặp
                         </h1>
                         <div className="space-y-6">
-                              {faqData.map((item) => (
-                                    <Accordion key={item._id} className="border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-gray-800">
+                              {faqData.map((item, index) => (
+                                    <Accordion key={item._id} className="border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-gray-800">
                                           <AccordionSummary
                                                 expandIcon={<IoIosArrowDown color='brown' />}
                                                 aria-controls={`panel-${item._id}-content`}
                                                 id={`panel-${item._id}-header`}
                                           >
-                                                <Typography component="span" className="dark:text-[#49daeb] text-[#94b94f]" fontSize={15}>{item.question}</Typography>
+                                                <Typography component="span" className="dark:text-[#49daeb] text-[#7e9cff]" fontSize={15}>CÂU HỎI {index + 1}:
+                                                      <span className="dark:text-[#dbd759] text-[#f0c17e]"> {item.question}</span></Typography>
                                           </AccordionSummary>
                                           <Divider sx={{ bgcolor: '#ccc' }} />
-                                          <AccordionDetails className="flex items-center">
+                                          <AccordionDetails className="flex items-center ml-2">
                                                 <Typography className="dark:text-white text-black flex items-center" fontSize={12}><IoIosArrowForward className="mr-2" /> {item.answer}</Typography>
                                           </AccordionDetails>
                                     </Accordion>

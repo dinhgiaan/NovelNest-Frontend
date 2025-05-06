@@ -2,8 +2,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "./provider";
 import SessionWrapper from "./components/session.wrapper";
-import Headers from '../app/components/header';
-import Footer from "./components/footer";
 import ScrollToTop from "./utils/scroll-to-top";
 import { Toaster } from "react-hot-toast";
 import { AuthWrapper } from "./context/auth.context";

@@ -7,7 +7,7 @@ import DialogContent from "@mui/material/DialogContent"
 import Input from "@mui/material/Input"
 import Button from "@mui/material/Button"
 import { AuthContext, AuthContextType } from "@/app/context/auth.context"
-import { getInfo, updateUserInfo } from "@/app/lib/api"
+import { updateUserInfo } from "@/app/lib/api"
 import toast from "react-hot-toast"
 import { MdOutlineLocalPhone, MdOutlineMail } from "react-icons/md"
 import { FaMapMarkedAlt } from "react-icons/fa";
@@ -19,49 +19,78 @@ interface UpdateUserInfoProps {
       isOpen: boolean;
       setIsOpen: (value: boolean) => void;
       userInfo: AuthContextType;
+      onUserInfoUpdated?: (updatedUser: any) => void;
 }
 
-export function UpdateUserInfo({ isOpen, setIsOpen, userInfo }: UpdateUserInfoProps) {
+export function UpdateUserInfo({ isOpen, setIsOpen, userInfo, onUserInfoUpdated }: UpdateUserInfoProps) {
       const [name, setName] = useState<string>('');
       const [phone, setPhone] = useState<string>('');
       const [address, setAddress] = useState<string>('');
       const { setUserInfo } = useContext(AuthContext);
 
       useEffect(() => {
-            if (isOpen) {
-                  setName(userInfo.user?.name);
-                  setPhone(userInfo.user?.phone);
-                  setAddress(userInfo.user?.address);
+            if (isOpen && userInfo.user) {
+                  setName(userInfo.user.name || '');
+                  setPhone(userInfo.user.phone || '');
+                  setAddress(userInfo.user.address || '');
             }
       }, [isOpen, userInfo]);
 
       const handleChangeUserInfo = async () => {
             if (userInfo.user?._id) {
-                  const res = await updateUserInfo({
-                        _id: userInfo.user._id,
-                        email: userInfo.user.email,
-                        name,
-                        phone,
-                        address
-                  });
+                  try {
+                        const res = await updateUserInfo({
+                              _id: userInfo.user._id,
+                              email: userInfo.user.email,
+                              name,
+                              phone,
+                              address
+                        });
 
-                  console.log('--> check res update: ', res)
+                        if (res.success) {
+                              toast.success(res.message);
 
-                  if (res.success) {
-                        toast.success(res.message);
-                        // Update the context with the new user information
-                        setUserInfo((prevState) => ({
-                              ...prevState,
-                              user: {
-                                    ...prevState.user,
-                                    ...res.user, // Use the updated user from the response
-                              },
-                        }))
+                              // Update global context
+                              setUserInfo((prevState) => ({
+                                    ...prevState,
+                                    user: {
+                                          ...prevState.user,
+                                          name,
+                                          phone,
+                                          address
+                                    },
+                              }));
 
-                        // Close the dialog after successful update
-                        setIsOpen(false)
+                              // Update local state in parent component
+                              if (onUserInfoUpdated) {
+                                    onUserInfoUpdated({
+                                          name,
+                                          phone,
+                                          address
+                                    });
+                              }
+
+                              // Close the dialog after successful update
+                              setIsOpen(false);
+
+                              // Also update localStorage to ensure persistence
+                              const currentUser = localStorage.getItem('user');
+                              if (currentUser) {
+                                    const parsedUser = JSON.parse(currentUser);
+                                    localStorage.setItem('user', JSON.stringify({
+                                          ...parsedUser,
+                                          name,
+                                          phone,
+                                          address
+                                    }));
+                              }
+                        } else {
+                              toast.error(res.message || "Cập nhật thất bại");
+                        }
+                  } catch (error) {
+                        console.error("Error updating user info:", error);
+                        toast.error("Đã xảy ra lỗi khi cập nhật thông tin");
                   }
-                  console.log('--> check res update: ', res);
             } else {
                   toast.error("Email không tồn tại.");
             }

@@ -21,7 +21,9 @@
     "react": "18",
     "react-dom": "18",
     "react-hot-toast": "2.5.1",
-    "react-icons": "^5.4.0",
+    "react-icons": "5.4.0",
+    "react-parallax-tilt": "1.7.287",
+    "react-reader": "2.0.13",
     "swr": "2.3.0"
   },
   "devDependencies": {

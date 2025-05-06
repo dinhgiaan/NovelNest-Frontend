@@ -8,9 +8,9 @@ import { Rating } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { AiOutlineBarcode } from 'react-icons/ai';
+import { AiOutlineBarcode, AiOutlineShoppingCart } from 'react-icons/ai';
 import { BiCategoryAlt } from 'react-icons/bi';
-import { FaBookReader, FaTags } from 'react-icons/fa';
+import { FaBookReader, FaTags, FaEye } from 'react-icons/fa';
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import { MdDateRange } from 'react-icons/md';
 
@@ -18,16 +18,17 @@ interface IProps {
       book: any;
       error: any;
       isLoading: boolean;
+      userId: string;
 }
 
-const BookDetail = ({ book, error, isLoading }: IProps) => {
+const BookDetail = ({ book, error, isLoading, userId }: IProps) => {
       const [clickBuy, setClickBuy] = useState<boolean>(false);
 
       if (error) return <ErrorAPI />;
       if (isLoading) return <Loading />;
 
       if (!book) {
-            return <div className="p-2">Không tìm thấy sách</div>;
+            return <div className="p-4 text-center text-gray-500 dark:text-gray-400">Không tìm thấy sách</div>;
       }
 
       const formatDate = (date: string) => {
@@ -35,118 +36,131 @@ const BookDetail = ({ book, error, isLoading }: IProps) => {
             return parsedDate.toLocaleDateString('vi-VN').replace(/\//g, ' - ');
       };
 
+      const isOutOfStock = book.quantity <= 0;
+
       return (
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 p-4">
-                  {clickBuy ?
+            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 p-4 md:p-6">
+                  {clickBuy ? (
                         <PurchaseTimeline book={book} />
-                        :
+                  ) : (
                         <>
                               <div className="max-w-4xl mx-auto">
                                     <Link
                                           href="/books"
-                                          className="inline-flex items-center space-x-2 mb-6 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                                          className="inline-flex items-center space-x-2 mb-3 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
                                     >
-                                          <IoIosArrowRoundBack size={16} />
+                                          <IoIosArrowRoundBack size={20} />
                                           <span className="text-sm font-medium">Quay lại danh sách</span>
                                     </Link>
 
                                     <div className="grid md:grid-cols-3 gap-6">
                                           <div className="md:col-span-1">
-                                                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-                                                      <div className="aspect-[4/5] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex justify-center">
-                                                            <     Image
+                                                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+                                                      <div className="aspect-[4/5] bg-gray-100 dark:bg-gray-700 overflow-hidden flex justify-center relative">
+                                                            <Image
                                                                   src={book.thumbnail?.url}
-                                                                  width={200}
-                                                                  height={250}
+                                                                  width={240}
+                                                                  height={300}
                                                                   alt={book.title}
-                                                                  className="object-cover"
+                                                                  className={`object-cover ${isOutOfStock ? 'grayscale opacity-80' : ''}`}
+                                                                  priority
+                                                                  quality={80}
                                                             />
-                                                      </div>
-
-                                                      <div className="mt-4 flex items-center justify-center space-x-2">
-                                                            <Rating
-                                                                  value={book.rating}
-                                                                  precision={0.1}
-                                                                  size="small"
-                                                                  readOnly={true}
-                                                            />
-                                                            <span className="text-sm font-semibold dark:text-[#ccc] text-[#1f1e1e]">
-                                                                  {book.rating}
+                                                            <span
+                                                                  className={`absolute top-3 right-3 text-xs font-medium px-2 py-1 rounded-full ${isOutOfStock
+                                                                        ? 'bg-red-500 text-white'
+                                                                        : 'bg-emerald-500 text-white'
+                                                                        }`}
+                                                            >
+                                                                  {isOutOfStock ? 'Hết hàng' : 'Còn hàng'}
                                                             </span>
                                                       </div>
-                                                </div>
-                                                <div className='mt-3'>
-                                                      <div>
-                                                            <div className='text-center space-x-3'>
-                                                                  <span className='dark:bg-[#693169] bg-[#30abc1] dark:text-[#e57fd9] text-[#f9f48e] px-3 py-1 rounded-md text-xs font-extralight cursor-pointer'>
-                                                                        Xem trước
+
+                                                      <div className="p-4">
+                                                            <div className="flex items-center justify-center space-x-2 mb-4">
+                                                                  <Rating
+                                                                        value={book.rating}
+                                                                        precision={0.1}
+                                                                        size="small"
+                                                                        readOnly={true}
+                                                                  />
+                                                                  <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                                                                        {book.rating}
                                                                   </span>
-                                                                  {book.quantity > 0 ? (
+                                                            </div>
+
+                                                            <div className="flex gap-3 justify-center">
+                                                                  <button className="flex items-center justify-center gap-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                                                                        <FaEye size={14} />
+                                                                        Xem trước
+                                                                  </button>
+
+                                                                  {isOutOfStock ? (
                                                                         <button
-                                                                              className='dark:bg-[#693169] bg-[#30abc1] dark:text-[#e57fd9] text-[#f9f48e] px-3 py-1 rounded-md text-xs font-extralight cursor-pointer'
-                                                                              onClick={() => setClickBuy(true)}
+                                                                              className="flex items-center justify-center gap-2 bg-gray-200 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500 px-4 py-2 rounded-md text-sm font-medium"
+                                                                              disabled
                                                                         >
-                                                                              Mua sách
+                                                                              <AiOutlineShoppingCart size={14} />
+                                                                              Hết hàng
                                                                         </button>
                                                                   ) : (
                                                                         <button
-                                                                              className='dark:bg-[#693169] bg-[#30abc1] dark:text-[#e57fd9] text-[#f9f48e] px-3 py-1 rounded-md text-xs font-extralight cursor-not-allowed opacity-50'
-                                                                              disabled
+                                                                              className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-700 dark:hover:bg-emerald-600 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                                                              onClick={() => setClickBuy(true)}
                                                                         >
-                                                                              Không thể mua
+                                                                              <AiOutlineShoppingCart size={14} />
+                                                                              Mua sách
                                                                         </button>
                                                                   )}
-
                                                             </div>
                                                       </div>
                                                 </div>
                                           </div>
 
                                           <div className="md:col-span-2">
-                                                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg pl-5 pt-3">
-                                                      <div className="space-y-3">
+                                                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-5">
+                                                      <div className="space-y-4">
                                                             <div>
-                                                                  <h1 className="text-lg italic font-bold text-[#72cd59] dark:text-[#f09c4f] mb-2">
+                                                                  <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                                                                         {book.title}
                                                                   </h1>
-                                                                  <span
-                                                                        className={`inline-flex px-3 py-1 rounded-full text-xs ${book.quantity > 0
-                                                                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                                                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                                                              }`}
-                                                                  >
-                                                                        {book.quantity > 0 ? 'Còn hàng' : 'Hết hàng'}
-                                                                  </span>
+                                                                  <p className="text-indigo-600 dark:text-indigo-400 text-sm font-medium italic">
+                                                                        {book.author}
+                                                                  </p>
                                                             </div>
 
                                                             <div className="h-px bg-gray-200 dark:bg-gray-700" />
 
                                                             <div className="grid gap-4">
-                                                                  <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                                                                        <AiOutlineBarcode size={15} />
-                                                                        <span className="text-xs">ISBN: <span className="font-medium dark:text-[#59a4de] text-[#aa8824]">{book.isbn}</span></span>
+                                                                  <div className="flex items-center space-x-3 text-gray-700 dark:text-gray-300">
+                                                                        <AiOutlineBarcode className="text-indigo-500 dark:text-indigo-400" size={16} />
+                                                                        <span className="text-sm">ISBN: <span className="font-medium">{book.isbn}</span></span>
                                                                   </div>
-                                                                  <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                                                                        <FaBookReader size={15} />
-                                                                        <span className="text-xs">Tác giả: <span className="font-medium dark:text-[#59a4de] text-[#aa8824]">{book.author}</span></span>
+                                                                  <div className="flex items-center space-x-3 text-gray-700 dark:text-gray-300">
+                                                                        <FaBookReader className="text-indigo-500 dark:text-indigo-400" size={16} />
+                                                                        <span className="text-sm">Tác giả: <span className="font-medium">{book.author}</span></span>
                                                                   </div>
-                                                                  <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                                                                        <MdDateRange size={15} />
-                                                                        <span className="text-xs">Ngày xuất bản: <span className="font-medium dark:text-[#59a4de] text-[#aa8824]">{formatDate(book.publicDate)}</span></span>
+                                                                  <div className="flex items-center space-x-3 text-gray-700 dark:text-gray-300">
+                                                                        <MdDateRange className="text-indigo-500 dark:text-indigo-400" size={16} />
+                                                                        <span className="text-sm">Ngày xuất bản: <span className="font-medium">{formatDate(book.publicDate)}</span></span>
                                                                   </div>
-                                                                  <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                                                                        <BiCategoryAlt size={15} />
-                                                                        <span className="text-xs">Số lượng còn: <span className="font-medium dark:text-[#59a4de] text-[#aa8824]">{book.quantity}</span></span>
+                                                                  <div className="flex items-center space-x-3 text-gray-700 dark:text-gray-300">
+                                                                        <BiCategoryAlt className="text-indigo-500 dark:text-indigo-400" size={16} />
+                                                                        <span className="text-sm">Số lượng còn:
+                                                                              <span className={`font-medium ml-1 ${isOutOfStock ? 'text-red-500 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                                                                                    {book.quantity}
+                                                                              </span>
+                                                                        </span>
                                                                   </div>
                                                             </div>
 
                                                             <div className="h-px bg-gray-200 dark:bg-gray-700" />
 
                                                             <div>
-                                                                  <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
+                                                                  <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-2">
                                                                         Mô tả
                                                                   </h2>
-                                                                  <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed overflow-hidden max-h-[58.5px] line-clamp-3">
+                                                                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                                                                         {book.description}
                                                                   </p>
                                                             </div>
@@ -154,19 +168,25 @@ const BookDetail = ({ book, error, isLoading }: IProps) => {
                                                             <div className="h-px bg-gray-200 dark:bg-gray-700" />
 
                                                             <div>
-                                                                  <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
+                                                                  <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-2">
                                                                         Thể loại
                                                                   </h2>
-                                                                  <div className="flex flex-wrap gap-2 pb-4">
-                                                                        {book.category.map((item: any) => (
-                                                                              <span
-                                                                                    key={item}
-                                                                                    className="inline-flex items-center px-3 py-1 rounded-md text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
-                                                                              >
-                                                                                    <FaTags className="h-3 w-3 mr-1" />
-                                                                                    {item}
+                                                                  <div className="flex flex-wrap gap-2 pb-2">
+                                                                        {book.categories && book.categories.length > 0 ? (
+                                                                              book.categories.map((item: any) => (
+                                                                                    <span
+                                                                                          key={item}
+                                                                                          className="inline-flex items-center px-3 py-1 rounded-md text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200"
+                                                                                    >
+                                                                                          <FaTags className="h-3 w-3 mr-1" />
+                                                                                          {item}
+                                                                                    </span>
+                                                                              ))
+                                                                        ) : (
+                                                                              <span className="text-gray-500 dark:text-gray-400 text-sm">
+                                                                                    Hiện chưa có danh mục nào
                                                                               </span>
-                                                                        ))}
+                                                                        )}
                                                                   </div>
                                                             </div>
                                                       </div>
@@ -174,11 +194,11 @@ const BookDetail = ({ book, error, isLoading }: IProps) => {
                                           </div>
                                     </div>
                               </div>
-                              <div>
+                              <div className="mt-8">
                                     <InfoUser />
                               </div>
                         </>
-                  }
+                  )}
             </div>
       );
 };

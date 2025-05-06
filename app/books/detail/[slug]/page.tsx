@@ -5,18 +5,23 @@ import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import BookDetail from '../BookDetail';
 import Loading from "@/app/utils/loading";
+import { useContext } from "react";
+import { AuthContext } from "@/app/context/auth.context";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Page = () => {
       const { slug } = useParams();
+      const { userInfo } = useContext(AuthContext);
+      const userId = userInfo?.user?._id;
+
+
 
       const { data, error, isLoading } = useSWR(
             slug ? `${process.env.NEXT_PUBLIC_BOOKS}/detail/${slug}` : null,
             fetcher
       );
 
-      // console.log('---> check data book detail: ', data)
 
       if (error) {
             return <div>Có lỗi xảy ra!</div>
@@ -38,6 +43,7 @@ const Page = () => {
                               book={data?.data}
                               error={error}
                               isLoading={isLoading}
+                              userId={userId}
                         />
                   </div>
             </>

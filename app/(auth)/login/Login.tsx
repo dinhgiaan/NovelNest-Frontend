@@ -3,12 +3,13 @@
 import { useContext, useState } from "react";
 import { loginAPI } from "../../lib/api";
 import toast from "react-hot-toast";
-import { Button, TextField, IconButton, InputAdornment } from "@mui/material";
+import { Button, TextField, IconButton, InputAdornment, CircularProgress } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "../../context/auth.context";
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
-import { FaGithub, FaGoogle, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaGithub, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FcGoogle } from "react-icons/fc";
 
 const LoginPage = () => {
       const [email, setEmail] = useState("");
@@ -54,9 +55,25 @@ const LoginPage = () => {
             }
       }
 
+      const handleSocialAuth = async (provider) => {
+            try {
+                  const result = await signIn(provider, {
+                        redirect: false,
+                        callbackUrl: '/api/auth/callback/' + provider
+                  })
+
+                  if (result?.error) {
+                        toast.error('Đăng nhập thất bại!');
+                  }
+            } catch (error) {
+                  console.log('---> error: ', error)
+                  toast.error('Đăng nhập thất bại!');
+            }
+      }
+
       return (
             <div className="w-full h-screen flex">
-                  <div className="basis-3/6 bg-gradient-to-b from-pink-500 to-pink-300 flex flex-col items-center justify-center p-10 text-center">
+                  <div className="basis-3/6 bg-gradient-to-b from-blue-500 to-blue-300 flex flex-col items-center justify-center p-10 text-center">
                         <h1 className='text-6xl font-extrabold text-white drop-shadow-md'>NovelNest</h1>
                         <p className='text-lg text-white mt-4'>Nơi khơi dậy niềm cảm hứng đọc sách</p>
                   </div>
@@ -106,7 +123,7 @@ const LoginPage = () => {
                                     style={{ borderRadius: 8 }}
                                     disabled={loading}
                               >
-                                    {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+                                    {loading ? <CircularProgress size={24.5} /> : "Đăng nhập"}
                               </Button>
                         </div>
 
@@ -114,13 +131,13 @@ const LoginPage = () => {
 
                         <div className="flex gap-4">
                               <button
-                                    onClick={() => signIn("google")}
+                                    onClick={() => handleSocialAuth("google")}
                                     className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 text-gray-700"
                               >
-                                    <FaGoogle className="mr-2" /> Google
+                                    <FcGoogle className="mr-2" color="yellow" /> Google
                               </button>
                               <button
-                                    onClick={() => signIn("github")}
+                                    onClick={() => handleSocialAuth("github")}
                                     className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 text-gray-700"
                               >
                                     <FaGithub className="mr-2" /> GitHub

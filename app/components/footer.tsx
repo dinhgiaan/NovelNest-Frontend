@@ -49,7 +49,7 @@ const Footer = () => {
                                           </li>
                                           <li>
                                                 <Link rel="preload"
-                                                      as={""} href={'https://github.com/dinhgiaandev'} passHref>
+                                                      as={""} href={'https://github.com/dinhgiaan'} passHref>
                                                       <FaGithub size={20} className="hover:text-gray-300" />
                                                 </Link>
                                           </li>
@@ -67,13 +67,13 @@ const Footer = () => {
                                           <li className={`${style.labelFooter} hover:text-blue-400`}>
                                                 <Link rel="preload"
                                                       as={""} href={'/policy'} passHref>
-                                                      Chính sách
+                                                      Chính sách bảo mật
                                                 </Link>
                                           </li>
                                           <li className={`${style.labelFooter} hover:text-blue-400 mt-3`}>
                                                 <Link rel="preload"
                                                       as={""} href={'/privacy'} passHref>
-                                                      Quyền riêng tư
+                                                      Điều khoản sử dụng
                                                 </Link>
                                           </li>
                                     </ul>

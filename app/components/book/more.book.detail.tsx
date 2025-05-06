@@ -15,6 +15,7 @@ import { MdDateRange } from 'react-icons/md';
 import { SlSizeFullscreen } from 'react-icons/sl';
 import { AiOutlineBarcode } from 'react-icons/ai';
 import { GiMoneyStack, GiSpellBook } from 'react-icons/gi';
+import  {style} from '../../styles/style';
 
 const InfoDetail = () => {
       const [value, setValue] = useState(0);
@@ -69,24 +70,24 @@ const InfoDetail = () => {
                               <TabPanel index={0}>
                                     <div className="space-y-10">
                                           <div>
-                                                <Typography variant="h6" className="font-bold mb-2 dark:text-[#c7c54a] text-[#eca874]">
+                                                <Typography variant="h6" className={`${style.titleBookDetails}`}>
                                                       Thông tin chung về sách
                                                 </Typography>
                                                 <div className="mt-3 space-y-2">
                                                       <Typography className='flex items-center'>
-                                                            <MdDateRange className="mr-2" size={14} color='#a935db' />
+                                                            <MdDateRange className={`${style.iconBookDetails}`} size={14}/>
                                                             <span className='text-sm dark:text-gray-300 text-gray-800'>Ngày xuất bản: {formatDate(data.data?.publicDate)}</span>
                                                       </Typography>
                                                       <Typography className='flex items-center'>
-                                                            <SlSizeFullscreen className="mr-2" size={14} color='#a935db' />
+                                                            <SlSizeFullscreen className={`${style.iconBookDetails}`} size={14}/>
                                                             <span className='text-sm dark:text-gray-300 text-gray-800'>Kích thước sách: {data.data?.size}</span>
                                                       </Typography>
                                                       <Typography className='flex items-center'>
-                                                            <AiOutlineBarcode className='mr-2' size={14} color='#a935db' />
+                                                            <AiOutlineBarcode className={`${style.iconBookDetails}`} size={14}/>
                                                             <span className='text-sm dark:text-gray-300 text-gray-800'> ISBN: {data.data?.isbn}</span>
                                                       </Typography>
                                                       <Typography className='flex items-center'>
-                                                            <GiSpellBook className='mr-2' size={14} color='#a935db' />
+                                                            <GiSpellBook className={`${style.iconBookDetails}`} size={14}/>
                                                             <span className='text-sm dark:text-gray-300 text-gray-800'>Số trang: {data.data?.page}</span>
                                                       </Typography>
                                                 </div>
@@ -95,12 +96,12 @@ const InfoDetail = () => {
                                           <Divider sx={{ bgcolor: '#ccc' }} />
 
                                           <div>
-                                                <Typography variant="h6" className="font-bold mb-2 dark:text-[#c7c54a] text-[#eca874]">
+                                                <Typography variant="h6" className={`${style.titleBookDetails}`}>
                                                       Thông tin thuê sách
                                                 </Typography>
                                                 <div className="mt-3 space-y-2">
                                                       <Typography className="flex items-center text-sm">
-                                                            <GiMoneyStack size={14} className='mr-2' color='#a935db' />
+                                                            <GiMoneyStack className={`${style.iconBookDetails}`} size={14}/>
                                                             <span className='text-sm dark:text-gray-300 text-gray-800'>Giá: {convertPriceToVND(data.data?.price)}</span>
                                                       </Typography>
                                                 </div>

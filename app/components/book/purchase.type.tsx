@@ -50,25 +50,9 @@ const PurchaseType = ({ purchaseType, setPurchaseType }: IProps) => {
                         >
                               <MenuItem value="hardcopy">Mua bản cứng</MenuItem>
                               <MenuItem value="online">Mua bản mềm</MenuItem>
-                              <MenuItem value="both">Mua cả bản cứng và bản mềm</MenuItem>
+                              <MenuItem value="both">Cả hai</MenuItem>
                         </Select>
                   </FormControl>
-
-                  <Alert
-                        severity="warning"
-                        icon={<FaCircleInfo size={16} />}
-                        className="mt-4"
-                        sx={{
-                              '& .MuiAlert-message': {
-                                    fontSize: '0.6rem',
-                                    color: '#666'
-                              },
-                              backgroundColor: 'transparent',
-                              padding: '0'
-                        }}
-                  >
-                        Nếu mua bản cứng, bạn sẽ không thể đọc bản mềm. Nếu mua bản mềm, bạn sẽ không thể đọc bản cứng.
-                  </Alert>
 
                   <Alert
                         severity="warning"

@@ -6,6 +6,7 @@ import CarouselGeneBooks from './home/discover.books';
 import BestSeller from './home/best.seller';
 import Timer from './home/subscribe';
 import { GiOlive } from 'react-icons/gi';
+import CustomerReviews from "@/app/components/home/customer.reviews";
 
 const Layout = () => {
       return (
@@ -23,10 +24,11 @@ const Layout = () => {
                                                       />
                                                 </div>
 
-                                                <h1 className="text-3xl lg:text-4xl dark:text-[#edd479] text-[#ee6c79] font-bold tracking-tight leading-tight">
-                                                      Khám phá thế giới
-                                                      <span className="block mt-2">qua từng trang sách</span>
-                                                </h1>
+                                                <div>
+                                                      <h1 className="text-xl lg:text-3xl dark:text-[#edd479] text-[#ee6c79] font-bold tracking-tight leading-tight overflow-hidden whitespace-nowrap animate-typing-loop border-r-4 border-orange-500">
+                                                            Khám phá thế giới qua từng trang sách
+                                                      </h1>
+                                                </div>
 
                                                 <p className="text-md dark:text-[#aed3e8] text-[#9bd6c2] leading-relaxed max-w-xl">
                                                       NovelNest - Nền tảng đọc sách số hàng đầu Việt Nam, nơi tri thức và cảm xúc hòa quyện trong từng trang sách điện tử.
@@ -50,8 +52,8 @@ const Layout = () => {
                                                       <Image
                                                             src={banner}
                                                             alt="NovelNest Reading Experience"
-                                                            width={650}
-                                                            height={450}
+                                                            width={350}
+                                                            height={150}
                                                             className="object-cover w-full h-full animate-gentle-float-swing"
                                                             priority
                                                             placeholder='blur'
@@ -63,21 +65,27 @@ const Layout = () => {
                               </div>
                         </section>
 
-                        <section className="mb-20">
-                              <Services />
-                        </section>
+                        <div className="space-y-14">
+                              <section>
+                                    <Services />
+                              </section>
 
-                        <section className="mb-20">
-                              <CarouselGeneBooks />
-                        </section>
+                              <section>
+                                    <CarouselGeneBooks />
+                              </section>
 
-                        <section className="mb-20">
-                              <BestSeller />
-                        </section>
+                              <section>
+                                    <BestSeller />
+                              </section>
 
-                        <section className="mb-20">
-                              <Timer />
-                        </section>
+                              <section>
+                                    <CustomerReviews />
+                              </section>
+
+                              <section>
+                                    <Timer />
+                              </section>
+                        </div>
                   </div>
             </div>
       );
