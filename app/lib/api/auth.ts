@@ -9,10 +9,29 @@ interface ILoginData extends IBaseAuthData {
       email: string;
 }
 
+interface IApiResponse {
+      success: boolean;
+      message: string;
+      data?: any;
+}
+
 interface ISocialAuth {
       email: string,
       name: string,
       avatar: string
+}
+
+interface IRegister {
+      name: string,
+      email: string,
+      password: string,
+      confirmPassword: string
+}
+
+interface IVerifyOtp {
+      otp: {
+            code: string;
+      };
 }
 
 const loginAPI = async ({ email, password }: ILoginData) => {
@@ -35,4 +54,22 @@ const socialAPI = async ({ email, name, avatar }: ISocialAuth) => {
       }
 }
 
-export { loginAPI, socialAPI }
+const registerAPI = async ({ name, email, password, confirmPassword }: IRegister): Promise<IApiResponse> => {
+      try {
+            const BACKEND_URL = '/api/v1/auth/register';
+            return await axios.post(BACKEND_URL, { email, name, password, confirmPassword });
+      } catch (error) {
+            throw error
+      }
+}
+
+const verifyAPI = async (code: IVerifyOtp): Promise<IApiResponse> => {
+      try {
+            const BACKEND_URL = '/api/v1/auth/verify';
+            return await axios.post(BACKEND_URL, code)
+      } catch (error) {
+            throw error
+      }
+}
+
+export { loginAPI, socialAPI, registerAPI, verifyAPI }

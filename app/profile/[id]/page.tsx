@@ -1,13 +1,13 @@
-'use client'
+"use client"
 
 import Heading from "@/app/utils/heading"
 import UserProfile from "./UserProfile"
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 import { AuthContext } from "@/app/context/auth.context"
 
 const Page = () => {
       const { userInfo } = useContext(AuthContext);
-      console.log('--> check userInfo in profile: ', userInfo);
+      // console.log('--> check userInfo in profile: ', userInfo);
 
       return (
             <>

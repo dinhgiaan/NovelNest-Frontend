@@ -16,23 +16,23 @@ const UserProfile = ({ userInfo }: IProps) => {
 
       return (
             <div className='bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen'>
-                  <div className='flex py-4'>
-                        {/* Sidebar */}
-                        <div className='w-1/4'>
-                              <SideBarUser active={active} setActive={setActive} />
-                        </div>
+                  <div className='container mx-auto px-4 py-4'>
+                        <div className='flex flex-col lg:flex-row gap-4 lg:gap-8'>
+                              <div className='w-full lg:w-1/4 xl:w-1/5'>
+                                    <SideBarUser active={active} setActive={setActive} />
+                              </div>
 
-                        {/* Content */}
-                        <div className='w-3/4 ml-32'>
-                              {active == 0 && <InfoUser userInfo={userInfo} />}
-                              {active == 1 && <ChangePassword userInfo={userInfo} />}
-                              {active == 2 && <PurchasedBook userInfo={userInfo} />}
+                              <div className='w-full lg:w-3/4 xl:w-4/5'>
+                                    <div className='w-full'>
+                                          {active == 0 && <InfoUser userInfo={userInfo} />}
+                                          {active == 1 && <ChangePassword userInfo={userInfo} />}
+                                          {active == 2 && <PurchasedBook userInfo={userInfo} />}
+                                    </div>
+                              </div>
                         </div>
                   </div>
             </div>
-
       )
 }
 
 export default UserProfile
-

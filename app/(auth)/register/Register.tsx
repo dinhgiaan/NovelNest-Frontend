@@ -5,10 +5,10 @@ import { Button, TextField, IconButton, InputAdornment, Checkbox, FormControlLab
 import Link from 'next/link';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import toast from "react-hot-toast";
-import ConfirmAccount from "@/app/components/confirm.account";
 import Banner from '@/app/public/banner-register.png';
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { registerAPI } from "@/app/lib/api/auth";
+import OtpModal from "@/app/components/register/otp.modal";
 
 const RegisterPage = () => {
       const [name, setName] = useState("");
@@ -19,8 +19,7 @@ const RegisterPage = () => {
       const [showPassword, setShowPassword] = useState(false);
       const [showConfirmPassword, setShowConfirmPassword] = useState(false);
       const [acceptTerms, setAcceptTerms] = useState(false);
-      const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-      const router = useRouter();
+      const [isModalOtpOpen, setIsModalOtpOpen] = useState(false);
 
       const handleClickShowPassword = () => setShowPassword((show) => !show);
       const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
@@ -41,9 +40,9 @@ const RegisterPage = () => {
                   toast.error('Email không hợp lệ!');
                   return false;
             }
-
-            if (password.length < 6) {
-                  toast.error('Mật khẩu phải có ít nhất 6 ký tự!');
+            const passwordRegex = /^(?=.*?[0-9])(?=.*?[A-Za-z]).{6,32}$/;
+            if (!passwordRegex.test(password)) {
+                  toast.error('Mật khẩu phải có ít nhất một chữ cái, một chữ số và có độ dài từ 6 đến 32 ký tự!');
                   return false;
             }
 
@@ -62,43 +61,38 @@ const RegisterPage = () => {
 
       const handleRegister = async () => {
             if (!validateForm()) return;
-
             try {
                   setLoading(true);
 
-                  // Simulate API call - replace with your actual registration API
-                  await new Promise(resolve => setTimeout(resolve, 1500));
+                  const res = await registerAPI({ name, email, password, confirmPassword });
+                  console.log('--> check res register: ', res);
 
-                  // Instead of redirecting right away, show the confirmation modal
-                  setIsConfirmOpen(true);
-
-                  // Reset form after successful registration
-                  setLoading(false);
+                  if (res?.success === true) {
+                        toast.success(res.message || "Đăng ký thành công!");
+                        setIsModalOtpOpen(true);
+                  } else {
+                        toast.error(res?.message || "Đăng ký thất bại");
+                  }
             } catch (error) {
                   console.log('--> check error: ', error);
                   toast.error('Đăng ký thất bại!');
+            } finally {
                   setLoading(false);
             }
       };
 
-      const handleConfirmClose = () => {
-            setIsConfirmOpen(false);
-            router.push('/login');
-      };
-
       return (
             <div className="w-full h-screen flex">
-                  {isConfirmOpen && (
-                        <ConfirmAccount
-                              isConfirmOpen={isConfirmOpen}
-                              setIsConfirmOpen={handleConfirmClose}
+                  {isModalOtpOpen && (
+                        <OtpModal
+                              isModalOtpOpen={isModalOtpOpen}
+                              setIsModalOtpOpen={setIsModalOtpOpen}
                               email={email}
+                              description={`Vui lòng nhập mã xác thực được gửi đến ${email}`}
                         />
                   )}
 
                   <div className="basis-3/6 bg-gradient-to-b from-pink-500 to-pink-300 flex flex-col items-center justify-center p-10 text-center">
-                        {/* <h1 className="text-xl font-extrabold text-white drop-shadow-md">+1000 cuốn sách</h1>
-                        <p className="text-sm text-white mt-4">Có nhiều thể loại đa dạng cùng nhiều phương thức thanh toán khác nhau, tiện lợi cho độc giả</p> */}
                         <Image
                               src={Banner}
                               className="w-50 h-50"

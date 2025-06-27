@@ -2,10 +2,8 @@
 
 import { useContext, useState } from 'react';
 import InfoBuy from './info.buy';
-import PurchaseType from './purchase.type';
 import PaymentMethod from './payment.method';
 import { AuthContext } from '@/app/context/auth.context';
-import toast from 'react-hot-toast';
 import { IoIosArrowRoundBack, IoIosArrowRoundForward } from 'react-icons/io';
 import { LuBan } from 'react-icons/lu';
 
@@ -16,7 +14,6 @@ interface IProps {
 const PurchaseTimeline = ({ book }: IProps) => {
       const [currentStep, setCurrentStep] = useState(1);
       const { userInfo } = useContext(AuthContext);
-      const [purchaseType, setPurchaseType] = useState('');
 
       const steps = [
             // { id: 1, label: 'Hình thức sách' },

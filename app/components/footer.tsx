@@ -27,7 +27,7 @@ const Footer = () => {
                                                 <span className={`${style.labelFooter}`}>novelnest@contact.com</span>
                                           </li>
                                           <li className="flex items-center space-x-4">
-                                                <FaMapMarkedAlt size={35} />
+                                                <FaMapMarkedAlt size={24} />
                                                 <span className={`${style.labelFooter}`}>
                                                       Chung cư Bộ công an, Block A, Đường số 3, phường An Khánh, TP.Thủ Đức
                                                 </span>

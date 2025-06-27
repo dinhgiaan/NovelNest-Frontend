@@ -15,10 +15,6 @@ interface IChangePasswordData extends IBaseAuthData {
       confirmNewPassword: string;
 }
 
-interface IUserData {
-      _id: string;
-}
-
 interface IUpdateData {
       _id: string,
       email: string,

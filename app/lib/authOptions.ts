@@ -1,10 +1,68 @@
-import axios from "axios";
-import NextAuth from "next-auth";
-import GithubProvider from "next-auth/providers/github";
-import GoogleProvider from "next-auth/providers/google";
-import { signIn } from "next-auth/react";
+import axios from "axios"
+import type { NextAuthOptions } from "next-auth"
+import GithubProvider from "next-auth/providers/github"
+import GoogleProvider from "next-auth/providers/google"
+import type { JWT } from "next-auth/jwt"
+import type { Session, User } from "next-auth"
+import type { AdapterUser } from "next-auth/adapters"
 
-export const authOptions = {
+// Extend the built-in session types
+declare module "next-auth" {
+      interface Session {
+            user: {
+                  id?: string
+                  name?: string | null
+                  email?: string | null
+                  image?: string | null
+                  userData?: {
+                        _id: string
+                        email: string
+                        name: string
+                        role: string
+                        phone?: string
+                        address?: string
+                        avatar: string
+                  }
+                  customAccessToken?: string
+                  message?: string
+                  token?: string
+            }
+      }
+
+      interface User {
+            customAccessToken?: string
+            userData?: {
+                  _id: string
+                  email: string
+                  name: string
+                  role: string
+                  phone?: string
+                  address?: string
+                  avatar: string
+            }
+            message?: string
+      }
+}
+
+declare module "next-auth/jwt" {
+      interface JWT {
+            customAccessToken?: string
+            userData?: {
+                  _id: string
+                  email: string
+                  name: string
+                  role: string
+                  phone?: string
+                  address?: string
+                  avatar: string
+            }
+            message?: string
+            accessToken?: string
+            provider?: string
+      }
+}
+
+export const authOptions: NextAuthOptions = {
       providers: [
             GithubProvider({
                   clientId: process.env.GITHUB_ID as string,
@@ -16,73 +74,90 @@ export const authOptions = {
             }),
       ],
       callbacks: {
-            async signIn({ user, account, profile }) {
-                  if (account?.provider === "google" || account.provider === "github") {
+            async signIn({
+                  user,
+                  account,
+            }: {
+                  user: User | AdapterUser
+                  account: any
+            }): Promise<boolean> {
+                  if (account?.provider === "google" || account?.provider === "github") {
                         try {
                               // Send user data to your API
-                              const response = await axios.post(
-                                    `${process.env.NEXT_PUBLIC_BASE_API_URL}/api/v1/auth/social-auth`,
-                                    {
-                                          email: user.email,
-                                          name: user.name,
-                                          avatar: user.image,
-                                    }
-                              );
+                              const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/api/v1/auth/social-auth`, {
+                                    email: user.email,
+                                    name: user.name,
+                                    avatar: user.image,
+                              })
 
-                              // If user doesn't exist, API creates a new one
-                              // If user exists, API returns existing user data
                               if (response.data.success) {
-                                    // Store token in cookie/local storage (consider using httpOnly cookies for better security)
-                                    if (response.data.access_token) {
-                                          // The token can be stored in session or cookies
-                                          // This is handled differently based on your auth strategy
-                                    }
-                                    return true;
+                                    // Store the custom access token and user data in the user object
+                                    ; (user as User).customAccessToken = response.data.access_token
+                                          ; (user as User).userData = response.data.user
+                                          ; (user as User).message = response.data.message
+                                    return true
                               }
-                              return false;
+                              return false
                         } catch (error) {
-                              console.error("Error during social auth:", error);
-                              return false;
+                              console.error("Error during social auth:", error)
+                              return false
                         }
                   }
-                  return true;
+                  return true
             },
-            async session({ session, token }) {
-                  // Get additional user info from your database
-                  try {
-                        // You might want to make an API call to get full user details
-                        // This is optional if you have all the data you need from the provider
 
-                        // Add custom properties to the session
-                        session.user.token = token.accessToken;
-                        // You can add more custom fields here
-                  } catch (error) {
-                        console.error("Error enriching session:", error);
+            async jwt({
+                  token,
+                  account,
+                  user,
+            }: {
+                  token: JWT
+                  account: any
+                  user?: User | AdapterUser
+            }): Promise<JWT> {
+                  // Store custom data in JWT token
+                  if (user && "customAccessToken" in user && user.customAccessToken) {
+                        token.customAccessToken = user.customAccessToken
+                        token.userData = (user as User).userData
+                        token.message = (user as User).message
                   }
-                  return session;
-            },
-            async jwt({ token, account, user }) {
-                  // Persist the OAuth access_token to the token
+
                   if (account) {
-                        token.accessToken = account.access_token;
-                        token.provider = account.provider;
+                        token.accessToken = account.access_token
+                        token.provider = account.provider
                   }
-                  return token;
+
+                  return token
             },
-            async redirect({ url, baseUrl }) {
-                  // Customize redirect behavior if needed
-                  return baseUrl;
+
+            async session({
+                  session,
+                  token,
+            }: {
+                  session: Session
+                  token: JWT
+            }): Promise<Session> {
+                  try {
+                        if (token.userData) {
+                              session.user.userData = token.userData
+                              session.user.customAccessToken = token.customAccessToken
+                              session.user.message = token.message
+                        }
+                        session.user.token = token.accessToken
+                  } catch (error) {
+                        console.error("Error enriching session:", error)
+                  }
+                  return session
+            },
+
+            async redirect({ baseUrl }: { url: string; baseUrl: string }): Promise<string> {
+                  return baseUrl
             },
       },
       pages: {
             signIn: "/login",
-            // Other custom pages if needed
       },
       session: {
             strategy: "jwt",
       },
-};
-
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST };
+}
