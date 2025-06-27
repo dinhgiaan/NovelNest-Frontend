@@ -58,13 +58,12 @@ const BookPage = ({ data, pagination }: IProps) => {
 
             try {
                   const res = await getUserById(userId);
-                  console.log('--> check res: ', res);
 
                   if (res.data?.purchasedBooks) {
                         setHasPurchasedBook(true);
                   }
             } catch (error) {
-                  console.error("Error fetching user purchases:", error);
+                  throw error;
             }
       }
 
@@ -127,7 +126,6 @@ const BookPage = ({ data, pagination }: IProps) => {
                                                                         rel="preload"
                                                                         href={`/books/detail/${book.slug}`}
                                                                         className={""}
-                                                                        onClick={(e) => e.preventDefault()}
                                                                   >
                                                                         <div className="relative aspect-[2/3] w-full overflow-hidden bg-gray-100 dark:bg-gray-700">
                                                                               <Image
@@ -155,15 +153,15 @@ const BookPage = ({ data, pagination }: IProps) => {
                                                                         {/* Action Buttons - Responsive */}
                                                                         <div className="flex flex-col sm:flex-row justify-between mt-2 items-stretch sm:items-center gap-2">
                                                                               <button
-                                                                                    className={`flex items-center justify-center flex-1 space-x-1 rounded-lg px-2 py-5 sm:py-1 text-xs transition-colors bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800"
-                                                                                          }`}
+                                                                                    className={`flex items-center justify-center flex-1 space-x-1 rounded-lg px-3 py-3 text-sm transition-colors
+    bg-indigo-100 text-indigo-700 hover:bg-indigo-200
+    dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800`}
                                                                               >
-                                                                                    {hasPurchasedBook ? (
-                                                                                          <span className="text-center">Đọc sách</span>
-                                                                                    ) : (
-                                                                                                      <span className="hidden sm:inline">Mua ngay</span>
-                                                                                    )}
+                                                                                    <span className="text-center">
+                                                                                          {hasPurchasedBook ? "Đọc sách" : "Mua ngay"}
+                                                                                    </span>
                                                                               </button>
+
                                                                         </div>
                                                                   </div>
                                                             </div>

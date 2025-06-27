@@ -1,241 +1,224 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from "next/navigation";
-import { verifyAPI } from '@/app/lib/api/auth';
-import toast from 'react-hot-toast';
+"use client"
+
+import { useState, useRef, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { verifyAPI } from "@/app/lib/api/auth"
+import toast from "react-hot-toast"
 
 interface OtpModalProps {
-      isModalOtpOpen: boolean;
-      setIsModalOtpOpen: (value: boolean) => void;
-      title?: string;
-      description?: string;
-      length?: number;
-      email: string;
+      isModalOtpOpen: boolean
+      setIsModalOtpOpen: (value: boolean) => void
+      title?: string
+      description?: string
+      length?: number
+      email: string
+      onResend?: () => Promise<void>
 }
 
-const OtpModal: React.FC<OtpModalProps> = ({
+const OtpModal = ({
       isModalOtpOpen,
       setIsModalOtpOpen,
       title = "Xác thực OTP",
-      description,
+      description = "Nhập mã xác thực đã được gửi đến email của bạn",
       length = 4,
-}) => {
-      const [otp, setOtp] = useState<string[]>(new Array(length).fill(''));
-      const [isLoading, setIsLoading] = useState(false);
-      const [error, setError] = useState('');
-      const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
-      const router = useRouter();
+      email,
+      onResend,
+}: OtpModalProps) => {
+      const [otp, setOtp] = useState<string[]>(Array(length).fill(""))
+      const [isLoading, setIsLoading] = useState(false)
+      const [isResending, setIsResending] = useState(false)
+      const [error, setError] = useState("")
+      const [timer, setTimer] = useState(0)
+      const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+      const router = useRouter()
 
-      // Reset state when modal opens
+      useEffect(() => {
+            let interval: NodeJS.Timeout
+            if (timer > 0) {
+                  interval = setInterval(() => setTimer((prev) => prev - 1), 1000)
+            }
+            return () => clearInterval(interval)
+      }, [timer])
+
       useEffect(() => {
             if (isModalOtpOpen) {
-                  setOtp(new Array(length).fill(''));
-                  setError('');
-                  setIsLoading(false);
-                  // Focus first input after modal animation
-                  setTimeout(() => inputRefs.current[0]?.focus(), 100);
+                  setOtp(Array(length).fill(""))
+                  setError("")
+                  setTimer(90)
+                  setTimeout(() => inputRefs.current[0]?.focus(), 100)
             }
-      }, [isModalOtpOpen, length]);
+      }, [isModalOtpOpen, length])
 
       const handleChange = (index: number, value: string) => {
-            if (!/^\d*$/.test(value)) return;
+            if (!/^\d$/.test(value) && value !== "") return
+            const newOtp = [...otp]
+            newOtp[index] = value
+            setOtp(newOtp)
+            setError("")
 
-            setError(''); // Clear error when user types
-            const newOtp = [...otp];
-            newOtp[index] = value;
-            setOtp(newOtp);
-
-            // Auto focus next input
             if (value && index < length - 1) {
-                  inputRefs.current[index + 1]?.focus();
+                  inputRefs.current[index + 1]?.focus()
             }
-      };
 
-      const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === 'Backspace') {
-                  e.preventDefault();
-                  const newOtp = [...otp];
+            if (value && index === length - 1 && newOtp.every((v) => v !== "")) {
+                  setTimeout(() => handleSubmit(newOtp.join("")), 100)
+            }
+      }
 
+      const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
+            if (e.key === "Backspace") {
+                  const newOtp = [...otp]
                   if (otp[index]) {
-                        newOtp[index] = '';
-                        setOtp(newOtp);
+                        newOtp[index] = ""
                   } else if (index > 0) {
-                        newOtp[index - 1] = '';
-                        setOtp(newOtp);
-                        inputRefs.current[index - 1]?.focus();
+                        newOtp[index - 1] = ""
+                        inputRefs.current[index - 1]?.focus()
                   }
+                  setOtp(newOtp)
             }
-      };
+      }
 
-      const handlePaste = (e: React.ClipboardEvent) => {
-            e.preventDefault();
-            const pastedData = e.clipboardData.getData('text').replace(/\D/g, '');
-
-            if (pastedData.length >= length) {
-                  const newOtp = pastedData.slice(0, length).split('');
-                  setOtp(newOtp);
-                  inputRefs.current[length - 1]?.focus();
-            }
-      };
-
-      const handleSubmit = async () => {
-            const otpValue = otp.join('');
-
-            if (otpValue.length !== length) {
-                  setError(`Vui lòng nhập đầy đủ ${length} số`);
-                  return;
+      const handleSubmit = async (otpValue?: string) => {
+            const finalOtp = otpValue || otp.join("")
+            if (finalOtp.length !== length) {
+                  setError("Vui lòng nhập đầy đủ mã OTP")
+                  return
             }
 
-            setIsLoading(true);
-            setError('');
+            setIsLoading(true)
+            setError("")
 
             try {
-                  const res = await verifyAPI({ otp: { code: otpValue } });
-                  console.log('--> check res: ', res);
-                  if (res.success === true) {
-                        toast.success("Độc giả đã tạo tài khoản thành công 🌻");
-                        setIsModalOtpOpen(false);
-                        router.push('/login')
+                  const res = await verifyAPI({ otp: { code: finalOtp } })
+                  if (res.success) {
+                        toast.success("Xác thực thành công!")
+                        setIsModalOtpOpen(false)
+                        router.push("/login")
                   } else {
-                        toast.error(res?.message);
+                        throw new Error()
                   }
-            } catch (err) {
-                  setError('Mã OTP không hợp lệ. Vui lòng thử lại.');
+            } catch {
+                  setError("Mã OTP không chính xác")
+                  setOtp(Array(length).fill(""))
+                  setTimeout(() => inputRefs.current[0]?.focus(), 100)
             } finally {
-                  setIsLoading(false);
+                  setIsLoading(false)
             }
-      };
+      }
 
-      const handleClose = () => {
-            if (!isLoading) {
-                  setIsModalOtpOpen(false);
+      const handleResend = async () => {
+            if (timer > 0 || isResending) return
+            setIsResending(true)
+            setError("")
+
+            try {
+                  if (onResend) await onResend()
+                  toast.success("Mã OTP mới đã được gửi!")
+                  setTimer(90)
+                  setOtp(Array(length).fill(""))
+                  setTimeout(() => inputRefs.current[0]?.focus(), 100)
+            } catch {
+                  setError("Không thể gửi lại mã OTP. Vui lòng thử lại.")
+            } finally {
+                  setIsResending(false)
             }
-      };
+      }
 
-      const handleBackdropClick = (e: React.MouseEvent) => {
-            if (e.target === e.currentTarget && !isLoading) {
-                  handleClose();
-            }
-      };
+      const formatTime = (seconds: number) => {
+            const mins = Math.floor(seconds / 60)
+            const secs = seconds % 60
+            return `${mins}:${secs.toString().padStart(2, "0")}`
+      }
 
-      const isComplete = otp.every(val => val !== '');
+      const isComplete = otp.every((v) => v !== "")
 
-      if (!isModalOtpOpen) return null;
+      if (!isModalOtpOpen) return null
 
       return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                  {/* Backdrop */}
-                  <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
-                        onClick={handleBackdropClick}
-                  />
-
-                  {/* Modal */}
-                  <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
-                        {/* Header */}
-                        <div className="px-6 pt-6 pb-4 text-center border-b border-gray-100">
-                              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                    </svg>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+                  <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-md overflow-hidden">
+                        <div className="p-4 sm:p-6">
+                              <div className="text-center mb-6">
+                                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                          <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                          </svg>
+                                    </div>
+                                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">{title}</h2>
+                                    <p className="text-sm text-gray-600">{description}</p>
+                                    <p className="text-sm font-medium text-gray-800 mt-1 break-words">{email}</p>
                               </div>
-                              <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
-                              <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
-                        </div>
 
-                        {/* OTP Input */}
-                        <div className="px-6 py-6">
-                              <div className="flex justify-center gap-3 mb-6">
-                                    {Array.from({ length }, (_, i) => (
+                              <div className="flex justify-center gap-2 mb-4">
+                                    {otp.map((val, i) => (
                                           <input
                                                 key={i}
-                                                ref={(el) => (inputRefs.current[i] = el)}
+                                                ref={(el) => { inputRefs.current[i] = el }}
                                                 type="text"
                                                 inputMode="numeric"
                                                 maxLength={1}
-                                                value={otp[i]}
+                                                value={val}
                                                 onChange={(e) => handleChange(i, e.target.value)}
                                                 onKeyDown={(e) => handleKeyDown(i, e)}
-                                                onPaste={handlePaste}
                                                 disabled={isLoading}
-                                                className={`
-                  w-14 h-14 text-center text-2xl font-bold rounded-xl border-2 transition-all duration-200
-                  ${otp[i]
-                                                            ? 'border-blue-500 bg-blue-50 text-blue-900'
-                                                            : 'border-gray-200 hover:border-gray-300'
-                                                      }
-                  ${isLoading ? 'opacity-50 cursor-not-allowed' : 'focus:border-blue-500 focus:ring-4 focus:ring-blue-100'}
-                  focus:outline-none
-                `}
+                                                className="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl font-bold border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all disabled:bg-gray-50 disabled:text-gray-400"
                                           />
                                     ))}
                               </div>
 
-                              {/* Error Message */}
                               {error && (
-                                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                                          <div className="flex items-center">
-                                                <svg className="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                </svg>
-                                                <span className="text-sm text-red-700">{error}</span>
-                                          </div>
+                                    <div className="mb-4">
+                                          <p className="text-sm text-red-600 bg-red-50 py-2 px-3 rounded-lg text-center">{error}</p>
                                     </div>
                               )}
 
-                              {/* Action Buttons */}
-                              <div className="space-y-3">
-                                    <button
-                                          onClick={handleSubmit}
-                                          disabled={!isComplete || isLoading}
-                                          className={`
-                w-full py-3.5 px-4 rounded-xl font-semibold text-white transition-all duration-200
-                ${isComplete && !isLoading
-                                                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transform hover:scale-[1.02] shadow-lg hover:shadow-xl'
-                                                      : 'bg-gray-300 cursor-not-allowed'
-                                                }
-                focus:outline-none focus:ring-4 focus:ring-blue-100
-              `}
-                                    >
-                                          {isLoading ? (
-                                                <div className="flex items-center justify-center">
-                                                      <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                                      </svg>
-                                                      Đang xác thực...
-                                                </div>
-                                          ) : (
-                                                'Xác nhận'
-                                          )}
-                                    </button>
+                              <button
+                                    onClick={() => handleSubmit()}
+                                    disabled={!isComplete || isLoading}
+                                    className="w-full h-12 sm:h-11 bg-blue-600 text-white text-sm sm:text-base font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors mb-4 flex items-center justify-center gap-2"
+                              >
+                                    {isLoading ? (
+                                          <>
+                                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                Đang xác thực...
+                                          </>
+                                    ) : (
+                                          "Xác thực"
+                                    )}
+                              </button>
 
+                              <div className="text-center mb-4">
+                                    {timer > 0 ? (
+                                          <p className="text-sm text-gray-600">
+                                                Gửi lại mã sau{" "}
+                                                <span className="font-mono font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                                                      {formatTime(timer)}
+                                                </span>
+                                          </p>
+                                    ) : (
+                                          <button
+                                                onClick={handleResend}
+                                                disabled={isResending}
+                                                className="text-sm text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400 disabled:cursor-not-allowed hover:underline"
+                                          >
+                                                {isResending ? "Đang gửi..." : "Gửi lại mã OTP"}
+                                          </button>
+                                    )}
+                              </div>
+
+                              <div className="text-center pt-4 border-t border-gray-100">
                                     <button
-                                          onClick={handleClose}
+                                          onClick={() => setIsModalOtpOpen(false)}
                                           disabled={isLoading}
-                                          className={`
-                w-full py-3 px-4 rounded-xl font-medium transition-all duration-200
-                ${isLoading
-                                                      ? 'text-gray-400 cursor-not-allowed'
-                                                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                                                }
-              `}
+                                          className="text-sm text-gray-500 hover:text-gray-700 disabled:text-gray-400"
                                     >
                                           Hủy bỏ
                                     </button>
                               </div>
                         </div>
-
-                        <div className="px-6 pb-6 text-center border-t border-gray-100 pt-4">
-                              <p className="text-sm text-gray-500">
-                                    Chưa nhận được mã?{' '}
-                                    <button className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors duration-200">
-                                          Gửi lại
-                                    </button>
-                              </p>
-                        </div>
                   </div>
             </div>
-      );
-};
+      )
+}
 
-export default OtpModal;
+export default OtpModal

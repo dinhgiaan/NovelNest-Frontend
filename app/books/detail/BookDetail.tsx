@@ -257,19 +257,13 @@ const BookDetail = ({ book, error, isLoading }: BookDetailProps) => {
                               <div className="md:col-span-2">
                                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-5">
                                           <div className="space-y-4">
-                                                {/* Title and Author */}
                                                 <div>
                                                       <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                                                             {book.title}
                                                       </h1>
-                                                      <p className="text-indigo-600 dark:text-indigo-400 text-sm font-medium italic">
-                                                            {book.author}
-                                                      </p>
                                                 </div>
 
                                                 <div className="h-px bg-gray-200 dark:bg-gray-700" />
-
-                                                {/* Book Information */}
                                                 <div className="grid gap-4">
                                                       {renderBookInfo()}
                                                 </div>

@@ -9,6 +9,7 @@ import Banner from '@/app/public/banner-register.png';
 import Image from "next/image";
 import { registerAPI } from "@/app/lib/api/auth";
 import OtpModal from "@/app/components/register/otp.modal";
+import { AxiosError } from "axios";
 
 const RegisterPage = () => {
       const [name, setName] = useState("");
@@ -29,12 +30,10 @@ const RegisterPage = () => {
                   toast.error('Vui lòng nhập họ và tên!');
                   return false;
             }
-
             if (!email.trim()) {
                   toast.error('Vui lòng nhập email!');
                   return false;
             }
-
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                   toast.error('Email không hợp lệ!');
@@ -45,17 +44,14 @@ const RegisterPage = () => {
                   toast.error('Mật khẩu phải có ít nhất một chữ cái, một chữ số và có độ dài từ 6 đến 32 ký tự!');
                   return false;
             }
-
             if (password !== confirmPassword) {
                   toast.error('Mật khẩu xác nhận không khớp!');
                   return false;
             }
-
             if (!acceptTerms) {
                   toast.error('Bạn cần chấp nhận các điều khoản và chính sách!');
                   return false;
             }
-
             return true;
       };
 
@@ -63,10 +59,7 @@ const RegisterPage = () => {
             if (!validateForm()) return;
             try {
                   setLoading(true);
-
                   const res = await registerAPI({ name, email, password, confirmPassword });
-                  console.log('--> check res register: ', res);
-
                   if (res?.success === true) {
                         toast.success(res.message || "Đăng ký thành công!");
                         setIsModalOtpOpen(true);
@@ -74,15 +67,18 @@ const RegisterPage = () => {
                         toast.error(res?.message || "Đăng ký thất bại");
                   }
             } catch (error) {
-                  console.log('--> check error: ', error);
-                  toast.error('Đăng ký thất bại!');
+                  console.error('Registration error:', error);
+                  const errorMessage = (error as AxiosError<{ message?: string }>).response?.data?.message ||
+                        (error as Error).message ||
+                        'Đăng ký thất bại!';
+                  toast.error(errorMessage);
             } finally {
                   setLoading(false);
             }
       };
 
       return (
-            <div className="w-full h-screen flex">
+            <div className="w-full min-h-screen flex flex-col lg:flex-row">
                   {isModalOtpOpen && (
                         <OtpModal
                               isModalOtpOpen={isModalOtpOpen}
@@ -92,87 +88,76 @@ const RegisterPage = () => {
                         />
                   )}
 
-                  <div className="basis-3/6 bg-gradient-to-b from-pink-500 to-pink-300 flex flex-col items-center justify-center p-10 text-center">
+                  <div className="w-full lg:w-1/2 bg-gradient-to-b from-pink-500 to-pink-300 flex items-center justify-center p-6 sm:p-10">
                         <Image
                               src={Banner}
-                              className="w-50 h-50"
+                              className="w-full max-w-xs sm:max-w-sm md:max-w-md h-auto object-contain"
                               about="banner"
                               alt="Banner"
                               priority
                         />
                   </div>
 
-                  <div className="basis-3/6 flex flex-col items-center justify-center p-10 bg-gray-100">
-                        <h2 className="text-3xl font-semibold text-gray-800 mb-8">Tạo tài khoản NovelNest</h2>
-                        <div className='w-full max-w-xl space-y-6'>
-                              <div className="flex gap-4">
+                  <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-10 bg-gray-100">
+                        <div className="w-full max-w-sm sm:max-w-md md:max-w-xl space-y-6">
+                              <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 text-center">Tạo tài khoản NovelNest</h2>
+
+                              <div className="flex flex-col sm:flex-row gap-4">
                                     <TextField
                                           label="Họ và tên"
-                                          variant="outlined"
                                           value={name}
                                           onChange={(e) => setName(e.target.value)}
                                           className="w-full"
-                                          InputProps={{
-                                                style: { borderRadius: 8 }
-                                          }}
                                           size="small"
-                                          required
+                                          InputProps={{ style: { borderRadius: 8 } }}
                                     />
                                     <TextField
                                           label="Email"
-                                          variant="outlined"
+                                          type="email"
                                           value={email}
                                           onChange={(e) => setEmail(e.target.value)}
                                           className="w-full"
-                                          InputProps={{
-                                                style: { borderRadius: 8 }
-                                          }}
                                           size="small"
-                                          required
-                                          type="email"
+                                          InputProps={{ style: { borderRadius: 8 } }}
                                     />
                               </div>
 
                               <TextField
                                     label="Mật khẩu"
                                     type={showPassword ? 'text' : 'password'}
-                                    variant="outlined"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="w-full"
+                                    size="small"
                                     InputProps={{
                                           endAdornment: (
                                                 <InputAdornment position="end">
-                                                      <IconButton onClick={handleClickShowPassword} edge="end">
+                                                      <IconButton onClick={handleClickShowPassword}>
                                                             {showPassword ? <FaEye size={14} /> : <FaEyeSlash size={14} />}
                                                       </IconButton>
                                                 </InputAdornment>
                                           ),
                                           style: { borderRadius: 8 }
                                     }}
-                                    size="small"
-                                    required
                               />
 
                               <TextField
                                     label="Xác nhận mật khẩu"
                                     type={showConfirmPassword ? 'text' : 'password'}
-                                    variant="outlined"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     className="w-full"
+                                    size="small"
                                     InputProps={{
                                           endAdornment: (
                                                 <InputAdornment position="end">
-                                                      <IconButton onClick={handleClickShowConfirmPassword} edge="end">
+                                                      <IconButton onClick={handleClickShowConfirmPassword}>
                                                             {showConfirmPassword ? <FaEye size={14} /> : <FaEyeSlash size={14} />}
                                                       </IconButton>
                                                 </InputAdornment>
                                           ),
                                           style: { borderRadius: 8 }
                                     }}
-                                    size="small"
-                                    required
                               />
 
                               <FormControlLabel
@@ -185,10 +170,12 @@ const RegisterPage = () => {
                                           />
                                     }
                                     label={
-                                          <span className="text-xs text-black">Bằng cách đăng kí, tôi chấp nhận
-                                                <Link href="/policy" className="text-blue-500 hover:underline">{" Chính sách bảo mật "}</Link> và
-                                                <Link href="/policy" className="text-blue-500 hover:underline">{" Điều khoản sử dụng "}</Link> của NovelNest
-                                          </span>}
+                                          <span className="text-xs text-black">
+                                                Bằng cách đăng ký, tôi chấp nhận
+                                                <Link href="/policy" className="text-blue-500 hover:underline ml-1">Chính sách</Link> và
+                                                <Link href="/policy" className="text-blue-500 hover:underline ml-1">Điều khoản</Link> của NovelNest
+                                          </span>
+                                    }
                               />
 
                               <Button
@@ -200,17 +187,15 @@ const RegisterPage = () => {
                                     disabled={loading || !acceptTerms}
                                     fullWidth
                               >
-                                    {loading ?
-                                          <div className="w-2/3">
-                                                <LinearProgress color="inherit" />
-                                          </div>
+                                    {loading
+                                          ? <div className="w-full"><LinearProgress color="inherit" /></div>
                                           : "Tạo tài khoản"}
                               </Button>
-                        </div>
 
-                        <p className="mt-6 text-sm text-gray-600">
-                              Bạn đã có tài khoản? <Link href={'/login'} className="text-blue-500 hover:underline">Đăng nhập</Link>
-                        </p>
+                              <p className="text-center text-sm text-gray-600">
+                                    Bạn đã có tài khoản? <Link href={'/login'} className="text-blue-500 hover:underline">Đăng nhập</Link>
+                              </p>
+                        </div>
                   </div>
             </div>
       );
