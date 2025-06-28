@@ -3,7 +3,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useContext, useMemo, useState, useEffect } from "react"
 import Image from "next/image";
-import avatar from "@/public/assets/avatar_default.png";
+import avatar from "@/public/assets/avatar_default.webp";
 import logo from "@/public/assets/logo.webp"
 import ThemeSwitch from "./theme.switch"
 import { signOut, useSession } from "next-auth/react"

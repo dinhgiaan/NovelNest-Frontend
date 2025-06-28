@@ -68,9 +68,6 @@ const LoginPage = () => {
                                     email: res?.data?.user?.email,
                                     name: res?.data?.user?.name,
                                     role: res?.data?.user?.role,
-                                    phone: res?.data?.user?.phone,
-                                    address: res?.data?.user?.address,
-                                    avatar: res?.data?.user?.avatar,
                               },
                         })
                         navigate.push("/")

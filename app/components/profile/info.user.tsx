@@ -1,6 +1,6 @@
 "use client"
 
-import bannerProfile from "@/app/public/banner-profile.png"
+import bannerProfile from "@/app/public/banner-profile.webp"
 import Image from "next/image"
 import type { AuthContextType } from "@/app/context/auth.context"
 import { useState, useLayoutEffect, useRef, useEffect } from "react"

@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react';
-import cod from '@/app/public/payment.cash.webp';
 import momo from '@/app/public/payment.momo.webp';
 import payOs from '@/app/public/payment.payos.webp';
 import zalopay from '@/app/public/payment.zalopay.webp';
@@ -25,14 +24,6 @@ const PaymentMethod = ({ book }: IProps) => {
       const { userInfo } = useContext(AuthContext);
 
       const paymentMethods = [
-            {
-                  id: 'COD',
-                  name: 'Thanh toán khi nhận hàng (COD)',
-                  description: 'Thanh toán tiền mặt khi nhận được hàng tại địa chỉ của bạn',
-                  icon: <BsCash className="w-6 h-6 text-gray-600" />,
-                  image: cod,
-                  benefits: ['Kiểm tra hàng trước khi nhận', 'Không cần thanh toán trước']
-            },
             {
                   id: 'PayOs',
                   name: 'Quét mã QR',
