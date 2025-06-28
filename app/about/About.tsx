@@ -1,9 +1,9 @@
 import { FaBookOpen, FaBullseye, FaLightbulb } from 'react-icons/fa';
 import { MdInfo, MdStar } from 'react-icons/md';
-import AboutUs1 from '@/app/public/about-us-1.png';
-import Misson from '@/app/public/misson.png';
-import Vison from '@/app/public/vison.png';
-import CoreValues from '@/app/public/core-values.png';
+import AboutUs1 from '@/public/assets/about-us-1.png';
+import Misson from '@/public/assets/misson.png';
+import Vison from '@/public/assets/vison.png';
+import CoreValues from '@/public/assets/core-values.png';
 import Image from 'next/image';
 
 const AboutPage = () => {

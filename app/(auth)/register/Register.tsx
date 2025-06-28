@@ -5,11 +5,10 @@ import { Button, TextField, IconButton, InputAdornment, Checkbox, FormControlLab
 import Link from 'next/link';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import toast from "react-hot-toast";
-import Banner from '@/app/public/banner-register.png';
-import Image from "next/image";
 import { registerAPI } from "@/app/lib/api/auth";
 import OtpModal from "@/app/components/register/otp.modal";
 import { AxiosError } from "axios";
+import EmblaCarousel from "@/app/components/embla.carousel";
 
 const RegisterPage = () => {
       const [name, setName] = useState("");
@@ -25,33 +24,29 @@ const RegisterPage = () => {
       const handleClickShowPassword = () => setShowPassword((show) => !show);
       const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
 
+      const carouselItems = [
+            {
+                  imageUrl: "/assets/librarybooks_slider_register.webp",
+            },
+            {
+                  imageUrl: "/assets/readbook_slider_register.webp",
+            },
+            {
+                  imageUrl: "/assets/pex_slider_register.webp",
+            },
+      ];
+
       const validateForm = () => {
-            if (!name.trim()) {
-                  toast.error('Vui lòng nhập họ và tên!');
-                  return false;
-            }
-            if (!email.trim()) {
-                  toast.error('Vui lòng nhập email!');
-                  return false;
-            }
+            if (!name.trim()) return toast.error("Vui lòng nhập họ và tên!");
+            if (!email.trim()) return toast.error("Vui lòng nhập email!");
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                  toast.error('Email không hợp lệ!');
-                  return false;
-            }
+            if (!emailRegex.test(email)) return toast.error("Email không hợp lệ!");
             const passwordRegex = /^(?=.*?[0-9])(?=.*?[A-Za-z]).{6,32}$/;
             if (!passwordRegex.test(password)) {
-                  toast.error('Mật khẩu phải có ít nhất một chữ cái, một chữ số và có độ dài từ 6 đến 32 ký tự!');
-                  return false;
+                  return toast.error("Mật khẩu phải có ít nhất một chữ cái, một chữ số và dài 6–32 ký tự!");
             }
-            if (password !== confirmPassword) {
-                  toast.error('Mật khẩu xác nhận không khớp!');
-                  return false;
-            }
-            if (!acceptTerms) {
-                  toast.error('Bạn cần chấp nhận các điều khoản và chính sách!');
-                  return false;
-            }
+            if (password !== confirmPassword) return toast.error("Mật khẩu xác nhận không khớp!");
+            if (!acceptTerms) return toast.error("Bạn cần chấp nhận các điều khoản và chính sách!");
             return true;
       };
 
@@ -67,10 +62,9 @@ const RegisterPage = () => {
                         toast.error(res?.message || "Đăng ký thất bại");
                   }
             } catch (error) {
-                  console.error('Registration error:', error);
-                  const errorMessage = (error as AxiosError<{ message?: string }>).response?.data?.message ||
-                        (error as Error).message ||
-                        'Đăng ký thất bại!';
+                  const errorMessage = (error as AxiosError<{ message?: string }>)?.response?.data?.message
+                        || (error as Error).message
+                        || "Đăng ký thất bại!";
                   toast.error(errorMessage);
             } finally {
                   setLoading(false);
@@ -78,7 +72,7 @@ const RegisterPage = () => {
       };
 
       return (
-            <div className="w-full min-h-screen flex flex-col lg:flex-row">
+            <section className="bg-bannerRegister bg-cover bg-center bg-no-repeat w-full h-screen flex">
                   {isModalOtpOpen && (
                         <OtpModal
                               isModalOtpOpen={isModalOtpOpen}
@@ -87,20 +81,16 @@ const RegisterPage = () => {
                               description={`Vui lòng nhập mã xác thực được gửi đến ${email}`}
                         />
                   )}
-
-                  <div className="w-full lg:w-1/2 bg-gradient-to-b from-pink-500 to-pink-300 flex items-center justify-center p-6 sm:p-10">
-                        <Image
-                              src={Banner}
-                              className="w-full max-w-xs sm:max-w-sm md:max-w-md h-auto object-contain"
-                              about="banner"
-                              alt="Banner"
-                              priority
-                        />
+                  <div className="w-1/2 hidden lg:flex items-center justify-center px-8">
+                        <div className="w-full max-w-lg">
+                              <EmblaCarousel items={carouselItems} showButtons={false} disableShadow={true} hideText={true} autoplayInterval={2500} showDots aspectRatioClass="h-[80vh]" />
+                        </div>
                   </div>
 
-                  <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-10 bg-gray-100">
-                        <div className="w-full max-w-sm sm:max-w-md md:max-w-xl space-y-6">
-                              <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 text-center">Tạo tài khoản NovelNest</h2>
+
+                  <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-10">
+                        <div className="w-full max-w-sm sm:max-w-md md:max-w-lg space-y-6">
+                              <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 text-center">Tạo tài khoản</h2>
 
                               <div className="flex flex-col sm:flex-row gap-4">
                                     <TextField
@@ -197,7 +187,8 @@ const RegisterPage = () => {
                               </p>
                         </div>
                   </div>
-            </div>
+            </section>
+
       );
 };
 

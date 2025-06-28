@@ -11,6 +11,11 @@ import { signIn, useSession } from "next-auth/react"
 import { FaGithub, FaEye, FaEyeSlash } from "react-icons/fa"
 import { FcGoogle } from "react-icons/fc"
 import { AxiosError } from "axios"
+import book1_abstract from '@/public/assets/book1_abstract.webp';
+import colorful1_abstract from '@/public/assets/colorful1_abstract.webp';
+import human_abstract from '@/public/assets/human_abstract.webp';
+import ufo_abstract from '@/public/assets/ufo_abstract.webp';
+import Image from "next/image"
 
 const LoginPage = () => {
       const [email, setEmail] = useState("")
@@ -99,16 +104,35 @@ const LoginPage = () => {
       }
 
       return (
-            <div className="min-h-screen w-full flex flex-col lg:flex-row">
-                  {/* Left: Branding */}
-                  <div className="lg:basis-1/2 w-full bg-gradient-to-b from-blue-500 to-blue-300 flex flex-col items-center justify-center px-6 py-12 sm:p-12 text-center">
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white drop-shadow-md">NovelNest</h1>
-                        <p className="text-base sm:text-lg text-white mt-4">Nơi khơi dậy niềm cảm hứng đọc sách</p>
+            <section className="bg-bannerLogin bg-repeat bg-cover bg-bottom w-full h-screen relative overflow-hidden">
+                  <div className="absolute inset-0">
+                        <Image
+                              src={human_abstract}
+                              alt="Abstract Human"
+                              className="absolute top-5 -left-3 w-[200px] h-auto object-contain z-10 opacity-80 hidden sm:block"
+                        />
+
+                        <Image
+                              src={colorful1_abstract}
+                              alt="Colorful Abstract 1"
+                              className="absolute bottom-8 left-60 w-[120px] h-auto object-contain z-15 opacity-75 hidden sm:block"
+                        />
+
+                        <Image
+                              src={book1_abstract}
+                              alt="Book Abstract"
+                              className="absolute top-60 right-4 -translate-y-1/2 w-[150px] h-auto object-contain z-25 rotate-12 hidden sm:block"
+                        />
+
+                        <Image
+                              src={ufo_abstract}
+                              alt="UFO Abstract"
+                              className="absolute bottom-5 right-32 w-[150px] h-auto object-contain z-30 opacity-85 hidden sm:block"
+                        />
                   </div>
 
-                  {/* Right: Login Form */}
-                  <div className="lg:basis-1/2 w-full bg-gray-100 flex flex-col items-center justify-center px-6 py-10 sm:py-14">
-                        <div className="w-full max-w-sm">
+                  <div className="relative z-40 w-full h-full flex items-center justify-center p-4">
+                        <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-lg shadow-xl px-10 py-10 sm:py-14">
                               <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 text-center mb-8">Đăng nhập</h2>
 
                               <div className="space-y-5">
@@ -121,6 +145,7 @@ const LoginPage = () => {
                                           InputProps={{ style: { borderRadius: 8 } }}
                                           size="small"
                                     />
+
                                     <TextField
                                           label="Mật khẩu"
                                           type={showPassword ? "text" : "password"}
@@ -159,28 +184,26 @@ const LoginPage = () => {
                                     </Button>
                               </div>
 
-                              {/* Divider */}
                               <div className="my-6 text-center text-sm text-gray-500">Hoặc đăng nhập bằng</div>
 
-                              {/* Social Login */}
                               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                     <button
                                           onClick={() => handleSocialAuth("google")}
-                                          className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 text-gray-700 w-full text-sm"
+                                          className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 text-gray-700 w-full text-sm transition-colors"
                                           disabled={status === "loading"}
                                     >
                                           <FcGoogle className="mr-2" /> Google
                                     </button>
+
                                     <button
                                           onClick={() => handleSocialAuth("github")}
-                                          className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 text-gray-700 w-full text-sm"
+                                          className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 text-gray-700 w-full text-sm transition-colors"
                                           disabled={status === "loading"}
                                     >
                                           <FaGithub className="mr-2" /> GitHub
                                     </button>
                               </div>
 
-                              {/* Register Link */}
                               <p className="mt-8 text-sm text-gray-600 text-center">
                                     Chưa có tài khoản?{" "}
                                     <Link href="/register" className="text-blue-500 hover:underline">
@@ -189,7 +212,7 @@ const LoginPage = () => {
                               </p>
                         </div>
                   </div>
-            </div>
+            </section>
       )
 }
 

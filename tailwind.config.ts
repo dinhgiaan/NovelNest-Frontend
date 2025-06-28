@@ -32,7 +32,8 @@ const config: Config = {
         'typing-loop': 'typing 3.5s steps(40, end) infinite',
       },
       backgroundImage: {
-        bannerImg: "url('/background_login2.jpg')",
+        bannerLogin: "url('/assets/background_login.webp')",
+        bannerRegister: "url('/assets/background_register.webp')",
       }
     },
   },
