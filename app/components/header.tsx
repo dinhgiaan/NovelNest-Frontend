@@ -2,9 +2,9 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useContext, useMemo, useState, useEffect } from "react"
-import Image from "next/image"
-import avatar from "../public/avatar_default.png"
-import logo from "@/app/public/logo.webp"
+import Image from "next/image";
+import avatar from "@/public/assets/avatar_default.png";
+import logo from "@/public/assets/logo.webp"
 import ThemeSwitch from "./theme.switch"
 import { signOut, useSession } from "next-auth/react"
 import { AuthContext } from "../context/auth.context"

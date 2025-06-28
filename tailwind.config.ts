@@ -30,6 +30,9 @@ const config: Config = {
         'gentle-float-swing': 'gentle-float-swing 3s ease-in-out infinite',
         'typing': 'typing 3.5s steps(40, end), blink .75s step-end infinite',
         'typing-loop': 'typing 3.5s steps(40, end) infinite',
+      },
+      backgroundImage: {
+        bannerImg: "url('/background_login2.jpg')",
       }
     },
   },

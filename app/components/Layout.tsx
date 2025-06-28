@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import banner from '../public/banner-homepage.webp';
+import banner from '@/public/assets/banner-homepage.webp';
 import Services from './home/services';
 import CarouselGeneBooks from './home/discover.books';
 import BestSeller from './home/best.seller';
