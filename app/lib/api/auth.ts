@@ -34,6 +34,10 @@ interface IVerifyOtp {
       };
 }
 
+interface IResendOtp {
+      email: string
+}
+
 const loginAPI = async ({ email, password }: ILoginData) => {
       const BACKEND_URL = '/api/v1/auth/login';
       const data = {
@@ -72,4 +76,13 @@ const verifyAPI = async (code: IVerifyOtp): Promise<IApiResponse> => {
       }
 }
 
-export { loginAPI, socialAPI, registerAPI, verifyAPI }
+const resendOtpAPI = async (email: IResendOtp) => {
+      try {
+            const BACKEND_URL = '/api/v1/auth/resend-otp';
+            return await axios.post(BACKEND_URL, email);
+      } catch (error) {
+            throw error
+      }
+}
+
+export { loginAPI, socialAPI, registerAPI, verifyAPI, resendOtpAPI }
