@@ -8,9 +8,6 @@ interface User {
       email: string;
       name: string;
       role: string;
-      phone: string;
-      address: string;
-      avatar: string;
 }
 
 export interface AuthContextType {
@@ -33,9 +30,6 @@ export const AuthContext = createContext<{
                   email: '',
                   name: '',
                   role: '',
-                  phone: '',
-                  address: '',
-                  avatar: ''
             }
       },
       setUserInfo: () => { }
@@ -49,9 +43,6 @@ export const AuthWrapper: React.FC<AuthProviderProps> = ({ children }) => {
                   email: '',
                   name: '',
                   role: '',
-                  phone: '',
-                  address: '',
-                  avatar: ''
             }
       });
 
@@ -67,9 +58,6 @@ export const AuthWrapper: React.FC<AuthProviderProps> = ({ children }) => {
                                     email: res.data.email,
                                     name: res.data.name,
                                     role: res.data.role,
-                                    phone: res.data.phone,
-                                    address: res.data.address,
-                                    avatar: res.data.avatar
                               }
                         };
                         setUserInfo(userData);
@@ -84,9 +72,6 @@ export const AuthWrapper: React.FC<AuthProviderProps> = ({ children }) => {
                               email: '',
                               name: '',
                               role: '',
-                              phone: '',
-                              address: '',
-                              avatar: ''
                         }
                   });
             }

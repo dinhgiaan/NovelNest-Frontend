@@ -16,7 +16,7 @@ const LoginPage = () => {
       const [email, setEmail] = useState("")
       const [password, setPassword] = useState("")
       const [loading, setLoading] = useState(false)
-      const { userInfo, setUserInfo } = useContext(AuthContext)
+      const { setUserInfo } = useContext(AuthContext)
       const [showPassword, setShowPassword] = useState(false)
       const { data: session, status } = useSession()
 
@@ -30,10 +30,7 @@ const LoginPage = () => {
                               _id: session.user.userData._id,
                               email: session.user.userData.email,
                               name: session.user.userData.name,
-                              role: session.user.userData.role,
-                              phone: session.user.userData.phone,
-                              address: session.user.userData.address,
-                              avatar: session.user.userData.avatar,
+                              role: session.user.userData.role
                         },
                   })
 

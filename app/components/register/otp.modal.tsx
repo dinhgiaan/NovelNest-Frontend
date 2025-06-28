@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { verifyAPI } from "@/app/lib/api/auth"
+import { resendOtpAPI, verifyAPI } from "@/app/lib/api/auth"
 import toast from "react-hot-toast"
 
 interface OtpModalProps {
@@ -20,9 +20,8 @@ const OtpModal = ({
       setIsModalOtpOpen,
       title = "Xác thực OTP",
       description = "Nhập mã xác thực đã được gửi đến email của bạn",
-      length = 4,
-      email,
-      onResend,
+      length = 6,
+      email
 }: OtpModalProps) => {
       const [otp, setOtp] = useState<string[]>(Array(length).fill(""))
       const [isLoading, setIsLoading] = useState(false)
@@ -112,15 +111,20 @@ const OtpModal = ({
             setError("")
 
             try {
-                  if (onResend) await onResend()
-                  toast.success("Mã OTP mới đã được gửi!")
-                  setTimer(90)
-                  setOtp(Array(length).fill(""))
-                  setTimeout(() => inputRefs.current[0]?.focus(), 100)
-            } catch {
-                  setError("Không thể gửi lại mã OTP. Vui lòng thử lại.")
-            } finally {
-                  setIsResending(false)
+                  const res = await resendOtpAPI({ email });
+
+                  if (res?.data?.success) {
+                        toast.success(res.data.message);
+                        setTimer(90);
+                        setOtp(Array(length).fill(""));
+                        setTimeout(() => inputRefs.current[0]?.focus(), 100);
+                  } else {
+                        toast.error(res.data.message); // ✅ đây là lỗi nghiệp vụ, không phải lỗi hệ thống
+                  }
+            } catch (err: any) {
+                  const msg =
+                        err?.response?.data?.message || "Đã có lỗi xảy ra khi gửi lại mã OTP.";
+                  toast.error(msg);
             }
       }
 

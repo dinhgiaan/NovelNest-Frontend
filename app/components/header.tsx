@@ -51,10 +51,7 @@ const Header = () => {
                               _id: session.user.userData._id,
                               name: session.user.userData.name,
                               email: session.user.userData.email,
-                              avatar: session.user.userData.avatar,
                               role: session.user.userData.role,
-                              phone: session.user.userData.phone,
-                              address: session.user.userData.address,
                         },
                   })
 
@@ -104,7 +101,7 @@ const Header = () => {
       }
 
       const handleLogout = async () => {
-            if (isLoggingOut) return // Prevent multiple logout attempts
+            if (isLoggingOut) return
 
             try {
                   setIsLoggingOut(true)
@@ -202,7 +199,7 @@ const Header = () => {
                               >
                                     {isAuthenticated && displayUser ? (
                                           <Avatar
-                                                src={displayUser.avatar || avatar.src}
+                                                src={avatar.src}
                                                 sx={{
                                                       width: 28,
                                                       height: 28,
@@ -257,7 +254,7 @@ const Header = () => {
                                                 <Box sx={{ px: 2, py: 1.5, borderBottom: 1, borderColor: 'divider' }}>
                                                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
                                                             <Avatar
-                                                                  src={displayUser.avatar || avatar.src}
+                                                                  src={avatar.src}
                                                                   sx={{ width: 32, height: 32, mr: 1.5 }}
                                                             >
                                                                   {displayUser.name?.[0] || displayUser.email?.[0]}
