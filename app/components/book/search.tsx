@@ -155,7 +155,7 @@ export default function SearchBar() {
                                                                   />
                                                             ) : (
                                                                   <div className="w-full h-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center rounded">
-                                                                        <span className="text-xs text-gray-500 dark:text-gray-400">No image</span>
+                                                                        <span className="text-xs text-gray-300 dark:text-gray-400">No image</span>
                                                                   </div>
                                                             )}
                                                       </div>
@@ -181,7 +181,7 @@ export default function SearchBar() {
                                           ))}
                                     </div>
                               ) : (
-                                    <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                                    <div className="p-4 text-center text-gray-300 dark:text-gray-400">
                                           <div className="text-2xl mb-2">🧐</div>
                                           <div className="text-sm">Không tìm thấy sách phù hợp</div>
                                     </div>

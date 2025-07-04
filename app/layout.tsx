@@ -2,10 +2,11 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "./provider";
 import SessionWrapper from "./components/session.wrapper";
-import ScrollToTop from "./utils/scroll-to-top";
 import { Toaster } from "react-hot-toast";
 import { AuthWrapper } from "./context/auth.context";
 import ConditionalLayout from "./components/conditional.layout";
+import Cart from "./components/cart/cart";
+import FloatingActionMenu from "./utils/arc.menu";
 
 const myFontCustom = localFont({
   src: "./fonts/Merienda-VariableFont_wght.ttf",
@@ -26,9 +27,10 @@ export default function RootLayout({
         >
           <AuthWrapper>
             <Providers>
+              <Cart />
               <ConditionalLayout>{children}</ConditionalLayout>
               <Toaster position="top-center" reverseOrder={false} toastOptions={{ className: 'text-xs mt-3' }} />
-              <ScrollToTop />
+              <FloatingActionMenu />
             </Providers>
           </AuthWrapper>
         </body>

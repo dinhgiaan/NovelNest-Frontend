@@ -81,3 +81,21 @@ body {
     scrollbar-color: #666 #2d2d2d;
   }
 }
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.will-change-transform {
+  will-change: transform;
+}
+
+/* Tối ưu cho scroll performance */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Tối ưu cho transitions */
+.transition-all {
+  transition-property: transform, opacity, box-shadow;
+}

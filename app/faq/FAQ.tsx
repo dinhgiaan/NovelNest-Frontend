@@ -8,7 +8,7 @@ interface IProps {
 const FAQPage = ({ faqData }: IProps) => {
 
       return (
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+            <div className="min-h-screen bg-gradient-to-b from-stone-100 to-green-50 dark:from-[#233b57] dark:to-[#1a2a3e] lg:pt-24 pt-24">
                   <div className="max-w-4xl mx-auto p-6">
                         <h1 className="text-2xl font-bold text-center mb-20 text-gray-800 dark:text-gray-100">
                               Những Câu Hỏi Thường Gặp

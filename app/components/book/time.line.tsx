@@ -42,7 +42,7 @@ const PurchaseTimeline = ({ book }: IProps) => {
                                     )}
                                     <p
                                           className={`text-sm font-medium mt-2 text-center w-full px-2
-              ${currentStep === step.id ? 'text-[#54d7ff]' : currentStep > step.id ? 'text-green-500' : 'text-gray-500'}`}
+              ${currentStep === step.id ? 'text-[#54d7ff]' : currentStep > step.id ? 'text-green-500' : 'text-gray-300'}`}
                                     >
                                           {step.label}
                                     </p>

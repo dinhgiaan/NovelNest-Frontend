@@ -10,7 +10,7 @@ import Link from "next/link"
 import { signIn, useSession } from "next-auth/react"
 import { FaGithub, FaEye, FaEyeSlash } from "react-icons/fa"
 import { FcGoogle } from "react-icons/fc"
-import { AxiosError } from "axios"
+import axios, { AxiosError } from "axios"
 import book1_abstract from '@/public/assets/book1_abstract.webp';
 import colorful1_abstract from '@/public/assets/colorful1_abstract.webp';
 import human_abstract from '@/public/assets/human_abstract.webp';
@@ -55,31 +55,75 @@ const LoginPage = () => {
 
       const handleLogin = async () => {
             try {
-                  setLoading(true)
-                  const res = await loginAPI({ email, password })
-                  if (res?.data?.success === true) {
-                        localStorage.setItem("access_token", res?.data?.access_token)
-                        toast.success(`Chào mừng ${res?.data?.user?.name} trở lại NovelNest`, { className: "text-xs" })
+                  setLoading(true);
+                  console.log('Starting login process...');
 
-                        setUserInfo({
+                  const res = await loginAPI({ email, password });
+                  console.log('Login API response:', res);
+
+                  if (res?.success === true) {
+                        console.log('Login successful, processing response...');
+
+                        // Kiểm tra response có đầy đủ thông tin không
+                        if (!res.access_token || !res.refresh_token || !res.user) {
+                              console.error('Incomplete login response:', res);
+                              toast.error("Phản hồi đăng nhập không đầy đủ!");
+                              return;
+                        }
+
+                        // Lưu tokens TRƯỚC
+                        localStorage.setItem("access_token", res.access_token);
+                        localStorage.setItem("refresh_token", res.refresh_token);
+                        console.log('Tokens saved to localStorage');
+
+                        // Tạo user info object
+                        const userInfo = {
                               isAuthenticated: true,
                               user: {
-                                    _id: res?.data?.user?._id,
-                                    email: res?.data?.user?.email,
-                                    name: res?.data?.user?.name,
-                                    role: res?.data?.user?.role,
+                                    _id: res.user._id,
+                                    email: res.user.email,
+                                    name: res.user.name,
+                                    role: res.user.role,
                               },
-                        })
-                        navigate.push("/")
+                        };
+
+                        // Cập nhật context
+                        setUserInfo(userInfo);
+
+                        // Lưu user info
+                        localStorage.setItem("user_info", JSON.stringify(userInfo));
+                        console.log('User info saved to localStorage and context updated');
+
+                        toast.success(`Chào mừng ${res.user.name} trở lại NovelNest`, {
+                              className: "text-xs"
+                        });
+
+                        console.log('About to navigate to home page...');
+
+                        // Delay nhỏ để đảm bảo state được cập nhật
+                        setTimeout(() => {
+                              navigate.push("/");
+                        }, 100);
+
                   } else {
-                        toast.error(res?.data?.message)
+                        console.log('Login failed:', res?.message);
+                        toast.error(res?.message || "Đăng nhập thất bại!");
                   }
-                  setLoading(false)
             } catch (error) {
-                  toast.error(error?.response?.data?.message || "Đăng nhập thất bại!")
-                  setLoading(false)
+                  console.error('Login error:', error);
+
+                  if (axios.isAxiosError(error)) {
+                        const serverMessage = error.response?.data?.message;
+                        console.error('Server error:', serverMessage);
+                        toast.error(serverMessage || "Đăng nhập thất bại!");
+                  } else {
+                        console.error('Unknown error:', error);
+                        toast.error("Có lỗi không xác định xảy ra!");
+                  }
+            } finally {
+                  setLoading(false);
             }
-      }
+      };
 
       const handleSocialAuth = async (provider: string) => {
             try {
@@ -181,7 +225,7 @@ const LoginPage = () => {
                                     </Button>
                               </div>
 
-                              <div className="my-6 text-center text-sm text-gray-500">Hoặc đăng nhập bằng</div>
+                              <div className="my-6 text-center text-sm text-gray-300">Hoặc đăng nhập bằng</div>
 
                               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                     <button

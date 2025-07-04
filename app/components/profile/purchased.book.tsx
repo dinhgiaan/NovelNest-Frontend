@@ -1,132 +1,106 @@
-import type { AuthContextType } from "@/app/context/auth.context"
-import Image from "next/image"
-import { Grid, Typography, Card, CardContent, Rating } from "@mui/material"
-import { GiBookmarklet } from "react-icons/gi"
-import useSWR from "swr"
-import ErrorAPI from "../error.api"
-import Loading from "@/app/utils/loading"
+'use client'
 
-interface IProps {
-      userInfo: AuthContextType
-}
+import { BookOpen, Search } from 'lucide-react'
+import { useState } from 'react'
+import useSWR from 'swr'
+import { userService } from '@/app/lib/api/user'
+import Loading from '@/app/utils/loading'
+import ErrorAPI from '../error.api'
+import BookCard from '../book.card'
 
-const PurchasedBook = ({ userInfo }: IProps) => {
-      const _id = userInfo.user?._id
+const PurchasedBooksPage = () => {
+      const [searchTerm, setSearchTerm] = useState('')
+      const { data, error, isLoading } = useSWR('/api/purchased-books', fetcher)
 
-      const fetcher = (url: string) => fetch(url).then((res) => res.json())
-      const { data, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_PURCHASED_BOOK_BY_ID}/${_id}`, fetcher, {
-            revalidateIfStale: true,
-            revalidateOnFocus: false,
-            revalidateOnReconnect: true,
-      })
+      const books: Book[] = data?.data || []
+      const total = data?.total || 0
 
-      const books = data?.data || []
+      const filteredBooks = books.filter((book) =>
+            [book.title, book.author].some((field) =>
+                  field.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+      )
 
       if (error) return <ErrorAPI />
       if (isLoading) return <Loading />
 
       return (
-            <div className="w-full">
-                  <div className="bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 w-full">
-                        <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-                              {/* Header */}
-                              <div className="mb-4 sm:mb-6">
-                                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                                          <div className="flex items-center gap-2">
-                                                <GiBookmarklet className="text-rose-500 flex-shrink-0" size={20} />
-                                                <Typography
-                                                      variant="h6"
-                                                      className="text-sm sm:text-base lg:text-lg font-semibold dark:text-white text-gray-800"
-                                                >
-                                                      Sách đã mua
-                                                </Typography>
-                                          </div>
-                                          <div className="inline-flex items-center px-3 py-1.5 bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-200 rounded-full text-xs sm:text-sm font-medium shadow-sm">
-                                                <span>Hiện đang sở hữu {data?.total || 0} cuốn sách</span>
-                                          </div>
-                                    </div>
-                              </div>
+            <div className="container mx-auto px-4 pb-10">
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+                        <button className="relative overflow-hidden rounded-lg px-24 py-5">
+                              <span className="absolute inset-px z-10 flex items-center justify-center rounded-lg bg-black bg-gradient-to-t from-neutral-800 text-neutral-300 text-base font-medium">
+                                    Đang sở hữu {total} cuốn
+                              </span>
+                              <span
+                                    aria-hidden
+                                    className="absolute inset-0 z-0 scale-x-[2] blur before:absolute before:inset-0 before:top-1/2 before:aspect-square before:animate-disco before:bg-gradient-conic before:from-purple-700 before:via-red-500 before:to-amber-400"
+                              />
+                        </button>
 
-                              {/* Books Grid */}
-                              <div className="border-l-2 sm:border-l-4 border-t-2 border-rose-300 dark:border-rose-600 p-2 sm:p-4 lg:p-6 rounded-tl-md bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm shadow-sm">
-                                    <Grid container spacing={{ xs: 2, sm: 3, lg: 4 }}>
-                                          {books.length > 0 ? (
-                                                books.map((book) => (
-                                                      <Grid item xs={6} sm={4} md={3} lg={2.4} xl={2} key={book._id}>
-                                                            <Card className="h-full flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:scale-105 group">
-                                                                  <div className="relative h-32 sm:h-40 lg:h-48 flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-700 p-1 sm:p-2">
-                                                                        <div className="transition-transform duration-300 group-hover:scale-110">
-                                                                              <Image
-                                                                                    src={book.thumbnail?.url || "/placeholder.svg"}
-                                                                                    alt={`Cover of ${book.title}`}
-                                                                                    width={140}
-                                                                                    height={170}
-                                                                                    className="object-contain max-h-full w-auto"
-                                                                              />
-                                                                        </div>
-                                                                  </div>
-                                                                  <CardContent className="p-2 sm:p-3 lg:p-4 flex-1 flex flex-col justify-between">
-                                                                        <div className="space-y-1 sm:space-y-2">
-                                                                              <Typography
-                                                                                    variant="subtitle1"
-                                                                                    className="font-semibold text-xs sm:text-sm lg:text-base line-clamp-2 dark:text-white text-gray-800 leading-tight"
-                                                                                    title={book.title}
-                                                                              >
-                                                                                    {book.title}
-                                                                              </Typography>
-                                                                              <Typography
-                                                                                    variant="body2"
-                                                                                    color="text.secondary"
-                                                                                    className="text-xs sm:text-sm line-clamp-1 dark:text-gray-300"
-                                                                                    title={book.author}
-                                                                              >
-                                                                                    {book.author}
-                                                                              </Typography>
-                                                                        </div>
-                                                                        <div className="mt-2">
-                                                                              <Rating
-                                                                                    value={book.rating || 0}
-                                                                                    readOnly
-                                                                                    size="small"
-                                                                                    sx={{
-                                                                                          fontSize: { xs: '0.75rem', sm: '1rem' }
-                                                                                    }}
-                                                                              />
-                                                                        </div>
-                                                                  </CardContent>
-                                                            </Card>
-                                                      </Grid>
-                                                ))
-                                          ) : (
-                                                <Grid item xs={12}>
-                                                      <div className="text-center py-8 sm:py-12 lg:py-16">
-                                                            <div className="flex flex-col items-center gap-3 sm:gap-4">
-                                                                  <GiBookmarklet className="text-gray-400 dark:text-gray-600" size={48} />
-                                                                  <div>
-                                                                        <Typography
-                                                                              variant="h6"
-                                                                              className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-400 mb-1"
-                                                                        >
-                                                                              Chưa có sách nào
-                                                                        </Typography>
-                                                                        <Typography
-                                                                              variant="body2"
-                                                                              color="text.secondary"
-                                                                              className="text-xs sm:text-sm dark:text-gray-500"
-                                                                        >
-                                                                              Bạn chưa mua cuốn sách nào. Hãy khám phá thư viện của chúng tôi!
-                                                                        </Typography>
-                                                                  </div>
-                                                            </div>
-                                                      </div>
-                                                </Grid>
-                                          )}
-                                    </Grid>
-                              </div>
+                        <div className="relative w-full md:w-80">
+                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                              <input
+                                    type="text"
+                                    placeholder="Tìm kiếm sách..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                              />
                         </div>
                   </div>
+
+                  {filteredBooks.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                              {filteredBooks.map((book) => (
+                                    <BookCard
+                                          key={book._id}
+                                          book={book}
+                                          variant="purchased"
+                                          showPrice={false}
+                                          showRating
+                                          showPurchaseDate
+                                          showActions
+                                    />
+                              ))}
+                        </div>
+                  ) : (
+                        <EmptyState searchTerm={searchTerm} />
+                  )}
             </div>
       )
 }
 
-export default PurchasedBook
+const EmptyState = ({ searchTerm }: { searchTerm: string }) => (
+      <div className="flex flex-col items-center justify-center text-center py-20">
+            <div className="w-20 h-20 rounded-full bg-indigo-100 dark:bg-indigo-900/20 flex items-center justify-center mb-4">
+                  <BookOpen className="w-10 h-10 text-indigo-500 dark:text-indigo-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {searchTerm ? 'Không tìm thấy kết quả' : 'Bạn chưa mua sách nào'}
+            </h3>
+            <p className="text-gray-300 dark:text-gray-400 max-w-xs">
+                  {searchTerm
+                        ? `Không có sách nào phù hợp với từ khoá "${searchTerm}"`
+                        : 'Khám phá thư viện sách của chúng tôi để bắt đầu hành trình đọc nhé!'}
+            </p>
+      </div>
+)
+
+async function fetcher() {
+      const response = await userService.purchasedBooks()
+      if (!response?.success) {
+            throw new Error('Failed to fetch purchased books')
+      }
+      return response.data
+}
+
+interface Book {
+      _id: string
+      title: string
+      author: string
+      thumbnail?: { url: string }
+      rating: number
+      purchaseDate: string
+}
+
+export default PurchasedBooksPage
