@@ -1,25 +1,30 @@
 'use client'
-import { lazy, Suspense } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import ErrorAPI from "../components/error.api"
 import Heading from "../utils/heading"
 import Loading from "../utils/loading"
 import useSWR from "swr"
+import { bookService } from "../lib/api/book"
+import { userService } from "../lib/api/user"
 
 const BookPage = lazy(() => import('./Book'));
 
 const Page = () => {
       const searchParams = useSearchParams();
+      const [isBookPurchased, setBookPurchased] = useState<boolean>();
 
-      // Lấy thông số trang từ URL hoặc sử dụng giá trị mặc định
       const page = searchParams.get("page") || "1";
       const limit = searchParams.get("limit") || "10";
 
-      // Tạo URL API với tham số trang
-      const apiUrl = `${process.env.NEXT_PUBLIC_BOOKS}?page=${page}&limit=${limit}`;
+      const fetcher = () => bookService.getAllBooks({
+            page: parseInt(page),
+            limit: parseInt(limit)
+      });
 
-      const fetcher = (url: string) => fetch(url).then((res) => res.json());
-      const { data, error, isLoading } = useSWR(apiUrl, fetcher,
+      const { data, error, isLoading } = useSWR(
+            `books-${page}-${limit}`,
+            fetcher,
             {
                   revalidateIfStale: false,
                   revalidateOnFocus: false,
@@ -41,7 +46,7 @@ const Page = () => {
                         <BookPage
                               data={data?.data || []}
                               pagination={data?.pagination || {
-                                    currentPage: 1,
+                                    currentPage: parseInt(page),
                                     totalPages: 1,
                                     totalResults: 0,
                                     resultsPerPage: parseInt(limit),

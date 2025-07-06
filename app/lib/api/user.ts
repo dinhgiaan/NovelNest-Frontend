@@ -1,58 +1,71 @@
 import axios from '../custom.api';
 import { IBaseAuthData } from "./auth";
 
-interface IUserData {
+// Types
+export interface IUserData {
       _id: string;
 }
 
-interface IUpdateData {
-      _id: string,
-      email: string,
-      name: string,
-      phone: string,
-      address: string
+export interface IUpdateUserData {
+      _id: string;
+      email: string;
+      name: string;
+      phone: string;
+      address: string;
 }
 
-interface IChangePasswordData extends IBaseAuthData {
+export interface IChangePasswordData extends IBaseAuthData {
       _id: string;
       newPassword: string;
       confirmNewPassword: string;
 }
 
+const BASE_URL = '/api/v1';
 
-const getInfo = async () => {
-      const BACKEND_URL = '/api/v1/get-info';
+export const userService = {
+      async getInfo() {
+            try {
+                  const response = await axios.get(`${BASE_URL}/get-info`);
+                  return response.data;
+            } catch (error) {
+                  throw new Error('Failed to get user info');
+            }
+      },
 
-      return await axios.get(BACKEND_URL);
-}
+      async changePassword(data: IChangePasswordData) {
+            const { _id, password, newPassword, confirmNewPassword } = data;
+            try {
+                  const response = await axios.put(`${BASE_URL}/change-password/${_id}`, {
+                        password,
+                        newPassword,
+                        confirmNewPassword
+                  });
+                  return response.data;
+            } catch (error) {
+                  throw new Error('Failed to change password');
+            }
+      },
 
-const getUserById = async ({ _id }: IUserData) => {
-      const BACKEND_URL = `/api/v1/users-by-id/${_id}`;
 
-      return await axios.get(BACKEND_URL);
-}
+      async updateUserInfo(data: {
+            name?: string;
+            phone?: string;
+            address?: string;
+      }) {
+            const BACKEND_URL = '/api/v1/update-info';
+            return await axios.put(BACKEND_URL, data);
+      },
 
-const changePasswordAPI = async ({ _id, password, newPassword, confirmNewPassword }: IChangePasswordData) => {
-      const BACKEND_URL = `/api/v1/change-password/${_id}`;
-      const data = {
-            password,
-            newPassword,
-            confirmNewPassword
-      };
-
-      return await axios.put(BACKEND_URL, data);
-}
-
-const updateUserInfo = async ({ _id, email, name, phone, address }: IUpdateData) => {
-      const BACKEND_URL = `/api/v1/update-info/${_id}`;
-      const data = {
-            email,
-            name,
-            phone,
-            address
-      };
-
-      return await axios.put(BACKEND_URL, data)
-}
-
-export { getInfo, getUserById, changePasswordAPI, updateUserInfo }
+      async purchasedBooks() {
+            try {
+                  const response = await axios.get(`${BASE_URL}/purchased-books`);
+                  return {
+                        success: true,
+                        data: response,
+                        total: response?.length || 0
+                  };
+            } catch (error: any) {
+                  throw new Error('Failed to get purchased books: ' + error.message);
+            }
+      }
+};

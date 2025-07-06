@@ -93,7 +93,7 @@ const BookPage = ({ data, pagination }: IProps) => {
 
                         <div className="flex flex-col lg:flex-row gap-4">
                               <div className={`
-                                    w-full lg:w-1/6 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md h-auto self-start
+                                    w-full lg:w-[180px] bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md h-auto self-start
                                     ${showMobileFilter ? 'block' : 'hidden lg:block'}
                                     lg:-ml-6
                               `}>

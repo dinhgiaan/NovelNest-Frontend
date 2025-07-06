@@ -99,18 +99,18 @@ const BookCard = ({
             if (!showPrice || !book.price) return null;
 
             return (
-                  <div className="mt-1">
+                  <div className="mt-2">
                         {book.discountPercent && book.discountPercent > 0 ? (
-                              <div className="flex flex-row justify-between">
+                              <div className="flex flex-col gap-1">
                                     <span className="text-gray-400 dark:text-gray-500 text-[10px] sm:text-xs line-through">
                                           {convertPriceToVND(book.price)}
                                     </span>
-                                    <span className="text-red-600 dark:text-red-400 text-xs sm:text-xs font-semibold">
+                                    <span className="text-red-600 dark:text-red-400 text-xs sm:text-sm font-semibold">
                                           {convertPriceToVND(discountedPrice!)}
                                     </span>
                               </div>
                         ) : (
-                              <span className="text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-semibold block">
+                              <span className="text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-semibold">
                                     {convertPriceToVND(book.price)}
                               </span>
                         )}
@@ -143,9 +143,9 @@ const BookCard = ({
             }
 
             return (
-                  <div className="flex items-center">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="ml-1 text-sm text-gray-600 dark:text-gray-300">
+                  <div className="flex items-center mt-1">
+                        <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="ml-1 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                               {book.rating.toFixed(1)}
                         </span>
                   </div>
@@ -192,8 +192,7 @@ const BookCard = ({
                                           size="sm"
                                           onClick={() => onBuyNow?.(book)}
                                     >
-                                          <ShoppingCart size={14} className="mr-1" />
-                                          Mua sách
+                                          Mua ngay
                                     </Button>
                               </div>
                         );
@@ -201,31 +200,33 @@ const BookCard = ({
                   default:
                         if (isPurchased) {
                               return (
-                                    <Link href={`/books/detail/${book.slug}`}>
-                                          <Button variant="green" size="sm" className="w-full mt-2">
-                                                Đọc sách
-                                          </Button>
-                                    </Link>
+                                    <div className="mt-auto">
+                                          <Link href={`/books/detail/${book.slug}`}>
+                                                <Button variant="green" size="sm" className="w-full">
+                                                      Đọc sách
+                                                </Button>
+                                          </Link>
+                                    </div>
                               );
                         }
 
                         return (
-                              <div className="flex gap-2 mt-2">
+                              <div className="flex gap-2 mt-auto w-full">
                                     <Button
                                           variant="blue"
                                           size="sm"
                                           onClick={() => onAddToCart?.(book)}
-                                          className="flex-1"
+                                          className="flex-1 flex items-center justify-center whitespace-nowrap"
                                     >
                                           <ShoppingCart className="w-3 h-3 mr-1" />
-                                          <span className="hidden sm:inline">Thêm vào giỏ</span>
+                                          <span className="hidden sm:inline">Thêm</span>
                                           <span className="sm:hidden">Giỏ</span>
                                     </Button>
                                     <Button
                                           variant="purple"
                                           size="sm"
                                           onClick={() => onBuyNow?.(book)}
-                                          className="flex-1"
+                                          className="flex-1 whitespace-nowrap"
                                     >
                                           Mua ngay
                                     </Button>
@@ -237,22 +238,24 @@ const BookCard = ({
       const getImageContainerStyles = () => {
             switch (variant) {
                   case 'purchased':
-                        return 'relative h-[15rem] w-full';
+                        return 'relative h-40 sm:h-48 w-full';
                   case 'detail':
-                        return 'relative h-[300px] w-[240px] mx-auto';
+                        return 'relative aspect-[3/4] w-full max-w-[280px] mx-auto';
                   default:
                         return 'relative aspect-[2/3] w-full';
             }
       };
 
       const getCardContainerStyles = () => {
+            const shimmerBase = "relative before:absolute before:inset-0 before:z-10 before:pointer-events-none before:opacity-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-100%] hover:before:opacity-100 hover:before:animate-[shimmer_1s_ease-in-out] hover:before:translate-x-[100%] dark:hover:before:via-white/10";
+
             switch (variant) {
                   case 'purchased':
-                        return 'group relative bg-white dark:bg-gray-800 rounded-sm shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-200 dark:border-gray-700 hover:ring-2 hover:ring-indigo-400';
+                        return `group relative bg-white dark:bg-gray-800 rounded-sm shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-200 dark:border-gray-700 ${shimmerBase}`;
                   case 'detail':
-                        return 'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden max-w-sm mx-auto';
+                        return 'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden max-w-xs mx-auto';
                   default:
-                        return 'group relative bg-white dark:bg-gray-800 rounded-md overflow-hidden shadow-md transition-shadow duration-200 hover:shadow-lg hover:ring-2 hover:ring-indigo-400';
+                        return `group relative bg-white dark:bg-gray-800 rounded-md overflow-hidden shadow-md transition-shadow duration-200 hover:shadow-lg flex flex-col ${shimmerBase}`;
             }
       };
 
@@ -268,13 +271,14 @@ const BookCard = ({
                                     src={optimizeCloudinaryUrl(book?.thumbnail?.url || '/placeholder-book.jpg')}
                                     alt={book.title}
                                     fill
-                                    className="object-cover"
+                                    className="object-cover rounded-t-lg"
                                     priority
-                                    quality={80}
+                                    quality={85}
+                                    sizes="(max-width: 640px) 90vw, (max-width: 768px) 60vw, 280px"
                               />
                         </div>
                   ) : (
-                        <Link href={`/books/detail/${book.slug}`}>
+                        <Link href={`/books/detail/${book.slug}`} className="block">
                               <div className={`${getImageContainerStyles()} overflow-hidden bg-gray-100 dark:bg-gray-700`}>
                                     {renderDiscountBadge()}
 
@@ -282,7 +286,7 @@ const BookCard = ({
                                           src={optimizeCloudinaryUrl(book?.thumbnail?.url || '/placeholder-book.jpg')}
                                           alt={book.title}
                                           fill
-                                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                          className="object-cover"
                                           loading="lazy"
                                           sizes="(max-width: 640px) 45vw, (max-width: 768px) 30vw, (max-width: 1024px) 23vw, (max-width: 1280px) 18vw, 15vw"
                                     />
@@ -292,26 +296,30 @@ const BookCard = ({
                         </Link>
                   )}
 
-                  <div className={variant === 'detail' ? 'p-4' : 'p-2 sm:p-3'}>
+                  <div className={`${variant === 'detail' ? 'p-4' : 'p-3'} flex flex-col flex-1`}>
                         {renderPurchaseDate()}
 
                         <h3 className={`font-medium text-gray-900 dark:text-white leading-tight ${variant === 'detail'
                               ? 'text-lg mb-2'
-                              : 'text-xs sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis'
+                              : 'text-xs sm:text-sm mb-1'
                               }`} title={book.title}>
-                              {book.title}
+                              <span className="line-clamp-2">{book.title}</span>
                         </h3>
 
-                        <p className={`text-gray-600 dark:text-gray-300 line-clamp-1 italic mt-1 ${variant === 'detail' ? 'text-sm' : 'text-[10px] sm:text-xs'
+                        <p className={`text-gray-600 dark:text-gray-300 italic mb-1 ${variant === 'detail' ? 'text-sm' : 'text-[10px] sm:text-xs'
                               }`}>
-                              {book.author}
+                              <span className="line-clamp-1">{book.author}</span>
                         </p>
 
                         {renderPrice()}
 
                         {renderRating()}
 
-                        {variant !== 'purchased' && renderActions()}
+                        {variant !== 'purchased' && (
+                              <div className="mt-auto pt-2">
+                                    {renderActions()}
+                              </div>
+                        )}
                   </div>
             </div>
       );

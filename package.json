@@ -15,6 +15,7 @@
     "@payos/payos-checkout": "1.0.8",
     "axios": "1.7.9",
     "embla-carousel-react": "8.5.1",
+    "lucide-react": "^0.525.0",
     "next": "14.2.21",
     "next-auth": "4.24.11",
     "next-themes": "0.4.4",
@@ -22,9 +23,9 @@
     "react-dom": "18",
     "react-hot-toast": "2.5.1",
     "react-icons": "5.4.0",
-    "react-parallax-tilt": "1.7.287",
     "react-reader": "2.0.13",
-    "swr": "2.3.0"
+    "swr": "2.3.0",
+    "zustand": "5.0.6"
   },
   "devDependencies": {
     "@types/node": "20",

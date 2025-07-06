@@ -18,7 +18,6 @@ interface CartStore {
       items: CartItem[]
       isOpen: boolean
 
-      // Actions
       addToCart: (book: Omit<CartItem, 'quantity'>) => void
       removeFromCart: (bookId: string) => void
       updateQuantity: (bookId: string, quantity: number) => void
@@ -26,7 +25,6 @@ interface CartStore {
       toggleCart: () => void
       closeCart: () => void
 
-      // Computed
       getTotalItems: () => number
       getTotalAmount: () => number
       getCartItem: (bookId: string) => CartItem | undefined
@@ -39,71 +37,96 @@ export const useCartStore = create<CartStore>()(
                   isOpen: false,
 
                   addToCart: (book) => {
-                        const { items } = get()
-                        const existingItem = items.find(item => item.bookId === book.bookId)
+                        set((state) => {
+                              const existingItem = state.items.find(item => item.bookId === book.bookId)
 
-                        if (existingItem) {
-                              set({
-                                    items: items.map(item =>
-                                          item.bookId === book.bookId
-                                                ? { ...item, quantity: item.quantity + 1 }
-                                                : item
-                                    )
-                              })
-                        } else {
-                              set({
-                                    items: [...items, { ...book, quantity: 1 }]
-                              })
-                        }
-                  },
-
-                  removeFromCart: (bookId) => {
-                        set({
-                              items: get().items.filter(item => item.bookId !== bookId)
+                              if (existingItem) {
+                                    return {
+                                          ...state,
+                                          items: state.items.map(item =>
+                                                item.bookId === book.bookId
+                                                      ? { ...item, quantity: item.quantity + 1 }
+                                                      : item
+                                          )
+                                    }
+                              } else {
+                                    return {
+                                          ...state,
+                                          items: [...state.items, { ...book, quantity: 1 }]
+                                    }
+                              }
                         })
                   },
 
-                  updateQuantity: (bookId, quantity) => {
-                        if (quantity <= 0) {
-                              get().removeFromCart(bookId)
-                              return
-                        }
+                  removeFromCart: (bookId) => {
+                        set((state) => ({
+                              ...state,
+                              items: state.items.filter(item => item.bookId !== bookId)
+                        }))
+                  },
 
-                        set({
-                              items: get().items.map(item =>
-                                    item.bookId === bookId
-                                          ? { ...item, quantity }
-                                          : item
-                              )
+                  updateQuantity: (bookId, quantity) => {
+                        set((state) => {
+                              if (quantity <= 0) {
+                                    return {
+                                          ...state,
+                                          items: state.items.filter(item => item.bookId !== bookId)
+                                    }
+                              }
+
+                              return {
+                                    ...state,
+                                    items: state.items.map(item =>
+                                          item.bookId === bookId
+                                                ? { ...item, quantity }
+                                                : item
+                                    )
+                              }
                         })
                   },
 
                   clearCart: () => {
-                        set({ items: [] })
+                        set((state) => ({
+                              ...state,
+                              items: []
+                        }))
                   },
 
                   toggleCart: () => {
-                        set({ isOpen: !get().isOpen })
+                        set((state) => ({
+                              ...state,
+                              isOpen: !state.isOpen
+                        }))
                   },
 
                   closeCart: () => {
-                        set({ isOpen: false })
+                        set((state) => ({
+                              ...state,
+                              isOpen: false
+                        }))
                   },
 
                   getTotalItems: () => {
-                        return get().items.reduce((total, item) => total + item.quantity, 0)
+                        const state = get()
+                        return state.items.reduce((total, item) => total + item.quantity, 0)
                   },
 
                   getTotalAmount: () => {
-                        return get().items.reduce((total, item) => total + (item.price * item.quantity), 0)
+                        const state = get()
+                        return state.items.reduce((total, item) => total + (item.price * item.quantity), 0)
                   },
 
                   getCartItem: (bookId) => {
-                        return get().items.find(item => item.bookId === bookId)
+                        const state = get()
+                        return state.items.find(item => item.bookId === bookId)
                   }
             }),
             {
                   name: 'cart-storage',
+                  partialize: (state) => ({
+                        items: state.items,
+                        isOpen: state.isOpen
+                  })
             }
       )
 )
