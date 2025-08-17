@@ -2,6 +2,8 @@ import Layout from "./components/layout/Layout";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://novelnest.tech"),
+
   // Basic
   title: 'NovelNest',
   description: 'NovelNest - nơi lựa chọn tốt nhất cho việc đọc sách của bạn. Khám phá hàng nghìn đầu sách hay.',

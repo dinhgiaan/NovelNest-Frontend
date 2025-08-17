@@ -9,7 +9,7 @@ declare module 'react-reader' {
             tocChanged?: (toc: unknown[]) => void
             epubInitOptions?: unknown
             epubOptions?: unknown
-            getRendition?: (rendition: unknown) => void
+            getRendition?: (rendition: Rendition) => void
             handleKeyPress?: boolean
             handleTextSelected?: (cfiRange: string, contents: unknown) => void
             loadingView?: ReactNode
