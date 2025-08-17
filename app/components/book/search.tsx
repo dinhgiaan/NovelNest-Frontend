@@ -8,18 +8,7 @@ import axios from 'axios';
 import { CircularProgress } from '@mui/material';
 import { Search } from 'lucide-react';
 
-// interface Book {
-//       _id: string;
-//       slug: string;
-//       title: string;
-//       author: string;
-//       rating: number;
-//       thumbnail: {
-//             url: string;
-//       };
-// }
-
-const API_URL = 'http://localhost:8888/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_BASE_API_URL_2;
 
 const SearchBar = () => {
       const [searchQuery, setSearchQuery] = useState('');

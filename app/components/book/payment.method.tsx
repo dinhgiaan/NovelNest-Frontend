@@ -251,8 +251,14 @@ const PaymentMethod = ({ book, fromCart = false }: IProps) => {
                         };
                   }
 
+                  const paymentSuccessUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS
+                  if (!paymentSuccessUrl) {
+                        toast.error('Lỗi cấu hình: Không tìm thấy URL thanh toán thành công')
+                        return
+                  }
+
                   const response = await fetch(
-                        "http://localhost:8888/api/v1/payments/create-embedded-payment-link",
+                        paymentSuccessUrl,
                         {
                               method: "POST",
                               headers: { 'Content-Type': 'application/json' },
