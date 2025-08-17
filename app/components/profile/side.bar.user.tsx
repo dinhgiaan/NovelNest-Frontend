@@ -1,6 +1,6 @@
 "use client"
 
-import { User, Lock, Book, History, LogOut, Bell, TicketIcon, Heart, MessageCircle, LucideIcon } from "lucide-react"
+import { User, Book, History, TicketIcon, Heart, LucideIcon } from "lucide-react"
 import { useCallback, useEffect, useRef } from "react"
 
 interface IProps {
@@ -19,20 +19,15 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
       { id: 0, label: "Thông tin chung", icon: User, description: "Quản lý thông tin cá nhân" },
-      { id: 1, label: "Đổi mật khẩu", icon: Lock, description: "Bảo mật tài khoản" },
-      { id: 2, label: "Sách đã mua", icon: Book, description: "Thư viện cá nhân" },
-      { id: 3, label: "Danh sách yêu thích", icon: Heart, description: "Sách yêu thích" },
-      { id: 4, label: "Phiếu hỗ trợ", icon: TicketIcon, description: "Giải đáp thắc mắc" },
-      { id: 5, label: "Lịch sử đơn hàng", icon: History, description: "Những sách đã mua" },
-      { id: 6, label: "Thông báo", icon: Bell, description: "Về những đơn hàng, phiếu" },
-      { id: 7, label: "Chat", icon: MessageCircle, description: "Hỏi đáp hỗ trợ" },
-      { id: 8, label: "Đăng xuất", icon: LogOut, description: "Thoát khỏi tài khoản", isAction: true },
+      { id: 1, label: "Sách đã mua", icon: Book, description: "Thư viện cá nhân" },
+      { id: 2, label: "Danh sách yêu thích", icon: Heart, description: "Sách yêu thích" },
+      { id: 3, label: "Phiếu hỗ trợ", icon: TicketIcon, description: "Giải đáp thắc mắc, lỗi" },
+      { id: 4, label: "Lịch sử đơn hàng", icon: History, description: "Những sách đã mua" }
 ]
 
 const SideBarUser = ({ active, setActive, scrollToSection }: IProps) => {
       const activeRef = useRef<HTMLButtonElement>(null)
 
-      // Smooth scroll to active item
       const scrollToActive = useCallback(() => {
             if (activeRef.current) {
                   activeRef.current.scrollIntoView({
@@ -43,25 +38,20 @@ const SideBarUser = ({ active, setActive, scrollToSection }: IProps) => {
             }
       }, [])
 
-      // Handle item click with smooth scroll
       const handleItemClick = useCallback((itemId: number) => {
             setActive(itemId)
 
-            // Scroll to corresponding section if callback provided
             if (scrollToSection) {
                   scrollToSection(itemId)
             }
 
-            // Small delay to ensure state update, then scroll to active item
             setTimeout(scrollToActive, 100)
       }, [setActive, scrollToSection, scrollToActive])
 
-      // Auto scroll to active item when active changes
       useEffect(() => {
             scrollToActive()
       }, [active, scrollToActive])
 
-      // Memoized menu item component
       const MenuItem = useCallback(({ item, isMobile }: { item: MenuItem; isMobile: boolean }) => {
             const IconComponent = item.icon
             const isActive = active === item.id
@@ -132,4 +122,4 @@ const SideBarUser = ({ active, setActive, scrollToSection }: IProps) => {
       )
 }
 
-export default SideBarUser
+export default SideBarUser;

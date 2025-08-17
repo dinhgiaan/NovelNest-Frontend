@@ -1,12 +1,12 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "./provider";
-import SessionWrapper from "./components/session.wrapper";
+import SessionWrapper from "./components/providers/session.wrapper";
 import { Toaster } from "react-hot-toast";
 import { AuthWrapper } from "./context/auth.context";
-import ConditionalLayout from "./components/conditional.layout";
+import { ConditionalLayout } from "./components/layout/conditional.layout";
 import Cart from "./components/cart/cart";
-import FloatingActionMenu from "./utils/arc.menu";
+import ScrollToTop from "./utils/scroll.to.top";
 
 const myFontCustom = localFont({
   src: "./fonts/Merienda-VariableFont_wght.ttf",
@@ -20,22 +20,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SessionWrapper>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${myFontCustom.variable} antialiased`}
-        >
+
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${myFontCustom.variable} antialiased`}
+        suppressHydrationWarning={true}
+      >
+        <SessionWrapper>
           <AuthWrapper>
             <Providers>
               <Cart />
               <ConditionalLayout>{children}</ConditionalLayout>
               <Toaster position="top-center" reverseOrder={false} toastOptions={{ className: 'text-xs mt-3' }} />
-              <FloatingActionMenu />
+              <ScrollToTop />
             </Providers>
           </AuthWrapper>
-        </body>
-      </html>
-    </SessionWrapper>
+        </SessionWrapper>
+      </body>
+    </html>
+
   );
 }
-

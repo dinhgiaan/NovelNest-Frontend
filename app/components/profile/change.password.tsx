@@ -1,158 +1,289 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
-import type { AuthContextType } from "@/app/context/auth.context"
-import { changePasswordAPI } from "@/app/lib/api"
+import { useState, useCallback } from "react"
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack, IconButton, InputAdornment, Box, useTheme, Typography }
+      from "@mui/material"
+import { Eye, EyeOff, Loader2, X } from "lucide-react"
 import { toast } from "react-hot-toast"
-import { Eye, EyeOff, Key } from "lucide-react"
+import { userService } from "@/app/lib/api/user"
 
-interface IProps {
-      userInfo: AuthContextType
+interface FormData {
+      currentPassword: string
+      newPassword: string
+      confirmPassword: string
 }
 
-const ChangePassword = ({ userInfo }: IProps) => {
-      const [formData, setFormData] = useState({
-            password: "",
+interface ChangePasswordModalProps {
+      open: boolean
+      onClose: () => void
+}
+
+interface ChangePasswordResponse {
+      success?: boolean
+      message?: string
+      data?: unknown
+}
+
+interface ApiErrorResponse {
+      response?: {
+            status?: number
+            data?: {
+                  message?: string
+                  code?: string
+            }
+      }
+}
+
+const ChangePasswordModal = ({ open, onClose }: ChangePasswordModalProps) => {
+      const theme = useTheme()
+
+      const [form, setForm] = useState<FormData>({
+            currentPassword: "",
             newPassword: "",
-            confirmNewPassword: "",
+            confirmPassword: "",
       })
+
       const [showPassword, setShowPassword] = useState({
-            old: false,
+            current: false,
             new: false,
             confirm: false,
       })
-      const [isLoading, setIsLoading] = useState(false)
 
-      const togglePasswordVisibility = (field: "old" | "new" | "confirm") => {
-            setShowPassword((prev) => ({
-                  ...prev,
-                  [field]: !prev[field],
-            }))
-      }
+      const [loading, setLoading] = useState(false)
 
-      const handleInputChange = (field: keyof typeof formData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-            setFormData((prev) => ({
-                  ...prev,
-                  [field]: e.target.value,
-            }))
-      }
+      const handleChange = useCallback(
+            (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+                  setForm((prev) => ({ ...prev, [field]: e.target.value }))
+            },
+            [],
+      )
 
-      const handleChangePassword = async () => {
-            if (!userInfo.user?._id) {
-                  toast.error("User ID not found")
-                  return
-            }
+      const toggleShow = useCallback((field: keyof typeof showPassword) => {
+            setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }))
+      }, [])
 
-            setIsLoading(true)
-            try {
-                  const { password, newPassword, confirmNewPassword } = formData
-                  const res = await changePasswordAPI({
-                        _id: userInfo.user._id,
-                        password,
-                        newPassword,
-                        confirmNewPassword,
+      const handleClose = useCallback(() => {
+            if (!loading) {
+                  setForm({
+                        currentPassword: "",
+                        newPassword: "",
+                        confirmPassword: "",
                   })
-
-                  if (res?.success === false) {
-                        toast.error(res?.message)
-                  } else {
-                        setFormData({ password: "", newPassword: "", confirmNewPassword: "" })
-                        toast.success("Thay đổi mật khẩu thành công")
-                  }
-            } catch (error) {
-                  toast.error(error instanceof Error ? error.message : "Có lỗi xảy ra khi đổi mật khẩu!")
-                  console.error("Error changing password:", error)
-            } finally {
-                  setIsLoading(false)
+                  setShowPassword({
+                        current: false,
+                        new: false,
+                        confirm: false,
+                  })
+                  onClose()
             }
-      }
+      }, [loading, onClose])
+
+      const handleSubmit = useCallback(
+            async (e: React.FormEvent) => {
+                  e.preventDefault()
+
+                  if (!form.currentPassword || !form.newPassword || !form.confirmPassword) {
+                        toast.error("Vui lòng điền đầy đủ thông tin")
+                        return
+                  }
+
+                  if (form.newPassword !== form.confirmPassword) {
+                        toast.error("Mật khẩu xác nhận không khớp")
+                        return
+                  }
+
+                  if (form.newPassword.length < 6) {
+                        toast.error("Mật khẩu mới phải có ít nhất 6 ký tự")
+                        return
+                  }
+
+                  setLoading(true)
+                  try {
+                        const res = await userService.changePassword(form) as ChangePasswordResponse
+                        if (res?.success === false) {
+                              toast.error(res.message || "Có lỗi xảy ra")
+                        } else {
+                              setForm({ currentPassword: "", newPassword: "", confirmPassword: "" })
+                              toast.success("Đổi mật khẩu thành công")
+                              handleClose()
+                        }
+                  } catch (error) {
+                        if (error && typeof error === 'object' && 'response' in error) {
+                              const apiError = error as ApiErrorResponse
+                              toast.error(apiError.response?.data?.message || "Có lỗi xảy ra")
+                        } else {
+                              toast.error("Có lỗi xảy ra")
+                        }
+                  } finally {
+                        setLoading(false)
+                  }
+            },
+            [form, handleClose],
+      )
 
       return (
-            <div className="w-full max-w-2xl mx-auto">
-                  <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg">
-                        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                              <div className="flex items-center gap-2">
-                                    <Key size={20} className="text-blue-600 dark:text-blue-400" />
-                                    <h2 className="text-xl font-semibold dark:text-white">Đổi mật khẩu</h2>
-                              </div>
-                        </div>
+            <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  maxWidth="sm"
+                  fullWidth
+                  PaperProps={{
+                        sx: {
+                              borderRadius: 2,
+                              border: theme.palette.mode === 'dark'
+                                    ? `1px solid ${theme.palette.divider}`
+                                    : 'none',
+                              background: theme.palette.mode === 'dark'
+                                    ? 'linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%)'
+                                    : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                              boxShadow: theme.palette.mode === 'dark'
+                                    ? '0 10px 40px rgba(0, 0, 0, 0.5)'
+                                    : '0 10px 40px rgba(0, 0, 0, 0.15)',
+                        }
+                  }}
+            >
+                  <DialogTitle
+                        sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              pb: 3,
+                              color: theme.palette.text.primary,
+                              fontWeight: 600,
+                        }}
+                  >
+                        <Typography variant="h6">Đổi mật khẩu</Typography>
+                        <IconButton
+                              onClick={handleClose}
+                              disabled={loading}
+                              size="small"
+                              sx={{
+                                    color: theme.palette.text.secondary,
+                                    '&:hover': {
+                                          backgroundColor: theme.palette.action.hover,
+                                    },
+                              }}
+                        >
+                              <X size={20} />
+                        </IconButton>
+                  </DialogTitle>
 
-                        <div className="p-6 space-y-4">
-                              {/* Current Password */}
-                              <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Mật khẩu hiện tại</label>
-                                    <div className="relative">
-                                          <input
-                                                type={showPassword.old ? "text" : "password"}
-                                                value={formData.password}
-                                                onChange={handleInputChange("password")}
-                                                placeholder="Nhập mật khẩu hiện tại"
-                                                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                          />
-                                          <button
-                                                type="button"
-                                                onClick={() => togglePasswordVisibility("old")}
-                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                          >
-                                                {showPassword.old ? <EyeOff size={16} /> : <Eye size={16} />}
-                                          </button>
-                                    </div>
-                              </div>
+                  <DialogContent sx={{ paddingTop: 3 }}>
+                        <Box component="form" onSubmit={handleSubmit}>
+                              <Stack spacing={2} sx={{ paddingTop: 2 }}>
+                                    <TextField
+                                          fullWidth
+                                          size="small"
+                                          label="Mật khẩu hiện tại"
+                                          type={showPassword.current ? "text" : "password"}
+                                          value={form.currentPassword}
+                                          onChange={handleChange("currentPassword")}
+                                          disabled={loading}
+                                          InputProps={{
+                                                endAdornment: (
+                                                      <InputAdornment position="end">
+                                                            <IconButton
+                                                                  size="small"
+                                                                  onClick={() => toggleShow("current")}
+                                                                  disabled={loading}
+                                                                  sx={{ color: theme.palette.text.secondary }}
+                                                            >
+                                                                  {showPassword.current ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                            </IconButton>
+                                                      </InputAdornment>
+                                                ),
+                                          }}
+                                    />
 
-                              {/* New Password */}
-                              <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Mật khẩu mới</label>
-                                    <div className="relative">
-                                          <input
-                                                type={showPassword.new ? "text" : "password"}
-                                                value={formData.newPassword}
-                                                onChange={handleInputChange("newPassword")}
-                                                placeholder="Nhập mật khẩu mới"
-                                                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                          />
-                                          <button
-                                                type="button"
-                                                onClick={() => togglePasswordVisibility("new")}
-                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                          >
-                                                {showPassword.new ? <EyeOff size={16} /> : <Eye size={16} />}
-                                          </button>
-                                    </div>
-                              </div>
+                                    <TextField
+                                          fullWidth
+                                          size="small"
+                                          label="Mật khẩu mới"
+                                          type={showPassword.new ? "text" : "password"}
+                                          value={form.newPassword}
+                                          onChange={handleChange("newPassword")}
+                                          disabled={loading}
+                                          InputProps={{
+                                                endAdornment: (
+                                                      <InputAdornment position="end">
+                                                            <IconButton
+                                                                  size="small"
+                                                                  onClick={() => toggleShow("new")}
+                                                                  disabled={loading}
+                                                                  sx={{ color: theme.palette.text.secondary }}
+                                                            >
+                                                                  {showPassword.new ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                            </IconButton>
+                                                      </InputAdornment>
+                                                ),
+                                          }}
+                                    />
 
-                              {/* Confirm New Password */}
-                              <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Xác nhận mật khẩu mới</label>
-                                    <div className="relative">
-                                          <input
-                                                type={showPassword.confirm ? "text" : "password"}
-                                                value={formData.confirmNewPassword}
-                                                onChange={handleInputChange("confirmNewPassword")}
-                                                placeholder="Xác nhận mật khẩu mới"
-                                                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                          />
-                                          <button
-                                                type="button"
-                                                onClick={() => togglePasswordVisibility("confirm")}
-                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                          >
-                                                {showPassword.confirm ? <EyeOff size={16} /> : <Eye size={16} />}
-                                          </button>
-                                    </div>
-                              </div>
+                                    <TextField
+                                          fullWidth
+                                          size="small"
+                                          label="Xác nhận mật khẩu"
+                                          type={showPassword.confirm ? "text" : "password"}
+                                          value={form.confirmPassword}
+                                          onChange={handleChange("confirmPassword")}
+                                          disabled={loading}
+                                          InputProps={{
+                                                endAdornment: (
+                                                      <InputAdornment position="end">
+                                                            <IconButton
+                                                                  size="small"
+                                                                  onClick={() => toggleShow("confirm")}
+                                                                  disabled={loading}
+                                                                  sx={{ color: theme.palette.text.secondary }}
+                                                            >
+                                                                  {showPassword.confirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                            </IconButton>
+                                                      </InputAdornment>
+                                                ),
+                                          }}
+                                    />
+                              </Stack>
+                        </Box>
+                  </DialogContent>
 
-                              <button
-                                    onClick={handleChangePassword}
-                                    disabled={isLoading}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-4 rounded-md transition-colors"
-                              >
-                                    {isLoading ? "Đang cập nhật..." : "Đổi mật khẩu"}
-                              </button>
-                        </div>
-                  </div>
-            </div>
+                  <DialogActions sx={{ p: 3, pt: 2 }}>
+                        <Button
+                              onClick={handleClose}
+                              disabled={loading}
+                              sx={{
+                                    color: theme.palette.text.secondary,
+                                    '&:hover': {
+                                          backgroundColor: theme.palette.action.hover,
+                                    },
+                              }}
+                        >
+                              Hủy
+                        </Button>
+                        <Button
+                              onClick={handleSubmit}
+                              variant="contained"
+                              disabled={loading}
+                              startIcon={loading ? <Loader2 size={16} className="animate-spin" /> : null}
+                              sx={{
+                                    fontWeight: 600,
+                                    px: 3,
+                                    boxShadow: theme.palette.mode === 'dark'
+                                          ? '0 4px 12px rgba(144, 202, 249, 0.2)'
+                                          : '0 4px 12px rgba(25, 118, 210, 0.2)',
+                                    '&:hover': {
+                                          boxShadow: theme.palette.mode === 'dark'
+                                                ? '0 6px 20px rgba(144, 202, 249, 0.3)'
+                                                : '0 6px 20px rgba(25, 118, 210, 0.3)',
+                                    }
+                              }}
+                        >
+                              {loading ? "Đang cập nhật..." : "Đổi mật khẩu"}
+                        </Button>
+                  </DialogActions>
+            </Dialog>
       )
 }
 
-export default ChangePassword
+ChangePasswordModal.displayName = "ChangePasswordModal"
+
+export default ChangePasswordModal;

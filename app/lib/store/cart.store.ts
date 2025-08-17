@@ -7,7 +7,7 @@ export interface CartItem {
       title: string
       author: string
       price: number
-      quantity: number
+      promotionPrice: number
       thumbnail: {
             url: string
       }
@@ -18,9 +18,8 @@ interface CartStore {
       items: CartItem[]
       isOpen: boolean
 
-      addToCart: (book: Omit<CartItem, 'quantity'>) => void
+      addToCart: (book: CartItem) => void
       removeFromCart: (bookId: string) => void
-      updateQuantity: (bookId: string, quantity: number) => void
       clearCart: () => void
       toggleCart: () => void
       closeCart: () => void
@@ -28,6 +27,14 @@ interface CartStore {
       getTotalItems: () => number
       getTotalAmount: () => number
       getCartItem: (bookId: string) => CartItem | undefined
+      isInCart: (bookId: string) => boolean
+}
+
+const getFinalPrice = (item: CartItem): number => {
+      if (item.promotionPrice && item.promotionPrice > 0 && item.promotionPrice < item.price) {
+            return item.promotionPrice;
+      }
+      return item.price;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -41,18 +48,11 @@ export const useCartStore = create<CartStore>()(
                               const existingItem = state.items.find(item => item.bookId === book.bookId)
 
                               if (existingItem) {
-                                    return {
-                                          ...state,
-                                          items: state.items.map(item =>
-                                                item.bookId === book.bookId
-                                                      ? { ...item, quantity: item.quantity + 1 }
-                                                      : item
-                                          )
-                                    }
+                                    return state
                               } else {
                                     return {
                                           ...state,
-                                          items: [...state.items, { ...book, quantity: 1 }]
+                                          items: [...state.items, book]
                                     }
                               }
                         })
@@ -63,26 +63,6 @@ export const useCartStore = create<CartStore>()(
                               ...state,
                               items: state.items.filter(item => item.bookId !== bookId)
                         }))
-                  },
-
-                  updateQuantity: (bookId, quantity) => {
-                        set((state) => {
-                              if (quantity <= 0) {
-                                    return {
-                                          ...state,
-                                          items: state.items.filter(item => item.bookId !== bookId)
-                                    }
-                              }
-
-                              return {
-                                    ...state,
-                                    items: state.items.map(item =>
-                                          item.bookId === bookId
-                                                ? { ...item, quantity }
-                                                : item
-                                    )
-                              }
-                        })
                   },
 
                   clearCart: () => {
@@ -108,17 +88,26 @@ export const useCartStore = create<CartStore>()(
 
                   getTotalItems: () => {
                         const state = get()
-                        return state.items.reduce((total, item) => total + item.quantity, 0)
+                        return state.items.length
                   },
 
                   getTotalAmount: () => {
                         const state = get()
-                        return state.items.reduce((total, item) => total + (item.price * item.quantity), 0)
+                        return state.items.reduce((total, item) => {
+                              const finalPrice = getFinalPrice(item)
+                              return total + finalPrice
+                        }, 0)
                   },
+
 
                   getCartItem: (bookId) => {
                         const state = get()
                         return state.items.find(item => item.bookId === bookId)
+                  },
+
+                  isInCart: (bookId) => {
+                        const state = get()
+                        return state.items.some(item => item.bookId === bookId)
                   }
             }),
             {

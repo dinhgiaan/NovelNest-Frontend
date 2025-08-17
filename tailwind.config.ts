@@ -18,17 +18,9 @@ const config: Config = {
           '0%': { transform: 'translateY(-50%) rotate(0deg)' },
           '100%': { transform: 'translateY(-50%) rotate(360deg)' },
         },
-        spinOnceCW: {
-          from: { transform: 'rotate(0deg)' },
-          to: { transform: 'rotate(360deg)' },
-        },
-        spinOnceCCW: {
-          from: { transform: 'rotate(0deg)' },
-          to: { transform: 'rotate(-360deg)' },
-        },
         marquee: {
-          "0%": { transform: "translateX(0%)" },
-          "100%": { transform: "translateX(-50%)" },
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(calc(-50% - 2.5rem))' }
         },
         shimmer: {
           '0%': { transform: 'translateX(-100%)' },
@@ -37,9 +29,7 @@ const config: Config = {
       },
       animation: {
         'disco': 'disco 1.5s linear infinite',
-        'spin-once-cw': 'spinOnceCW 0.5s ease-out',
-        'spin-once-ccw': 'spinOnceCCW 0.5s ease-out',
-        'marquee': "marquee 10s linear infinite",
+        'marquee': 'marquee 20s linear infinite'
       },
       backgroundImage: {
         bannerLogin: "url('/assets/background_login.webp')",

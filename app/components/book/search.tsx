@@ -5,25 +5,25 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import axios from 'axios';
-import { FcSearch } from "react-icons/fc";
 import { CircularProgress } from '@mui/material';
+import { Search } from 'lucide-react';
 
-interface Book {
-      _id: string;
-      slug: string;
-      title: string;
-      author: string;
-      rating: number;
-      thumbnail: {
-            url: string;
-      };
-}
+// interface Book {
+//       _id: string;
+//       slug: string;
+//       title: string;
+//       author: string;
+//       rating: number;
+//       thumbnail: {
+//             url: string;
+//       };
+// }
 
 const API_URL = 'http://localhost:8888/api/v1';
 
-export default function SearchBar() {
+const SearchBar = () => {
       const [searchQuery, setSearchQuery] = useState('');
-      const [searchResults, setSearchResults] = useState<Book[]>([]);
+      const [searchResults, setSearchResults] = useState<IBook[]>([]);
       const [isLoading, setIsLoading] = useState(false);
       const [isDropdownOpen, setIsDropdownOpen] = useState(false);
       const pathname = usePathname();
@@ -51,7 +51,7 @@ export default function SearchBar() {
             setIsDropdownOpen(false);
       }, [pathname]);
 
-      // Handle search with debounce
+      // Handle search with debounce + fake loading
       useEffect(() => {
             if (searchTimeout.current) {
                   clearTimeout(searchTimeout.current);
@@ -60,16 +60,27 @@ export default function SearchBar() {
             if (searchQuery.trim().length < 1) {
                   setSearchResults([]);
                   setIsDropdownOpen(false);
+                  setIsLoading(false);
                   return;
             }
 
+            // Debounce delay: 1.5s
             searchTimeout.current = setTimeout(async () => {
                   setIsLoading(true);
+                  setIsDropdownOpen(true);
+
                   try {
-                        const { data } = await axios.get(`${API_URL}/search?title=${encodeURIComponent(searchQuery)}`);
+                        // Gọi API ngay lập tức
+                        const apiCall = axios.get(`${API_URL}/search?title=${encodeURIComponent(searchQuery)}`);
+
+                        // Tạo fake loading delay 0.8s
+                        const fakeDelay = new Promise(resolve => setTimeout(resolve, 800));
+
+                        // Chờ cả API call và fake delay hoàn thành
+                        const [{ data }] = await Promise.all([apiCall, fakeDelay]);
+
                         if (data.success) {
                               setSearchResults(data.data);
-                              setIsDropdownOpen(true);
                         } else {
                               setSearchResults([]);
                         }
@@ -79,7 +90,7 @@ export default function SearchBar() {
                   } finally {
                         setIsLoading(false);
                   }
-            }, 300);
+            }, 1500);
 
             return () => {
                   if (searchTimeout.current) {
@@ -108,34 +119,33 @@ export default function SearchBar() {
       };
 
       return (
-            <div className="relative w-full max-w-2xl mx-auto" ref={searchRef}>
+            <div className="w-full sm:max-w-full md:max-w-sm lg:max-w-sm xl:max-w-xs relative" ref={searchRef}>
                   <form className="flex">
-                        <div className="relative flex w-full items-center group border-2 border-transparent focus-within:border-blue-500 focus-within:bg-white dark:focus-within:bg-gray-900 dark:focus-within:border-blue-400 bg-gray-200 dark:bg-gray-800 transition rounded-lg overflow-hidden">
-                              <div className="px-3 sm:px-4 flex items-center justify-center bg-inherit flex-shrink-0 cursor-default">
-                                    <FcSearch className="text-lg sm:text-xl" />
+                        <div className="flex w-full group border-2 border-transparent focus-within:border-blue-500 focus-within:bg-white dark:focus-within:bg-gray-900 dark:focus-within:border-blue-400 bg-[#f3f1f1] dark:bg-[#1c273d] transition rounded-sm overflow-hidden">
+                              <div className="px-2 sm:px-4 flex items-center bg-inherit flex-shrink-0 cursor-default">
+                                    <Search size={20} />
                               </div>
 
                               <input
                                     type="text"
-                                    placeholder="Khám phá kho tàng sách cùng NovelNest..."
+                                    placeholder="Tìm kiếm sách, tên tác giả"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full px-2 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-black dark:text-white focus:outline-none focus:ring-0 bg-inherit placeholder-gray-500 dark:placeholder-gray-400"
+                                    className="w-full py-2 text-sm sm:text-base text-black dark:text-white focus:outline-none focus:ring-0 bg-inherit placeholder-gray-500 dark:placeholder-gray-400"
                                     autoComplete="off"
                               />
                         </div>
                   </form>
 
-                  {/* Search Results Dropdown - Responsive */}
                   {isDropdownOpen && (
-                        <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-80 sm:max-h-96 overflow-y-auto">
+                        <div className="absolute w-full z-20 xl:max-w-full py-2 bg-[#19151a] dark:bg-[#0b0c11] rounded-md shadow-lg max-h-80 sm:max-h-96 overflow-y-auto">
                               {isLoading ? (
                                     <div className="flex items-center justify-center p-4">
                                           <CircularProgress size={24} />
                                           <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Đang tìm kiếm...</span>
                                     </div>
                               ) : searchResults.length > 0 ? (
-                                    <div>
+                                    <div className='max-w-full'>
                                           {searchResults.map((book) => (
                                                 <Link
                                                       key={book._id}
@@ -155,7 +165,7 @@ export default function SearchBar() {
                                                                   />
                                                             ) : (
                                                                   <div className="w-full h-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center rounded">
-                                                                        <span className="text-xs text-gray-300 dark:text-gray-400">No image</span>
+                                                                        <span className="text-xs text-gray-300 dark:text-gray-400">Hình ảnh không khả dụng</span>
                                                                   </div>
                                                             )}
                                                       </div>
@@ -170,10 +180,10 @@ export default function SearchBar() {
                                                             </p>
                                                             <div className="flex items-center text-xs sm:text-sm mt-1">
                                                                   <div className="flex">
-                                                                        {renderStars(book.rating)}
+                                                                        {renderStars(book.rating ?? 0)}
                                                                   </div>
                                                                   <span className="ml-1 text-gray-600 dark:text-gray-400">
-                                                                        {book.rating.toFixed(1)}
+                                                                        {book?.rating?.toFixed(1)}
                                                                   </span>
                                                             </div>
                                                       </div>
@@ -182,8 +192,7 @@ export default function SearchBar() {
                                     </div>
                               ) : (
                                     <div className="p-4 text-center text-gray-300 dark:text-gray-400">
-                                          <div className="text-2xl mb-2">🧐</div>
-                                          <div className="text-sm">Không tìm thấy sách phù hợp</div>
+                                          <div className="text-sm">Không tìm thấy kết quả nào</div>
                                     </div>
                               )}
                         </div>
@@ -191,3 +200,5 @@ export default function SearchBar() {
             </div>
       );
 }
+
+export default SearchBar;

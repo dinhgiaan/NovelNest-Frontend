@@ -24,7 +24,6 @@ function ProfileSkeleton() {
       )
 }
 
-// Lazy load the heavy profile component
 const UserProfile = dynamic(() => import("./UserProfile"), {
       loading: () => <ProfileSkeleton />,
       ssr: false,
@@ -51,7 +50,7 @@ const Page = () => {
       return (
             <>
                   <Heading
-                        title={`Hồ sơ của ${userInfo.user?.name}`}
+                        title={`${userInfo.user?.name}`}
                         description="NovelNest, nơi lựa chọn tốt nhất cho việc đọc sách của bạn."
                         keyword="NovelNest, Book, Book Store, Dinhgiaan, Dinhgiaandev"
                   />
@@ -62,4 +61,4 @@ const Page = () => {
       )
 }
 
-export default Page
+export default Page;

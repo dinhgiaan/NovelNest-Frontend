@@ -1,12 +1,12 @@
-import { FaRegFaceSadTear } from 'react-icons/fa6';
+import { Frown } from "lucide-react";
 
 const Page = () => {
       return (
             <div className="bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-                  <div className='py-16'>
+                  <div className='pt-24 py-16'>
                         <div className="flex flex-col items-center py-16 px-6 space-y-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg transition-all hover:shadow-xl">
                               <div>
-                                    <FaRegFaceSadTear className="text-[#e44444] dark:text-[#ff7676]" size={85} />
+                                    <Frown className="text-[#e44444] dark:text-[#ff7676]" size={85} />
                               </div>
                               <div className="text-center space-y-4">
                                     <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">

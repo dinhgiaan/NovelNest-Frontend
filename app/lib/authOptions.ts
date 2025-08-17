@@ -1,12 +1,11 @@
 import axios from "axios"
-import type { NextAuthOptions } from "next-auth"
+import type { Account, NextAuthOptions } from "next-auth"
 import GithubProvider from "next-auth/providers/github"
 import GoogleProvider from "next-auth/providers/google"
 import type { JWT } from "next-auth/jwt"
 import type { Session, User } from "next-auth"
 import type { AdapterUser } from "next-auth/adapters"
 
-// Extend the built-in session types
 declare module "next-auth" {
       interface Session {
             user: {
@@ -19,9 +18,8 @@ declare module "next-auth" {
                         email: string
                         name: string
                         role: string
-                        phone?: string
-                        address?: string
                         avatar: string
+                        loginMethod: string
                   }
                   customAccessToken?: string
                   message?: string
@@ -37,8 +35,8 @@ declare module "next-auth" {
                   name: string
                   role: string
                   phone?: string
-                  address?: string
                   avatar: string
+                  loginMethod: string
             }
             message?: string
       }
@@ -53,8 +51,8 @@ declare module "next-auth/jwt" {
                   name: string
                   role: string
                   phone?: string
-                  address?: string
                   avatar: string
+                  loginMethod: string
             }
             message?: string
             accessToken?: string
@@ -79,11 +77,10 @@ export const authOptions: NextAuthOptions = {
                   account,
             }: {
                   user: User | AdapterUser
-                  account: any
+                  account: Account | null
             }): Promise<boolean> {
                   if (account?.provider === "google" || account?.provider === "github") {
                         try {
-                              // Send user data to your API
                               const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/api/v1/auth/social-auth`, {
                                     email: user.email,
                                     name: user.name,
@@ -91,7 +88,6 @@ export const authOptions: NextAuthOptions = {
                               })
 
                               if (response.data.success) {
-                                    // Store the custom access token and user data in the user object
                                     ; (user as User).customAccessToken = response.data.access_token
                                           ; (user as User).userData = response.data.user
                                           ; (user as User).message = response.data.message
@@ -112,10 +108,9 @@ export const authOptions: NextAuthOptions = {
                   user,
             }: {
                   token: JWT
-                  account: any
+                  account: Account | null
                   user?: User | AdapterUser
             }): Promise<JWT> {
-                  // Store custom data in JWT token
                   if (user && "customAccessToken" in user && user.customAccessToken) {
                         token.customAccessToken = user.customAccessToken
                         token.userData = (user as User).userData

@@ -2,34 +2,40 @@
 
 import { useEffect, useRef, useCallback, memo } from "react";
 import { Shield, BookOpen, Headphones, Zap } from "lucide-react";
-import Link from "next/link";
 
-const services = [
-      {
-            icon: Shield,
-            title: "Bảo mật tuyệt đối",
-            description: "Thông tin cá nhân và dữ liệu đọc của bạn được bảo vệ 100%",
-            color: "emerald"
-      },
-      {
-            icon: BookOpen,
-            title: "Thư viện khổng lồ",
-            description: "Hơn 100,000 đầu sách từ cổ điển đến hiện đại",
-            color: "blue"
-      },
-      {
-            icon: Headphones,
-            title: "Hỗ trợ 24/7",
-            description: "Đội ngũ tư vấn chuyên nghiệp luôn sẵn sàng hỗ trợ",
-            color: "purple"
-      },
-      {
-            icon: Zap,
-            title: "Đồng bộ đa thiết bị",
-            description: "Đọc liền mạch trên mọi thiết bị, lưu tiến độ tự động",
-            color: "orange"
-      }
-];
+type ColorKey = keyof typeof colorVariants;
+
+const services: {
+      icon: React.ElementType;
+      title: string;
+      description: string;
+      color: ColorKey;
+}[] = [
+            {
+                  icon: Shield,
+                  title: "Bảo mật tuyệt đối",
+                  description: "Thông tin cá nhân và dữ liệu đọc của bạn được bảo vệ 100%",
+                  color: "emerald"
+            },
+            {
+                  icon: BookOpen,
+                  title: "Thư viện khổng lồ",
+                  description: "Hơn 100,000 đầu sách từ cổ điển đến hiện đại",
+                  color: "blue"
+            },
+            {
+                  icon: Headphones,
+                  title: "Hỗ trợ 24/7",
+                  description: "Đội ngũ tư vấn chuyên nghiệp luôn sẵn sàng hỗ trợ",
+                  color: "purple"
+            },
+            {
+                  icon: Zap,
+                  title: "Đồng bộ đa thiết bị",
+                  description: "Đọc liền mạch trên mọi thiết bị, lưu tiến độ tự động",
+                  color: "orange"
+            }
+      ];
 
 const colorVariants = {
       emerald: {
@@ -67,7 +73,7 @@ const ServiceCard = memo(({ service, index, itemRef }: {
                   className={`
                 group relative p-6 rounded-2xl bg-white dark:bg-gray-800 
                 border ${colors.border} shadow-sm hover:shadow-lg
-                transition-all duration-500 ease-out
+                transition-all duration-500 ease-out hover:rotate-360
                 opacity-0 translate-y-8 will-change-transform
             `}
                   style={{
@@ -154,12 +160,12 @@ const Services = () => {
       return (
             <section className="py-16 lg:py-24">
                   <div className="max-w-6xl mx-auto px-4">
-                        {/* Header */}
                         <div
                               className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out"
                               ref={setItemRef(0)}
                         >
-                              <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+                              <h2 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 
+            dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent mb-4">
                                     Tại sao chọn NovelNest?
                               </h2>
                               <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-md">
@@ -168,7 +174,6 @@ const Services = () => {
                               <div className="mx-auto w-16 h-0.5 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 rounded-full mt-3"></div>
                         </div>
 
-                        {/* Services Grid */}
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                               {services.map((service, index) => (
                                     <ServiceCard
@@ -178,33 +183,6 @@ const Services = () => {
                                           itemRef={setItemRef(index + 1)}
                                     />
                               ))}
-                        </div>
-
-                        {/* Bottom CTA */}
-                        <div
-                              className="text-center mt-16 opacity-0 translate-y-8 transition-all duration-700 ease-out"
-                              ref={setItemRef(5)}
-                              style={{ transitionDelay: "600ms" }}
-                        >
-                              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
-                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                          Sẵn sàng khám phá?
-                                    </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-6">
-                                          Tham gia cùng hàng triệu độc giả khác trên NovelNest
-                                    </p>
-                                    <Link href="/books">
-                                          <button className="
-                                bg-gray-900 dark:bg-white text-white dark:text-gray-900 
-                                px-8 py-3 rounded-xl font-medium
-                                hover:bg-gray-800 dark:hover:bg-gray-100
-                                transition-colors duration-300
-                                focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
-                            ">
-                                                Bắt đầu đọc ngay
-                                          </button>
-                                    </Link>
-                              </div>
                         </div>
                   </div>
             </section>

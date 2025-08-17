@@ -1,21 +1,26 @@
 "use client"
 
 import { useContext, useState, useEffect } from "react"
-import { loginAPI } from "../../lib/api"
+import { loginAPI } from "../../lib/api/auth";
 import toast from "react-hot-toast"
 import { Button, TextField, IconButton, InputAdornment, CircularProgress } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { AuthContext } from "../../context/auth.context"
 import Link from "next/link"
 import { signIn, useSession } from "next-auth/react"
-import { FaGithub, FaEye, FaEyeSlash } from "react-icons/fa"
-import { FcGoogle } from "react-icons/fc"
 import axios, { AxiosError } from "axios"
-import book1_abstract from '@/public/assets/book1_abstract.webp';
-import colorful1_abstract from '@/public/assets/colorful1_abstract.webp';
-import human_abstract from '@/public/assets/human_abstract.webp';
-import ufo_abstract from '@/public/assets/ufo_abstract.webp';
-import Image from "next/image"
+import { Eye, EyeOff, Github, MoveLeft } from "lucide-react";
+import Google from "./components/svg/google.svg";
+import ButtonBack from "@/app/components/ui/button.back";
+
+const setStoredData = (key: string, value: string): void => {
+      if (typeof window === 'undefined') return;
+      try {
+            localStorage.setItem(key, value);
+      } catch (error) {
+            console.error(`Error setting ${key} to localStorage:`, error);
+      }
+};
 
 const LoginPage = () => {
       const [email, setEmail] = useState("")
@@ -29,19 +34,24 @@ const LoginPage = () => {
 
       useEffect(() => {
             if (status === "authenticated" && session?.user?.userData) {
-                  setUserInfo({
+                  const userInfo = {
                         isAuthenticated: true,
                         user: {
                               _id: session.user.userData._id,
                               email: session.user.userData.email,
                               name: session.user.userData.name,
-                              role: session.user.userData.role
+                              role: session.user.userData.role,
+                              loginMethod: session.user.userData.loginMethod || "Social"
                         },
-                  })
+                  }
+
+                  setUserInfo(userInfo)
 
                   if (session.user.customAccessToken) {
-                        localStorage.setItem("access_token", session.user.customAccessToken)
+                        setStoredData("access_token", session.user.customAccessToken)
                   }
+
+                  setStoredData("user_info", JSON.stringify(userInfo))
 
                   if (session.user.message) {
                         toast.success(session.user.message)
@@ -56,27 +66,17 @@ const LoginPage = () => {
       const handleLogin = async () => {
             try {
                   setLoading(true);
-                  console.log('Starting login process...');
 
                   const res = await loginAPI({ email, password });
-                  console.log('Login API response:', res);
 
                   if (res?.success === true) {
-                        console.log('Login successful, processing response...');
-
-                        // Kiểm tra response có đầy đủ thông tin không
                         if (!res.access_token || !res.refresh_token || !res.user) {
-                              console.error('Incomplete login response:', res);
                               toast.error("Phản hồi đăng nhập không đầy đủ!");
                               return;
                         }
+                        setStoredData("access_token", res.access_token);
+                        setStoredData("refresh_token", res.refresh_token);
 
-                        // Lưu tokens TRƯỚC
-                        localStorage.setItem("access_token", res.access_token);
-                        localStorage.setItem("refresh_token", res.refresh_token);
-                        console.log('Tokens saved to localStorage');
-
-                        // Tạo user info object
                         const userInfo = {
                               isAuthenticated: true,
                               user: {
@@ -84,40 +84,30 @@ const LoginPage = () => {
                                     email: res.user.email,
                                     name: res.user.name,
                                     role: res.user.role,
+                                    loginMethod: res.user.loginMethod || "Email"
                               },
                         };
 
-                        // Cập nhật context
                         setUserInfo(userInfo);
 
-                        // Lưu user info
-                        localStorage.setItem("user_info", JSON.stringify(userInfo));
-                        console.log('User info saved to localStorage and context updated');
+                        setStoredData("user_info", JSON.stringify(userInfo));
 
-                        toast.success(`Chào mừng ${res.user.name} trở lại NovelNest`, {
+                        toast.success(`Chào mừng ${res.user.name} đã đăng nhập vào NovelNest`, {
                               className: "text-xs"
                         });
 
-                        console.log('About to navigate to home page...');
-
-                        // Delay nhỏ để đảm bảo state được cập nhật
                         setTimeout(() => {
                               navigate.push("/");
                         }, 100);
 
                   } else {
-                        console.log('Login failed:', res?.message);
                         toast.error(res?.message || "Đăng nhập thất bại!");
                   }
             } catch (error) {
-                  console.error('Login error:', error);
-
                   if (axios.isAxiosError(error)) {
                         const serverMessage = error.response?.data?.message;
-                        console.error('Server error:', serverMessage);
                         toast.error(serverMessage || "Đăng nhập thất bại!");
                   } else {
-                        console.error('Unknown error:', error);
                         toast.error("Có lỗi không xác định xảy ra!");
                   }
             } finally {
@@ -146,35 +136,17 @@ const LoginPage = () => {
 
       return (
             <section className="bg-bannerLogin bg-repeat bg-cover bg-bottom w-full h-screen relative overflow-hidden">
-                  <div className="absolute inset-0">
-                        <Image
-                              src={human_abstract}
-                              alt="Abstract Human"
-                              className="absolute top-5 -left-3 w-[200px] h-auto object-contain z-10 opacity-80 hidden sm:block"
-                        />
 
-                        <Image
-                              src={colorful1_abstract}
-                              alt="Colorful Abstract 1"
-                              className="absolute bottom-8 left-60 w-[120px] h-auto object-contain z-15 opacity-75 hidden sm:block"
-                        />
+                  <ButtonBack className="absolute top-3 left-2 flex items-center space-x-1 text-[#675d5d] hover:text-white">
+                        <MoveLeft className="sm:size-5" />
+                        <span>Quay lại</span>
+                  </ButtonBack>
 
-                        <Image
-                              src={book1_abstract}
-                              alt="Book Abstract"
-                              className="absolute top-60 right-4 -translate-y-1/2 w-[150px] h-auto object-contain z-25 rotate-12 hidden sm:block"
-                        />
-
-                        <Image
-                              src={ufo_abstract}
-                              alt="UFO Abstract"
-                              className="absolute bottom-5 right-32 w-[150px] h-auto object-contain z-30 opacity-85 hidden sm:block"
-                        />
-                  </div>
-
-                  <div className="relative z-40 w-full h-full flex items-center justify-center p-4">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex items-center justify-center px-4">
                         <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-lg shadow-xl px-10 py-10 sm:py-14">
-                              <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 text-center mb-8">Đăng nhập</h2>
+                              <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 text-center mb-8">
+                                    Đăng nhập
+                              </h2>
 
                               <div className="space-y-5">
                                     <TextField
@@ -183,7 +155,7 @@ const LoginPage = () => {
                                           value={email}
                                           onChange={(e) => setEmail(e.target.value)}
                                           className="w-full"
-                                          InputProps={{ style: { borderRadius: 8 } }}
+                                          InputProps={{ style: { borderRadius: 4, color: "black" } }}
                                           size="small"
                                     />
 
@@ -199,11 +171,15 @@ const LoginPage = () => {
                                                 endAdornment: (
                                                       <InputAdornment position="end">
                                                             <IconButton onClick={handleClickShowPassword} edge="end">
-                                                                  {showPassword ? <FaEye size={14} /> : <FaEyeSlash size={14} />}
+                                                                  {showPassword ? (
+                                                                        <Eye size={14} color="black" />
+                                                                  ) : (
+                                                                        <EyeOff size={14} color="black" />
+                                                                  )}
                                                             </IconButton>
                                                       </InputAdornment>
                                                 ),
-                                                style: { borderRadius: 8 },
+                                                style: { borderRadius: 4, color: "black" },
                                           }}
                                     />
 
@@ -225,7 +201,9 @@ const LoginPage = () => {
                                     </Button>
                               </div>
 
-                              <div className="my-6 text-center text-sm text-gray-300">Hoặc đăng nhập bằng</div>
+                              <div className="my-6 text-center text-sm text-gray-500">
+                                    Hoặc đăng nhập bằng
+                              </div>
 
                               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                     <button
@@ -233,7 +211,7 @@ const LoginPage = () => {
                                           className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 text-gray-700 w-full text-sm transition-colors"
                                           disabled={status === "loading"}
                                     >
-                                          <FcGoogle className="mr-2" /> Google
+                                          <Google className="mr-2" /> Google
                                     </button>
 
                                     <button
@@ -241,20 +219,21 @@ const LoginPage = () => {
                                           className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 text-gray-700 w-full text-sm transition-colors"
                                           disabled={status === "loading"}
                                     >
-                                          <FaGithub className="mr-2" /> GitHub
+                                          <Github size={20} className="mr-2" /> GitHub
                                     </button>
                               </div>
 
                               <p className="mt-8 text-sm text-gray-600 text-center">
                                     Chưa có tài khoản?{" "}
                                     <Link href="/register" className="text-blue-500 hover:underline">
-                                          Đăng ký
+                                          Đăng ký ngay
                                     </Link>
                               </p>
                         </div>
                   </div>
             </section>
-      )
+      );
+
 }
 
-export default LoginPage
+export default LoginPage;

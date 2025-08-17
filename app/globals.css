@@ -90,12 +90,6 @@ body {
   will-change: transform;
 }
 
-/* Tối ưu cho scroll performance */
-* {
-  scroll-behavior: smooth;
-}
-
-/* Tối ưu cho transitions */
 .transition-all {
   transition-property: transform, opacity, box-shadow;
 }

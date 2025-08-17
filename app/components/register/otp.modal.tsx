@@ -90,7 +90,7 @@ const OtpModal = ({
             try {
                   const res = await verifyAPI({ otp: { code: finalOtp } })
                   if (res.success) {
-                        toast.success("Xác thực thành công!")
+                        toast.success("Xác thực thành công")
                         setIsModalOtpOpen(false)
                         router.push("/login")
                   } else {
@@ -119,11 +119,11 @@ const OtpModal = ({
                         setOtp(Array(length).fill(""));
                         setTimeout(() => inputRefs.current[0]?.focus(), 100);
                   } else {
-                        toast.error(res.data.message); // ✅ đây là lỗi nghiệp vụ, không phải lỗi hệ thống
+                        toast.error(res.data.message);
                   }
-            } catch (err: any) {
-                  const msg =
-                        err?.response?.data?.message || "Đã có lỗi xảy ra khi gửi lại mã OTP.";
+            } catch (err) {
+                  const error = err as Error;
+                  const msg = error?.message || "Đã có lỗi xảy ra khi gửi lại mã OTP.";
                   toast.error(msg);
             }
       }
@@ -225,4 +225,4 @@ const OtpModal = ({
       )
 }
 
-export default OtpModal
+export default OtpModal;

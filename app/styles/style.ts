@@ -13,5 +13,5 @@ export const style = {
 
       // icon book details
       titleBookDetails: "font-bold mb-2 dark:text-[#15bd7c] text-[#eca874]",
-      iconBookDetails: "mr-2 dark:text-[#e6bd4c] text-[#ccc]"
+      iconBookDetails: "mr-2 dark:text-[#e6bd4c] text-[#9e3966]"
 }

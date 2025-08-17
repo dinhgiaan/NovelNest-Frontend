@@ -1,118 +1,127 @@
 'use client';
 
-import { useState } from 'react';
-import useSWR from 'swr';
 import { useParams } from 'next/navigation';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import convertPriceToVND from '@/app/utils/convert.price';
 import ErrorAPI from '../error.api';
 import Loading from '@/app/utils/loading';
-import { Divider } from '@mui/material';
-import { MdDateRange } from 'react-icons/md';
-import { SlSizeFullscreen } from 'react-icons/sl';
-import { AiOutlineBarcode } from 'react-icons/ai';
-import { GiMoneyStack, GiSpellBook } from 'react-icons/gi';
-import  {style} from '../../styles/style';
+import formatDate from '@/app/utils/format.date';
+import { useBookDetail } from '@/app/hooks/use.book.details';
 
-const InfoDetail = () => {
-      const [value, setValue] = useState(0);
-      const { slug } = useParams();
+const DetailItem = ({
+      label,
+      value,
+      isPrice = false
+}: {
+      label: string;
+      value: string | number | undefined;
+      isPrice?: boolean;
+}) => (
+      <div className="group">
+            <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                  {label}
+            </dt>
+            <dd className={`text-sm ${isPrice
+                  ? 'font-semibold text-emerald-600 dark:text-emerald-400'
+                  : 'font-medium text-gray-900 dark:text-gray-100'
+                  } transition-colors duration-200 group-hover:text-gray-700 dark:group-hover:text-gray-200`}>
+                  {value || <span className="text-gray-400 dark:text-gray-500 italic">Đang cập nhật</span>}
+            </dd>
+      </div>
+);
 
-      const fetcher = (url: string) => fetch(url).then((res) => res.json());
-      const { data, error, isLoading } = useSWR(
-            slug ? `${process.env.NEXT_PUBLIC_BOOKS}/detail/${slug}` : null,
-            fetcher
-      );
+const PriceDetail = ({ originalPrice, promotionPrice }: { originalPrice?: number; promotionPrice?: number }) => {
+      const hasPromotion = promotionPrice && promotionPrice < originalPrice!;
 
-      const formatDate = (date: string) => {
-            const parsedDate = new Date(date);
-            return parsedDate.toLocaleDateString('vi-VN').replace(/\//g, ' - ');
-      };
-
-      const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-            setValue(newValue);
-      };
-
-      const TabPanel = ({ children, index }: { children: React.ReactNode; index: number }) => (
-            <div role="tabpanel" hidden={value !== index} aria-labelledby={`tab-${index}`}>
-                  {value === index && (
-                        <Box sx={{ p: 3 }}>
-                              <Typography>{children}</Typography>
-                        </Box>
-                  )}
+      return (
+            <div className="group">
+                  <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                        Giá sách
+                  </dt>
+                  <dd className="text-sm transition-colors duration-200 group-hover:text-gray-700 dark:group-hover:text-gray-200">
+                        {originalPrice ? (
+                              <div className="flex flex-col gap-1">
+                                    {hasPromotion ? (
+                                          <>
+                                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                                      {convertPriceToVND(promotionPrice)}
+                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                      <span className="text-xs text-gray-500 dark:text-gray-400 line-through">
+                                                            {convertPriceToVND(originalPrice)}
+                                                      </span>
+                                                      <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2 py-1 rounded-full font-medium">
+                                                            -{Math.round(((originalPrice - promotionPrice) / originalPrice) * 100)}%
+                                                      </span>
+                                                </div>
+                                          </>
+                                    ) : (
+                                          <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                                {convertPriceToVND(originalPrice)}
+                                          </span>
+                                    )}
+                              </div>
+                        ) : (
+                              <span className="text-gray-400 dark:text-gray-500 italic">Đang cập nhật</span>
+                        )}
+                  </dd>
             </div>
       );
+};
+
+const InfoDetail = () => {
+      const { slug } = useParams();
+      const { book: bookData, error, isLoading } = useBookDetail(slug as string);
 
       if (error) return <ErrorAPI />;
       if (isLoading) return <Loading />;
 
       return (
-            <div className="max-w-4xl mx-auto mt-14 rounded-lg shadow-md">
-                  <Box sx={{ width: '100%' }}>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }} className="bg-gray-100 dark:bg-gray-700 rounded-t-lg">
-                              <Tabs
-                                    value={value}
-                                    onChange={handleChange}
-                                    aria-label="Book Info Tabs"
-                                    textColor="primary"
-                                    indicatorColor="primary"
-                                    centered
-                              >
-                                    <Tab label="Thông tin chi tiết" id="tab-0" aria-controls="tabpanel-0" />
-                                    <Tab label="Đánh giá" id="tab-1" aria-controls="tabpanel-1" />
-                              </Tabs>
-                        </Box>
-
-                        <div>
-                              <TabPanel index={0}>
-                                    <div className="space-y-10">
-                                          <div>
-                                                <Typography variant="h6" className={`${style.titleBookDetails}`}>
-                                                      Thông tin chung về sách
-                                                </Typography>
-                                                <div className="mt-3 space-y-2">
-                                                      <Typography className='flex items-center'>
-                                                            <MdDateRange className={`${style.iconBookDetails}`} size={14}/>
-                                                            <span className='text-sm dark:text-gray-300 text-gray-800'>Ngày xuất bản: {formatDate(data.data?.publicDate)}</span>
-                                                      </Typography>
-                                                      <Typography className='flex items-center'>
-                                                            <SlSizeFullscreen className={`${style.iconBookDetails}`} size={14}/>
-                                                            <span className='text-sm dark:text-gray-300 text-gray-800'>Kích thước sách: {data.data?.size}</span>
-                                                      </Typography>
-                                                      <Typography className='flex items-center'>
-                                                            <AiOutlineBarcode className={`${style.iconBookDetails}`} size={14}/>
-                                                            <span className='text-sm dark:text-gray-300 text-gray-800'> ISBN: {data.data?.isbn}</span>
-                                                      </Typography>
-                                                      <Typography className='flex items-center'>
-                                                            <GiSpellBook className={`${style.iconBookDetails}`} size={14}/>
-                                                            <span className='text-sm dark:text-gray-300 text-gray-800'>Số trang: {data.data?.page}</span>
-                                                      </Typography>
-                                                </div>
-                                          </div>
-
-                                          <Divider sx={{ bgcolor: '#ccc' }} />
-
-                                          <div>
-                                                <Typography variant="h6" className={`${style.titleBookDetails}`}>
-                                                      Thông tin thuê sách
-                                                </Typography>
-                                                <div className="mt-3 space-y-2">
-                                                      <Typography className="flex items-center text-sm">
-                                                            <GiMoneyStack className={`${style.iconBookDetails}`} size={14}/>
-                                                            <span className='text-sm dark:text-gray-300 text-gray-800'>Giá: {convertPriceToVND(data.data?.price)}</span>
-                                                      </Typography>
-                                                </div>
-                                          </div>
+            <div className="max-w-4xl mx-auto mt-8 px-4 lg:px-0">
+                  <div className="bg-[#f5f7f3] dark:bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+                              <div className="flex items-center justify-between">
+                                    <div>
+                                          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                                Thông tin xuất bản
+                                          </h2>
+                                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                Chi tiết về sách và nhà xuất bản
+                                          </p>
                                     </div>
-                              </TabPanel>
-                              <TabPanel index={1}>
-                                    <Typography>Hiện tại chưa có đánh giá nào.</Typography>
-                              </TabPanel>
+                              </div>
                         </div>
-                  </Box>
+
+                        <div className="px-6 py-5">
+                              <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
+                                    <DetailItem
+                                          label="Nhà xuất bản"
+                                          value={bookData?.publisher}
+                                    />
+                                    <DetailItem
+                                          label="Ngày xuất bản"
+                                          value={formatDate(bookData?.publicDate)}
+                                    />
+                                    <DetailItem
+                                          label="Mã ISBN"
+                                          value={bookData?.isbn}
+                                    />
+                                    <DetailItem
+                                          label="Số trang"
+                                          value={bookData?.page ? `${bookData.page} trang` : undefined}
+                                    />
+                                    <PriceDetail
+                                          originalPrice={bookData?.price}
+                                          promotionPrice={bookData?.promotionPrice}
+                                    />
+                              </dl>
+                        </div>
+
+                        <div className="px-6 py-3 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl border-t border-gray-100 dark:border-gray-800">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                                    Thông tin được cập nhật từ nhà xuất bản
+                              </p>
+                        </div>
+                  </div>
             </div>
       );
 };

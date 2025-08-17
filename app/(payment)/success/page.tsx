@@ -15,12 +15,11 @@ const PaymentSuccess = () => {
       const [hasProcessed, setHasProcessed] = useState(false);
       const [isInitialized, setIsInitialized] = useState(false);
 
-      const bookId = searchParams.get('bookId');
+      const userId = searchParams.get('userId') || userInfo?.user?._id;
       const orderCode = searchParams.get('orderCode');
-      const quantity = searchParams.get('quantity') || '1';
-      const userId = userInfo?.user?._id;
+      const bookIds = searchParams.get('bookIds');
+      const itemsParam = searchParams.get('items');
 
-      // Đợi userInfo được load trước khi validate
       useEffect(() => {
             if (userInfo !== null && !isInitialized) {
                   setIsInitialized(true);
@@ -28,15 +27,43 @@ const PaymentSuccess = () => {
       }, [userInfo, isInitialized]);
 
       useEffect(() => {
-            // Chỉ chạy validation khi đã initialized
             if (!isInitialized) return;
 
-            // Validate required parameters
-            if (!userId || !bookId || !orderCode) {
-                  console.log('Missing params:', { userId, bookId, orderCode });
-                  toast.error('Thông tin thanh toán không hợp lệ');
+            if (!userId || !orderCode) {
+                  toast.error('Thông tin thanh toán không hợp lệ - thiếu userId hoặc orderCode');
                   setStatus('error');
                   setTimeout(() => router.push('/books'), 2000);
+                  return;
+            }
+
+            let items = [];
+            if (itemsParam) {
+                  try {
+                        items = JSON.parse(decodeURIComponent(itemsParam));
+                  } catch {
+                        toast.error('Không thể phân tích thông tin sản phẩm');
+                        setStatus('error');
+                        return;
+                  }
+            } else if (bookIds) {
+                  const bookIdArray = bookIds.split(',');
+                  items = bookIdArray.map(bookId => ({
+                        bookId: bookId.trim(),
+                        title: 'Sản phẩm',
+                        author: 'Không xác định',
+                        price: 0,
+                        quantity: 1,
+                        thumbnail: { url: '' }
+                  }));
+            } else {
+                  toast.error('Không tìm thấy thông tin sản phẩm');
+                  setStatus('error');
+                  return;
+            }
+
+            if (!items || items.length === 0) {
+                  toast.error('Danh sách sản phẩm trống');
+                  setStatus('error');
                   return;
             }
 
@@ -45,39 +72,44 @@ const PaymentSuccess = () => {
                   setHasProcessed(true);
 
                   try {
-                        const response = await fetch('http://localhost:8888/api/v1/payments/success', {
+                        const requestBody = {
+                              userId,
+                              orderCode,
+                              items
+                        };
+
+                        const paymentSuccessUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS;
+                        if (!paymentSuccessUrl) {
+                              toast.error('Lỗi cấu hình: Không tìm thấy URL thanh toán thành công')
+                              return
+                        }
+
+                        const response = await fetch(paymentSuccessUrl, {
                               method: 'POST',
                               headers: {
                                     'Content-Type': 'application/json'
                               },
-                              body: JSON.stringify({
-                                    userId,
-                                    bookId,
-                                    orderCode,
-                                    quantity: parseInt(quantity)
-                              })
+                              body: JSON.stringify(requestBody)
                         });
 
                         const data = await response.json();
 
                         if (response.ok && data.success) {
                               setStatus('success');
-                              toast.success('Thanh toán thành công! Sách đã được thêm vào thư viện của bạn.');
+                              toast.success(data.message || 'Thanh toán thành công! Sách đã được thêm vào thư viện của bạn.');
                         } else {
                               setStatus('error');
                               toast.error(data.message || 'Có lỗi xảy ra khi xử lý thanh toán');
                         }
-                  } catch (error) {
-                        console.error('Error updating purchase:', error);
+                  } catch {
                         setStatus('error');
                         toast.error('Không thể kết nối đến server');
                   }
             };
 
             updatePurchase();
-      }, [isInitialized, userId, bookId, orderCode, quantity, router, hasProcessed]);
+      }, [isInitialized, userId, orderCode, itemsParam, bookIds, router, hasProcessed]);
 
-      // Countdown timer
       useEffect(() => {
             if (status === 'success' && countdown > 0) {
                   const timer = setTimeout(() => {
@@ -89,26 +121,21 @@ const PaymentSuccess = () => {
             }
       }, [status, countdown, router]);
 
-      const handleGoToBooks = () => {
-            router.push('/books');
-      };
-
       const handleGoHome = () => {
             router.push('/');
       };
 
-      // Hiển thị loading nếu chưa initialized
       if (!isInitialized) {
             return (
-                  <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-                              <div className="mb-6">
-                                    <div className="w-16 h-16 mx-auto mb-4 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 max-w-sm w-full">
+                              <div className="flex justify-center mb-4">
+                                    <div className="w-12 h-12 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                               </div>
-                              <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                              <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 text-center">
                                     Đang khởi tạo...
                               </h1>
-                              <p className="text-gray-600">
+                              <p className="text-gray-600 dark:text-gray-300 text-sm text-center">
                                     Vui lòng chờ trong giây lát
                               </p>
                         </div>
@@ -117,23 +144,20 @@ const PaymentSuccess = () => {
       }
 
       return (
-            <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
-                  <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+            <div className="min-h-screen bg-[#FFFFFF] dark:bg-[#191B24] flex items-center justify-center p-4">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 max-w-sm w-full pt-10">
                         {status === 'processing' && (
                               <>
-                                    <div className="mb-6">
-                                          <div className="w-16 h-16 mx-auto mb-4 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                                          <div className="w-20 h-20 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-                                                <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                                                </svg>
+                                    <div className="flex justify-center mb-4">
+                                          <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                                                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                                           </div>
                                     </div>
-                                    <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                                    <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 text-center">
                                           Đang xử lý giao dịch...
                                     </h1>
-                                    <p className="text-gray-600 mb-4">
-                                          Chúng tôi đang xác nhận thanh toán và cập nhật thư viện của bạn
+                                    <p className="text-gray-600 dark:text-gray-300 text-sm text-center mb-4">
+                                          Chúng tôi đang xác nhận thanh toán và cập nhật thư viện
                                     </p>
                                     <div className="flex items-center justify-center space-x-1">
                                           <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
@@ -145,72 +169,74 @@ const PaymentSuccess = () => {
 
                         {status === 'success' && (
                               <>
-                                    <div className="mb-6">
-                                          <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-                                                <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    <div className="flex justify-center mb-4">
+                                          <div className="w-16 h-16 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                                                <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                                                 </svg>
                                           </div>
                                     </div>
-                                    <h1 className="text-3xl font-bold text-green-600 mb-2">
-                                          Thanh toán thành công!
+
+                                    <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 text-center">
+                                          Thanh toán thành công
                                     </h1>
-                                    <p className="text-gray-600 mb-6">
-                                          Sách đã được thêm vào thư viện của bạn. Bạn có thể bắt đầu đọc ngay bây giờ!
+
+                                    <p className="text-gray-600 dark:text-gray-300 text-xs text-center mb-5">
+                                          Sách đã thêm vào thư viện. Bạn có thể bắt đầu đọc ngay ❤️‍🔥
                                     </p>
 
-                                    <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                                          <p className="text-sm text-gray-300 mb-2">Mã đơn hàng:</p>
-                                          <p className="font-mono text-lg font-semibold text-gray-800">ORD{orderCode}</p>
+                                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-5">
+                                          <div className="flex items-center justify-between">
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">Mã đơn hàng</span>
+                                                <span className="font-mono text-sm font-medium text-gray-900 dark:text-white">ORD{orderCode}</span>
+                                          </div>
                                     </div>
 
-                                    <div className="space-y-3">
-                                          <button
-                                                onClick={handleGoToBooks}
-                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
-                                          >
-                                                Đi đến thư viện sách
-                                          </button>
+                                    <div className="space-y-2">
                                           <button
                                                 onClick={handleGoHome}
-                                                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+                                                className="w-full border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2.5 px-4 rounded-lg transition-colors text-sm"
                                           >
                                                 Về trang chủ
                                           </button>
                                     </div>
 
-                                    <p className="text-sm text-gray-300 mt-4">
-                                          Tự động chuyển hướng sau {countdown} giây...
-                                    </p>
+                                    <div className="text-center mt-4">
+                                          <span className="text-xs text-gray-400 dark:text-gray-500">
+                                                Tự động chuyển hướng sau {countdown} giây
+                                          </span>
+                                    </div>
                               </>
                         )}
 
                         {status === 'error' && (
                               <>
-                                    <div className="mb-6">
-                                          <div className="w-20 h-20 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                                                <svg className="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    <div className="flex justify-center mb-4">
+                                          <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                                                <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                                                 </svg>
                                           </div>
                                     </div>
-                                    <h1 className="text-2xl font-bold text-red-600 mb-2">
+
+                                    <h1 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2 text-center">
                                           Có lỗi xảy ra
                                     </h1>
-                                    <p className="text-gray-600 mb-6">
-                                          Không thể xử lý giao dịch của bạn. Vui lòng liên hệ hỗ trợ khách hàng nếu bạn đã bị trừ tiền.
+
+                                    <p className="text-gray-600 dark:text-gray-300 text-sm text-center mb-5">
+                                          Không thể xử lý giao dịch. Vui lòng liên hệ hỗ trợ nếu bạn đã bị trừ tiền.
                                     </p>
 
-                                    <div className="space-y-3">
+                                    <div className="space-y-2">
                                           <button
                                                 onClick={() => window.location.reload()}
-                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors text-sm"
                                           >
                                                 Thử lại
                                           </button>
                                           <button
                                                 onClick={handleGoHome}
-                                                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+                                                className="w-full border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2.5 px-4 rounded-lg transition-colors text-sm"
                                           >
                                                 Về trang chủ
                                           </button>
@@ -220,6 +246,6 @@ const PaymentSuccess = () => {
                   </div>
             </div>
       );
-}
+};
 
 export default PaymentSuccess;

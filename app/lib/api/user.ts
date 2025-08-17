@@ -1,71 +1,124 @@
-import axios from '../custom.api';
-import { IBaseAuthData } from "./auth";
+import axios from "../custom.api"
 
-// Types
-export interface IUserData {
-      _id: string;
+export interface IChangePasswordData {
+      currentPassword: string
+      newPassword: string
+      confirmPassword: string
 }
 
-export interface IUpdateUserData {
-      _id: string;
-      email: string;
-      name: string;
-      phone: string;
-      address: string;
+export interface ApiResponse<T> {
+      success: boolean
+      message: string
+      data?: T
 }
 
-export interface IChangePasswordData extends IBaseAuthData {
-      _id: string;
-      newPassword: string;
-      confirmNewPassword: string;
-}
-
-const BASE_URL = '/api/v1';
+const BASE_URL = "/api/v1"
 
 export const userService = {
       async getInfo() {
             try {
-                  const response = await axios.get(`${BASE_URL}/get-info`);
-                  return response.data;
+                  const response = await axios.get(`${BASE_URL}/get-info`)
+                  return response.data
             } catch (error) {
-                  throw new Error('Failed to get user info');
+                  throw new Error("Failed to get user info: " + (error as Error).message)
             }
       },
 
-      async changePassword(data: IChangePasswordData) {
-            const { _id, password, newPassword, confirmNewPassword } = data;
+      async updateUserInfo(data: IUser): Promise<ApiResponse<IUser>> {
             try {
-                  const response = await axios.put(`${BASE_URL}/change-password/${_id}`, {
-                        password,
+                  const updatePayload = {
+                        name: data.name,
+                        gender: data.gender,
+                  }
+
+                  return axios.put(`${BASE_URL}/update-info`, updatePayload) as Promise<ApiResponse<IUser>>
+            } catch (error) {
+                  throw error
+            }
+      },
+
+      async changePassword({ currentPassword, newPassword, confirmPassword }: IChangePasswordData) {
+            try {
+                  const data = await axios.put(`${BASE_URL}/change-password`, {
+                        currentPassword,
                         newPassword,
-                        confirmNewPassword
-                  });
-                  return response.data;
+                        confirmPassword,
+                  })
+                  return data
             } catch (error) {
-                  throw new Error('Failed to change password');
+                  console.error("Password change failed:", error)
+                  throw new Error("Failed to change password")
             }
       },
 
-
-      async updateUserInfo(data: {
-            name?: string;
-            phone?: string;
-            address?: string;
-      }) {
-            const BACKEND_URL = '/api/v1/update-info';
-            return await axios.put(BACKEND_URL, data);
-      },
-
-      async purchasedBooks() {
+      async getPurchasedBooks() {
             try {
-                  const response = await axios.get(`${BASE_URL}/purchased-books`);
+                  const data = await axios.get(`${BASE_URL}/purchased-books`)
                   return {
                         success: true,
-                        data: response,
-                        total: response?.length || 0
-                  };
-            } catch (error: any) {
-                  throw new Error('Failed to get purchased books: ' + error.message);
+                        data: data,
+                        total: data.data?.length || 0,
+                  }
+            } catch (error) {
+                  throw new Error("Failed to get purchased books: " + (error as Error).message)
+            }
+      },
+
+      async logout() {
+            try {
+                  const data = await axios.post(`${BASE_URL}/logout`)
+                  return data;
+            } catch (error) {
+                  throw new Error("Failed to logout: " + (error as Error).message)
+            }
+      },
+
+      async getFavourites() {
+            try {
+                  const data = await axios.get(`${BASE_URL}/favourites`)
+                  return {
+                        data
+                  }
+            } catch (error) {
+                  throw new Error("Failed to get favorites: " + (error as Error).message)
+            }
+      },
+
+      async uploadAvatar(file: File) {
+            try {
+                  const formData = new FormData();
+                  formData.append('avatar', file);
+
+                  const response = await axios.post(`${BASE_URL}/upload-avatar`, formData, {
+                        headers: {
+                              'Content-Type': 'multipart/form-data'
+                        },
+                        timeout: 30000
+                  });
+                  return response;
+
+            } catch (error) {
+                  if (error && typeof error === 'object' && 'response' in error) {
+                        const axiosError = error as {
+                              response?: {
+                                    status?: number;
+                                    data?: { message?: string };
+                              };
+                        };
+
+                        if (axiosError.response?.status === 413) {
+                              throw new Error('File quá lớn. Vui lòng chọn file nhỏ hơn.');
+                        }
+
+                        if (axiosError.response?.status === 415) {
+                              throw new Error('Định dạng file không được hỗ trợ.');
+                        }
+
+                        const errorMessage = axiosError.response?.data?.message || 'Upload avatar thất bại';
+                        throw new Error(errorMessage);
+                  }
+
+                  throw new Error('Upload avatar thất bại');
             }
       }
-};
+}

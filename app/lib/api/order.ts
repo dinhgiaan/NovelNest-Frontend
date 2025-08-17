@@ -12,7 +12,7 @@ export const orderService = {
                   const data = response.data
 
                   if (!data || !Array.isArray(data.orders)) {
-                        console.error("❌ Invalid data structure:", data)
+                        console.error("Invalid data structure:", data)
                         throw new Error("Invalid API response structure")
                   }
 

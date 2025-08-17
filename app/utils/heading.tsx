@@ -16,4 +16,4 @@ const Heading = ({ title, description, keyword }: IHeadProps) => {
       )
 }
 
-export default Heading
+export default Heading;

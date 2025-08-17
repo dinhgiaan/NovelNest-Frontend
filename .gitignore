@@ -8,7 +8,7 @@
 
 # env
 .env.development
-.env
+.env.production
 *env
 
 # testing

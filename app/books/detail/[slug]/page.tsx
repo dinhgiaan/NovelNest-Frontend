@@ -2,45 +2,35 @@
 
 import Heading from "../../../utils/heading";
 import { useParams } from 'next/navigation';
-import useSWR from 'swr';
 import BookDetail from '../BookDetail';
 import Loading from "@/app/utils/loading";
 import { useContext } from "react";
 import { AuthContext } from "@/app/context/auth.context";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { useBookDetail } from "@/app/hooks/use.book.details";
+import ErrorAPI from "@/app/components/error.api";
 
 const Page = () => {
       const { slug } = useParams();
       const { userInfo } = useContext(AuthContext);
       const userId = userInfo?.user?._id;
 
+      const { book: bookData, error, isLoading } = useBookDetail(slug as string)
 
+      if (error) return <ErrorAPI />
+      if (isLoading) return <Loading />
 
-      const { data, error, isLoading } = useSWR(
-            slug ? `${process.env.NEXT_PUBLIC_BOOKS}/detail/${slug}` : null,
-            fetcher
-      );
-
-
-      if (error) {
-            return <div>Có lỗi xảy ra!</div>
-      }
-
-      if (isLoading) {
-            return <Loading />
-      }
+      const title = bookData?.title;
 
       return (
             <>
                   <div>
                         <Heading
-                              title={`${data?.data?.title}`}
+                              title={`${title}`}
                               description="NovelNest, nơi lựa chọn tốt nhất cho việc đọc sách của bạn."
                               keyword="NovelNest, Book, Book Store, Dinhgiaan, Dinhgiaandev"
                         />
                         <BookDetail
-                              book={data?.data}
+                              book={bookData}
                               error={error}
                               isLoading={isLoading}
                               userId={userId}
