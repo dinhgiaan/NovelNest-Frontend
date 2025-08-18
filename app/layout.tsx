@@ -7,6 +7,7 @@ import { AuthWrapper } from "./context/auth.context";
 import { ConditionalLayout } from "./components/layout/conditional.layout";
 import Cart from "./components/cart/cart";
 import ScrollToTop from "./utils/scroll.to.top";
+import { Analytics } from '@vercel/analytics/next';
 
 const myFontCustom = localFont({
   src: "./fonts/Merienda-VariableFont_wght.ttf",
@@ -30,12 +31,15 @@ export default function RootLayout({
           <AuthWrapper>
             <Providers>
               <Cart />
-              <ConditionalLayout>{children}</ConditionalLayout>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
               <Toaster position="top-center" reverseOrder={false} toastOptions={{ className: 'text-xs mt-3' }} />
               <ScrollToTop />
             </Providers>
           </AuthWrapper>
         </SessionWrapper>
+        <Analytics />
       </body>
     </html>
 

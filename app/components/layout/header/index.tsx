@@ -361,6 +361,7 @@ const Header = () => {
 
       const backdropOpacity = Math.min(scrollY / 80, 1)
       const shadowIntensity = Math.min(scrollY / 60, 1)
+      const mobileOpacity = isScrolled ? backdropOpacity : 0.9
 
       const headerStyle = {
             background: isScrolled
@@ -388,23 +389,23 @@ const Header = () => {
 
       const mobileMenuStyle = {
             background: isScrolled
-                  ? `rgba(255, 255, 255, ${0.95 * backdropOpacity})`
-                  : `rgba(255, 255, 255, ${0.85 * backdropOpacity})`,
-            backdropFilter: `blur(${8 + (4 * backdropOpacity)}px)`,
-            WebkitBackdropFilter: `blur(${8 + (4 * backdropOpacity)}px)`,
+                  ? `rgba(255, 255, 255, ${0.95 * mobileOpacity})`
+                  : `rgba(255, 255, 255, ${0.85 * mobileOpacity})`,
+            backdropFilter: `blur(${8 + (4 * mobileOpacity)}px)`,
+            WebkitBackdropFilter: `blur(${8 + (4 * mobileOpacity)}px)`,
             boxShadow: `0 4px ${12 * shadowIntensity}px rgba(0, 0, 0, ${0.1 * shadowIntensity})`,
-            borderTop: `1px solid rgba(229, 231, 235, ${0.2 * backdropOpacity})`,
+            borderTop: `1px solid rgba(229, 231, 235, ${0.2 * mobileOpacity})`,
             transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
       }
 
       const mobileMenuStyleDark = {
             background: isScrolled
-                  ? `rgba(17, 24, 39, ${0.95 * backdropOpacity})`
-                  : `rgba(17, 24, 39, ${0.85 * backdropOpacity})`,
-            backdropFilter: `blur(${8 + (4 * backdropOpacity)}px)`,
-            WebkitBackdropFilter: `blur(${8 + (4 * backdropOpacity)}px)`,
+                  ? `rgba(17, 24, 39, ${0.95 * mobileOpacity})`
+                  : `rgba(17, 24, 39, ${0.85 * mobileOpacity})`,
+            backdropFilter: `blur(${8 + (4 * mobileOpacity)}px)`,
+            WebkitBackdropFilter: `blur(${8 + (4 * mobileOpacity)}px)`,
             boxShadow: `0 4px ${12 * shadowIntensity}px rgba(0, 0, 0, ${0.25 * shadowIntensity})`,
-            borderTop: `1px solid rgba(75, 85, 99, ${0.2 * backdropOpacity})`,
+            borderTop: `1px solid rgba(75, 85, 99, ${0.2 * mobileOpacity})`,
             transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
       }
 
