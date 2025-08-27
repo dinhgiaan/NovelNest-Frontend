@@ -9,9 +9,8 @@ import { AuthContext } from "../../context/auth.context"
 import Link from "next/link"
 import { signIn, useSession } from "next-auth/react"
 import axios, { AxiosError } from "axios"
-import { Eye, EyeOff, Github, HomeIcon, MoveLeft } from "lucide-react";
+import { Eye, EyeOff, Github, HomeIcon } from "lucide-react";
 import Google from "./components/svg/google.svg";
-import ButtonBack from "@/app/components/ui/button.back";
 
 const setStoredData = (key: string, value: string): void => {
       if (typeof window === 'undefined') return;
