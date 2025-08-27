@@ -23,7 +23,7 @@ const Filter = ({ onFilterChange, className = "" }: FilterProps) => {
 
       const { data: categoriesData } = useSWR<Category[]>('categories', () => bookService.getCategories());
       const { data: priceRangeData } = useSWR('price-range', () => bookService.getPriceRange());
-      // const { data: publishersData } = useSWR('publishers', () => bookService.getPublishers());
+      const { data: publishersData } = useSWR('get-all-publishers', () => bookService.getPublishers());
 
       useEffect(() => {
             const categories = searchParams.getAll('categories');
@@ -137,13 +137,13 @@ const Filter = ({ onFilterChange, className = "" }: FilterProps) => {
             );
       };
 
-      // const togglePublisher = (publisherName: string) => {
-      //       setSelectedPublishers(prev =>
-      //             prev.includes(publisherName)
-      //                   ? prev.filter(name => name !== publisherName)
-      //                   : [...prev, publisherName]
-      //       );
-      // };
+      const togglePublisher = (publisherName: string) => {
+            setSelectedPublishers(prev =>
+                  prev.includes(publisherName)
+                        ? prev.filter(name => name !== publisherName)
+                        : [...prev, publisherName]
+            );
+      };
 
       return (
             <div className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded ${className}`}>
@@ -253,15 +253,15 @@ const Filter = ({ onFilterChange, className = "" }: FilterProps) => {
                               )}
 
                               {/* Publishers */}
-                              {/* {publishersData && publishersData.length > 0 && (
-                                    < div className="grid grid-cols-12 items-center gap-4">
+                              {publishersData?.data && publishersData.data.length > 0 && (
+                                    <div className="grid grid-cols-12 items-center gap-4">
                                           <label className="col-span-2 lg:col-span-1 text-xs dark:text-[#e0dcdc] font-semibold text-right">Nhà xuất bản:</label>
                                           <div className="col-span-10 xl:col-span-11">
                                                 <div className="flex flex-wrap gap-1.5">
-                                                      {publishersData.map((publisher) => (
+                                                      {publishersData.data.map((publisher) => (
                                                             <Chip
                                                                   key={publisher.name}
-                                                                  label={publisher.name}
+                                                                  label={`${publisher.name} (${publisher.count})`}
                                                                   clickable
                                                                   onClick={() => togglePublisher(publisher.name)}
                                                                   variant="outlined"
@@ -271,6 +271,8 @@ const Filter = ({ onFilterChange, className = "" }: FilterProps) => {
                                                                         height: '24px',
                                                                         fontSize: '11px',
                                                                         fontWeight: 500,
+                                                                        borderWidth: '0.5px',
+                                                                        borderStyle: 'solid',
                                                                         borderColor: selectedPublishers.includes(publisher.name)
                                                                               ? '#6dced1'
                                                                               : '#63666b',
@@ -280,16 +282,21 @@ const Filter = ({ onFilterChange, className = "" }: FilterProps) => {
                                                                               : '#91949c',
                                                                         '& .MuiChip-label': { px: 1 },
                                                                         '&:hover': {
-                                                                              backgroundColor: selectedPublishers.includes(publisher.name) ? '#047857' : '#f9fafb',
-                                                                              borderColor: selectedPublishers.includes(publisher.name) ? '#047857' : '#9ca3af',
-                                                                        }
+                                                                              backgroundColor: 'transparent',
+                                                                              borderColor: selectedPublishers.includes(publisher.name)
+                                                                                    ? '#2563eb'
+                                                                                    : 'rgba(0,0,0,0.2)',
+                                                                              color: selectedPublishers.includes(publisher.name)
+                                                                                    ? '#2563eb'
+                                                                                    : '#374151',
+                                                                        },
                                                                   }}
                                                             />
                                                       ))}
                                                 </div>
                                           </div>
-                                    </>
-                              )} */}
+                                    </div>
+                              )}
 
                               {/* Price Range */}
                               {priceRangeData?.data && (

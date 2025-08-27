@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { Box, Tabs, Tab, Typography, Card, CardContent, Chip, Avatar, Alert, CircularProgress, Paper, Stack, Divider, Container, useTheme }
       from "@mui/material"
-import { BookOpen, Star, CreditCard, PackageSearch, BadgeCheck } from "lucide-react"
+import { BookOpen, Star, CreditCard, BadgeCheck } from "lucide-react"
 import useSWR from "swr"
 import { orderService } from "@/app/lib/api/order"
 import type { AuthContextType } from "@/app/context/auth.context"
@@ -180,11 +180,6 @@ const OrderHistory = ({ userInfo }: IProps) => {
                                     border: `1px dashed ${theme.palette.divider}`,
                               }}
                         >
-                              <PackageSearch
-                                    size={48}
-                                    color={theme.palette.text.secondary}
-                                    style={{ marginBottom: 16 }}
-                              />
                               <Typography variant="subtitle1" color="text.primary" gutterBottom fontWeight={600}>
                                     Chưa có đơn hàng nào
                               </Typography>

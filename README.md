@@ -47,7 +47,7 @@ NovelNest cung cấp trải nghiệm toàn diện: từ xem thông tin chi tiế
 - Lọc theo **thể loại, giá tiền, rating**.
 - Tìm kiếm sách theo tên, tác giả hoặc từ khóa.
 
-![Khám phá sách](https://res.cloudinary.com/duw4cwp7d/image/upload/v1755450642/novelnest-books_sjwpqs.png)
+![Khám phá sách](https://res.cloudinary.com/duw4cwp7d/image/upload/v1755505840/novelnest-books_peai58.png)
 
 ---
 
@@ -59,7 +59,15 @@ NovelNest cung cấp trải nghiệm toàn diện: từ xem thông tin chi tiế
 
 ---
 
-### 4. Login
+### 4. Đọc sách
+- Các thông tin về sách: tên, tác giả, số trang.
+- Các chức năng cơ bản: scroll và phím mũi tên di chuyển trang, search, theme, font size.
+
+![Đọc sách](https://res.cloudinary.com/duw4cwp7d/image/upload/v1755788134/read_gwdv5b.png)
+
+---
+
+### 5. Login
 - Cho phép người dùng đăng nhập để trải nghiệm đầy đủ các tính năng.
 - Xác thực thông tin email và mật khẩu.
 
@@ -67,7 +75,7 @@ NovelNest cung cấp trải nghiệm toàn diện: từ xem thông tin chi tiế
 
 ---
 
-### 5. Register
+### 6. Register
 - Người dùng mới có thể đăng ký tài khoản.
 - Thu thập thông tin cơ bản: email, mật khẩu, tên người dùng.
 
@@ -75,7 +83,7 @@ NovelNest cung cấp trải nghiệm toàn diện: từ xem thông tin chi tiế
 
 ---
 
-### 6. Giới thiệu NovelNest
+### 7. Giới thiệu NovelNest
 - Câu chuyện ra đời của NovelNest.
 - Mục đích, tầm nhìn và giá trị mang đến cho độc giả.
 
@@ -83,7 +91,7 @@ NovelNest cung cấp trải nghiệm toàn diện: từ xem thông tin chi tiế
 
 ---
 
-### 7. FAQ
+### 8. FAQ
 - Giải đáp các thắc mắc phổ biến từ độc giả.
 
 ![FAQ](https://res.cloudinary.com/duw4cwp7d/image/upload/v1755450641/novelnest-faq_zfunmx.png)

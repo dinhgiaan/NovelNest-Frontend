@@ -9,7 +9,7 @@ import { AuthContext } from "../../context/auth.context"
 import Link from "next/link"
 import { signIn, useSession } from "next-auth/react"
 import axios, { AxiosError } from "axios"
-import { Eye, EyeOff, Github, MoveLeft } from "lucide-react";
+import { Eye, EyeOff, Github, HomeIcon, MoveLeft } from "lucide-react";
 import Google from "./components/svg/google.svg";
 import ButtonBack from "@/app/components/ui/button.back";
 
@@ -134,13 +134,19 @@ const LoginPage = () => {
             }
       }
 
+      const handlePress = (e: React.KeyboardEvent) => {
+            if (e.key === "Enter") {
+                  handleLogin();
+            }
+      }
+
       return (
             <section className="bg-bannerLogin bg-repeat bg-cover bg-bottom w-full h-screen relative overflow-hidden">
 
-                  <ButtonBack className="absolute top-3 left-2 flex items-center space-x-1 text-[#675d5d] hover:text-white">
-                        <MoveLeft className="sm:size-5" />
-                        <span>Quay lại</span>
-                  </ButtonBack>
+                  <div className="flex space-x-1 ml-3 mt-3 bg-blue-600 px-3 py-1 max-w-fit rounded-full hover:bg-orange-700">
+                        <HomeIcon size={19} className="hover:" />
+                        <span className="font-light">Trang chủ</span>
+                  </div>
 
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex items-center justify-center px-4">
                         <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-lg shadow-xl px-10 py-10 sm:py-14">
@@ -157,6 +163,7 @@ const LoginPage = () => {
                                           className="w-full"
                                           InputProps={{ style: { borderRadius: 4, color: "black" } }}
                                           size="small"
+                                          onKeyDown={handlePress}
                                     />
 
                                     <TextField
@@ -167,6 +174,7 @@ const LoginPage = () => {
                                           onChange={(e) => setPassword(e.target.value)}
                                           className="w-full"
                                           size="small"
+                                          onKeyDown={handlePress}
                                           InputProps={{
                                                 endAdornment: (
                                                       <InputAdornment position="end">
