@@ -1,193 +1,209 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import axios from 'axios';
-import { CircularProgress } from '@mui/material';
-import { Search } from 'lucide-react';
+import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import axios from "axios";
+import { Search, X, Star } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const API_URL = process.env.NEXT_PUBLIC_BASE_API_URL_2;
 
 const SearchBar = () => {
-      const [searchQuery, setSearchQuery] = useState('');
-      const [searchResults, setSearchResults] = useState<IBook[]>([]);
-      const [isLoading, setIsLoading] = useState(false);
-      const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-      const pathname = usePathname();
-      const searchRef = useRef<HTMLDivElement>(null);
-      const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<IBook[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const ref = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-      // Close dropdown when clicking outside
-      useEffect(() => {
-            const handleClickOutside = (event: MouseEvent) => {
-                  if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-                        setIsDropdownOpen(false);
-                  }
-            };
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setIsOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
-            document.addEventListener('mousedown', handleClickOutside);
-            return () => {
-                  document.removeEventListener('mousedown', handleClickOutside);
-            };
-      }, []);
+  useEffect(() => {
+    setQuery("");
+    setResults([]);
+    setIsOpen(false);
+  }, [pathname]);
 
-      // Reset search when navigating
-      useEffect(() => {
-            setSearchQuery('');
-            setSearchResults([]);
-            setIsDropdownOpen(false);
-      }, [pathname]);
+  useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (query.trim().length < 1) {
+      setResults([]);
+      setIsOpen(false);
+      setLoading(false);
+      return;
+    }
 
-      // Handle search with debounce + fake loading
-      useEffect(() => {
-            if (searchTimeout.current) {
-                  clearTimeout(searchTimeout.current);
-            }
+    timerRef.current = setTimeout(async () => {
+      setLoading(true);
+      setIsOpen(true);
+      try {
+        const [{ data }] = await Promise.all([
+          axios.get(`${API_URL}/search?title=${encodeURIComponent(query)}`),
+          new Promise((r) => setTimeout(r, 600)),
+        ]);
+        setResults(data.success ? data.data : []);
+      } catch {
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 500);
 
-            if (searchQuery.trim().length < 1) {
-                  setSearchResults([]);
-                  setIsDropdownOpen(false);
-                  setIsLoading(false);
-                  return;
-            }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [query]);
 
-            // Debounce delay: 1.5s
-            searchTimeout.current = setTimeout(async () => {
-                  setIsLoading(true);
-                  setIsDropdownOpen(true);
+  const clear = () => {
+    setQuery("");
+    setResults([]);
+    setIsOpen(false);
+    inputRef.current?.focus();
+  };
 
-                  try {
-                        // Gọi API ngay lập tức
-                        const apiCall = axios.get(`${API_URL}/search?title=${encodeURIComponent(searchQuery)}`);
+  return (
+    <div ref={ref} className="relative w-full max-w-lg">
+      <div className="flex items-center bg-ink/5 border border-white/30 rounded-sm transition-colors duration-200 focus-within:border-accent focus-within:bg-ink/10">
+        <div className="px-3.5 py-3 shrink-0">
+          {loading ? (
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+              className="w-4 h-4 rounded-full border-2 border-ink/15 border-t-accent"
+            />
+          ) : (
+            <Search size={16} className="text-ink-muted" />
+          )}
+        </div>
 
-                        // Tạo fake loading delay 0.8s
-                        const fakeDelay = new Promise(resolve => setTimeout(resolve, 800));
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Tìm kiếm sách, tác giả..."
+          className="flex-1 bg-transparent border-none outline-none text-ink font-body text-[0.875rem] py-3 placeholder:text-ink-faint"
+          autoComplete="off"
+          spellCheck={false}
+        />
 
-                        // Chờ cả API call và fake delay hoàn thành
-                        const [{ data }] = await Promise.all([apiCall, fakeDelay]);
+        <AnimatePresence>
+          {query.length > 0 && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.7 }}
+              transition={{ duration: 0.15 }}
+              onClick={clear}
+              className="p-3 shrink-0 bg-transparent border-none cursor-pointer text-ink-faint flex hover:text-ink transition-colors">
+              <X size={14} />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
 
-                        if (data.success) {
-                              setSearchResults(data.data);
-                        } else {
-                              setSearchResults([]);
-                        }
-                  } catch (error) {
-                        console.error('Search error:', error);
-                        setSearchResults([]);
-                  } finally {
-                        setIsLoading(false);
-                  }
-            }, 1500);
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="absolute top-[calc(100%+8px)] left-0 right-0 bg-surface border border-ink/10 border-t-2 border-t-accent rounded-sm shadow-[0_16px_48px_rgba(0,0,0,0.4)] z-50 overflow-hidden max-h-[min(380px,60vh)] overflow-y-auto">
+            {loading ? (
+              <div className="p-4 space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex gap-3 items-start animate-pulse">
+                    <div className="w-10 h-[54px] bg-ink/5 rounded-sm shrink-0" />
+                    <div className="flex-1 space-y-2 pt-1">
+                      <div className="h-2.5 bg-ink/5 rounded-sm w-3/4" />
+                      <div className="h-2 bg-ink/5 rounded-sm w-[45%]" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : results.length > 0 ? (
+              <div>
+                <div className="px-3.5 py-2 border-b border-ink/5">
+                  <span className="font-display text-[0.62rem] tracking-[0.22em] text-ink-faint uppercase">
+                    {results.length} KẾT QUẢ
+                  </span>
+                </div>
 
-            return () => {
-                  if (searchTimeout.current) {
-                        clearTimeout(searchTimeout.current);
-                  }
-            };
-      }, [searchQuery]);
+                {results.map((book, i) => (
+                  <motion.div
+                    key={book._id}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.04 }}>
+                    <Link
+                      href={`/books/detail/${book.slug}`}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-start gap-3 px-3.5 py-3 border-b border-ink/5 transition-colors duration-150 hover:bg-ink/5">
+                      {/* Thumbnail */}
+                      <div className="w-10 h-[54px] rounded-sm overflow-hidden shrink-0 border border-ink/10 relative">
+                        {book.thumbnail?.url ? (
+                          <Image
+                            src={book.thumbnail.url}
+                            alt={book.title}
+                            fill
+                            className="object-cover"
+                            sizes="40px"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-ink/5" />
+                        )}
+                      </div>
 
-      // Render stars based on rating
-      const renderStars = (rating: number) => {
-            const stars = [];
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 >= 0.5;
-
-            for (let i = 0; i < 5; i++) {
-                  if (i < fullStars) {
-                        stars.push(<span key={i} className="text-yellow-500">★</span>);
-                  } else if (i === fullStars && hasHalfStar) {
-                        stars.push(<span key={i} className="text-yellow-500">★</span>);
-                  } else {
-                        stars.push(<span key={i} className="text-gray-300">★</span>);
-                  }
-            }
-
-            return stars;
-      };
-
-      return (
-            <div className="w-full sm:max-w-full md:max-w-sm lg:max-w-sm xl:max-w-xs relative" ref={searchRef}>
-                  <form className="flex">
-                        <div className="flex w-full group border-2 border-transparent focus-within:border-blue-500 focus-within:bg-white dark:focus-within:bg-gray-900 dark:focus-within:border-blue-400 bg-[#f3f1f1] dark:bg-[#1c273d] transition rounded-sm overflow-hidden">
-                              <div className="px-2 sm:px-4 flex items-center bg-inherit flex-shrink-0 cursor-default">
-                                    <Search size={20} />
-                              </div>
-
-                              <input
-                                    type="text"
-                                    placeholder="Tìm kiếm sách, tên tác giả"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full py-2 text-sm sm:text-base text-black dark:text-white focus:outline-none focus:ring-0 bg-inherit placeholder-gray-500 dark:placeholder-gray-400"
-                                    autoComplete="off"
-                              />
-                        </div>
-                  </form>
-
-                  {isDropdownOpen && (
-                        <div className="absolute w-full z-20 xl:max-w-full py-2 bg-[#19151a] dark:bg-[#0b0c11] rounded-md shadow-lg max-h-80 sm:max-h-96 overflow-y-auto">
-                              {isLoading ? (
-                                    <div className="flex items-center justify-center p-4">
-                                          <CircularProgress size={24} />
-                                          <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Đang tìm kiếm...</span>
-                                    </div>
-                              ) : searchResults.length > 0 ? (
-                                    <div className='max-w-full'>
-                                          {searchResults.map((book) => (
-                                                <Link
-                                                      key={book._id}
-                                                      href={`/books/detail/${book.slug}`}
-                                                      className="flex items-start p-3 sm:p-4 hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-600 last:border-b-0 transition-colors"
-                                                      onClick={() => setIsDropdownOpen(false)}
-                                                >
-                                                      {/* Book thumbnail - responsive sizing */}
-                                                      <div className="w-10 h-14 sm:w-12 sm:h-16 flex-shrink-0 mr-3 overflow-hidden rounded">
-                                                            {book.thumbnail?.url ? (
-                                                                  <Image
-                                                                        src={book.thumbnail.url}
-                                                                        alt={book.title}
-                                                                        width={48}
-                                                                        height={64}
-                                                                        className="object-cover w-full h-full"
-                                                                  />
-                                                            ) : (
-                                                                  <div className="w-full h-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center rounded">
-                                                                        <span className="text-xs text-gray-300 dark:text-gray-400">Hình ảnh không khả dụng</span>
-                                                                  </div>
-                                                            )}
-                                                      </div>
-
-                                                      {/* Book details - responsive text */}
-                                                      <div className="flex-1 min-w-0">
-                                                            <h3 className="font-medium text-sm sm:text-base text-black dark:text-white line-clamp-2">
-                                                                  {book.title}
-                                                            </h3>
-                                                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate mt-1">
-                                                                  {book.author}
-                                                            </p>
-                                                            <div className="flex items-center text-xs sm:text-sm mt-1">
-                                                                  <div className="flex">
-                                                                        {renderStars(book.rating ?? 0)}
-                                                                  </div>
-                                                                  <span className="ml-1 text-gray-600 dark:text-gray-400">
-                                                                        {book?.rating?.toFixed(1)}
-                                                                  </span>
-                                                            </div>
-                                                      </div>
-                                                </Link>
-                                          ))}
-                                    </div>
-                              ) : (
-                                    <div className="p-4 text-center text-gray-300 dark:text-gray-400">
-                                          <div className="text-sm">Không tìm thấy kết quả nào</div>
-                                    </div>
-                              )}
-                        </div>
-                  )}
-            </div>
-      );
-}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-body font-semibold text-[0.82rem] text-ink leading-[1.35] line-clamp-2">
+                          {book.title}
+                        </p>
+                        <p className="font-serif text-[0.7rem] text-ink-muted italic truncate mt-0.5">
+                          {book.author}
+                        </p>
+                        {book.rating !== undefined && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <Star
+                              size={10}
+                              className="text-gold fill-current"
+                            />
+                            <span className="text-gold text-[0.68rem] font-body">
+                              {book.rating.toFixed(1)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-10 px-4 text-center">
+                <p className="font-display text-[1.1rem] tracking-[0.06em] text-ink-faint mb-1">
+                  KHÔNG TÌM THẤY
+                </p>
+                <p className="text-ink-faint/80 font-body text-[0.78rem]">
+                  Thử tìm với từ khoá khác
+                </p>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 export default SearchBar;

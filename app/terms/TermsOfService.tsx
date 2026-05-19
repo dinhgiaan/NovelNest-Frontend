@@ -1,162 +1,215 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { ChevronDown, ArrowLeft } from 'lucide-react';
-import ButtonBack from '../components/ui/button.back';
+import { ArrowLeft } from "lucide-react";
+import ButtonBack from "../components/ui/button.back";
 
-type SectionProps = {
-      title: string;
-      children: React.ReactNode;
-      isOpen?: boolean;
-      onToggle?: () => void;
-};
+const TERMS_SECTIONS = [
+  {
+    id: "01",
+    title: "Giới thiệu",
+    content: (
+      <p>
+        Chào mừng bạn đến với <strong>NovelNest</strong>. Bằng việc truy cập và
+        sử dụng dịch vụ của chúng tôi, bạn xác nhận rằng bạn đã đọc, hiểu và
+        đồng ý tuân thủ, bị ràng buộc bởi các điều khoản và điều kiện được quy
+        định dưới đây.
+      </p>
+    ),
+  },
+  {
+    id: "02",
+    title: "Định nghĩa",
+    content: (
+      <ul className="list-none space-y-3">
+        <li>
+          — <strong>&quot;Dịch vụ&quot;</strong>: Nền tảng đọc sách, chia sẻ và
+          các tiện ích liên quan do NovelNest cung cấp.
+        </li>
+        <li>
+          — <strong>&quot;Người dùng&quot;</strong>: Mọi cá nhân hoặc tổ chức
+          truy cập, đăng ký và sử dụng dịch vụ.
+        </li>
+        <li>
+          — <strong>&quot;Nội dung&quot;</strong>: Bao gồm mọi văn bản, hình
+          ảnh, đồ họa, âm thanh, video hoặc các tài liệu khác được hiển thị hoặc
+          đăng tải trên nền tảng.
+        </li>
+      </ul>
+    ),
+  },
+  {
+    id: "03",
+    title: "Quyền và Nghĩa vụ của Người dùng",
+    content: (
+      <ul className="list-none space-y-3">
+        <li>
+          — Cung cấp thông tin đầy đủ, chính xác khi đăng ký và cập nhật tài
+          khoản.
+        </li>
+        <li>
+          — Cam kết không đăng tải nội dung vi phạm pháp luật, xâm phạm bản
+          quyền, hoặc đi ngược lại thuần phong mỹ tục.
+        </li>
+        <li>
+          — Tuyệt đối không sử dụng dịch vụ để phát tán phần mềm độc hại, thư
+          rác hoặc can thiệp trái phép vào hệ thống.
+        </li>
+        <li>
+          — Chịu hoàn toàn trách nhiệm bảo mật thông tin đăng nhập và mọi hoạt
+          động diễn ra dưới tài khoản của mình.
+        </li>
+      </ul>
+    ),
+  },
+  {
+    id: "04",
+    title: "Quyền và Nghĩa vụ của NovelNest",
+    content: (
+      <ul className="list-none space-y-3">
+        <li>
+          — Nỗ lực cung cấp dịch vụ ổn định, an toàn và bảo mật cho người dùng.
+        </li>
+        <li>
+          — Có quyền kiểm duyệt, xóa bỏ nội dung hoặc tạm ngừng, chấm dứt tài
+          khoản vi phạm các điều khoản mà không cần báo trước.
+        </li>
+        <li>
+          — Cam kết bảo vệ thông tin cá nhân của người dùng tuân thủ theo Chính
+          sách Bảo mật hiện hành.
+        </li>
+      </ul>
+    ),
+  },
+  {
+    id: "05",
+    title: "Sở hữu Trí tuệ",
+    content: (
+      <p>
+        Mọi nội dung, mã nguồn, thiết kế và tài nguyên nền tảng trên NovelNest
+        (ngoại trừ các nội dung do chính người dùng hoặc tác giả độc lập tạo ra
+        và cấp phép) đều thuộc quyền sở hữu của NovelNest hoặc các đối tác cấp
+        phép, và được bảo vệ nghiêm ngặt bởi luật bản quyền sở hữu trí tuệ quốc
+        tế.
+      </p>
+    ),
+  },
+  {
+    id: "06",
+    title: "Giới hạn Trách nhiệm",
+    content: (
+      <div className="space-y-4">
+        <p>
+          Trong phạm vi tối đa được pháp luật cho phép, NovelNest không chịu
+          trách nhiệm đối với bất kỳ thiệt hại trực tiếp, gián tiếp, ngẫu nhiên
+          hoặc mang tính hậu quả nào phát sinh từ việc:
+        </p>
+        <ul className="list-none space-y-3 text-slate-500 italic">
+          <li>— Sử dụng hoặc không thể sử dụng dịch vụ.</li>
+          <li>
+            — Quyền truy cập trái phép hoặc thay đổi nội dung dữ liệu của bạn.
+          </li>
+          <li>— Hành vi của bất kỳ bên thứ ba nào trên nền tảng.</li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    id: "07",
+    title: "Chấm dứt Dịch vụ",
+    content: (
+      <div className="space-y-4">
+        <p>
+          Chúng tôi có quyền đơn phương chấm dứt hoặc đình chỉ quyền truy cập
+          vào dịch vụ của bạn bất kỳ lúc nào, không cần thông báo trước, với các
+          lý do bao gồm nhưng không giới hạn ở việc vi phạm các Điều khoản này.
+        </p>
+        <p className="text-sm font-medium text-slate-800">
+          Người dùng cũng có thể tự do ngừng sử dụng dịch vụ và yêu cầu xóa tài
+          khoản thông qua phần cài đặt bất cứ khi nào.
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: "08",
+    title: "Sửa đổi Điều khoản",
+    content: (
+      <div className="space-y-4">
+        <p>
+          NovelNest bảo lưu quyền cập nhật, sửa đổi hoặc thay thế các điều khoản
+          này tại bất kỳ thời điểm nào. Mọi thay đổi lớn sẽ được thông báo rõ
+          ràng trên website hoặc qua email trước ít nhất 30 ngày.
+        </p>
+        <p className="font-medium text-slate-800 border-l-2 border-slate-300 pl-4">
+          Việc bạn tiếp tục truy cập và sử dụng dịch vụ sau khi các thay đổi có
+          hiệu lực đồng nghĩa với việc bạn hoàn toàn chấp nhận các Điều khoản
+          mới.
+        </p>
+      </div>
+    ),
+  },
+];
 
 const TermsOfServicePage = () => {
-      const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
+  return (
+    <div className="min-h-screen bg-[#FAFCFF] selection:bg-blue-100 selection:text-blue-900">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-20 lg:py-32">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+          <div className="lg:col-span-4 flex flex-col items-start relative">
+            <div className="sticky top-32">
+              <ButtonBack className="group inline-flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-colors text-xs font-semibold uppercase tracking-widest mb-12">
+                <ArrowLeft
+                  size={14}
+                  className="group-hover:-translate-x-1 transition-transform"
+                />
+                <span>Trở về</span>
+              </ButtonBack>
 
-      const toggleSection = (sectionId: string) => {
-            setOpenSections((prev) => ({
-                  ...prev,
-                  [sectionId]: !prev[sectionId],
-            }));
-      };
+              <h1 className="text-4xl lg:text-5xl font-light text-slate-900 tracking-tight leading-tight mb-4">
+                Điều khoản <br className="hidden lg:block" />
+                <span className="font-serif italic text-slate-500">
+                  Dịch vụ
+                </span>
+              </h1>
 
-      return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-                  <header className="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-5 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-black/10" />
-                        <div className="absolute top-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full -translate-x-32 -translate-y-32" />
-                        <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full translate-x-32 translate-y-32" />
+              <div className="w-12 h-[1px] bg-slate-300 my-8" />
 
-                        <div className="max-w-3xl mx-auto px-4 relative z-10">
-                              <ButtonBack className="inline-flex items-center gap-1 text-[#ccc] hover:text-white transition-colors text-[11px]">
-                                    <ArrowLeft size={12} className="flex-shrink-0" />
-                                    <span className="font-medium">Quay lại</span>
-                              </ButtonBack>
-
-                              <div className="text-center mt-3">
-                                    <h1 className="text-2xl md:text-3xl font-bold mb-1">Điều khoản Dịch vụ</h1>
-                                    <p className="text-[11px] text-slate-300">Cập nhật lần cuối: Tháng 08, 2025</p>
-                              </div>
-                        </div>
-                  </header>
-
-                  <main className="max-w-3xl mx-auto px-4 py-6">
-                        <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden divide-y divide-slate-200">
-                              <Section
-                                    title="1. Giới thiệu"
-                                    isOpen={openSections['section-1']}
-                                    onToggle={() => toggleSection('section-1')}
-                              >
-                                    <p className="text-[13px]">
-                                          Chào mừng bạn đến với <strong>NovelNest</strong>. Khi sử dụng dịch vụ của chúng tôi,
-                                          bạn đồng ý tuân thủ và bị ràng buộc bởi các điều khoản dưới đây.
-                                    </p>
-                              </Section>
-
-                              <Section
-                                    title="2. Định nghĩa"
-                                    isOpen={openSections['section-2']}
-                                    onToggle={() => toggleSection('section-2')}
-                              >
-                                    <ul className="list-disc list-inside space-y-1 text-[13px]">
-                                          <li><strong>&quot;Dịch vụ&quot;</strong> là nền tảng đọc và chia sẻ sách của NovelNest.</li>
-                                          <li><strong>&quot;Người dùng&quot;</strong> là cá nhân hoặc tổ chức sử dụng dịch vụ.</li>
-                                          <li><strong>&quot;Nội dung&quot;</strong> là mọi văn bản, hình ảnh, âm thanh, video được đăng tải.</li>
-                                    </ul>
-                              </Section>
-
-                              <Section
-                                    title="3. Quyền và nghĩa vụ của Người dùng"
-                                    isOpen={openSections['section-3']}
-                                    onToggle={() => toggleSection('section-3')}
-                              >
-                                    <ul className="list-disc list-inside space-y-1 text-[13px]">
-                                          <li>Cung cấp thông tin chính xác khi đăng ký tài khoản.</li>
-                                          <li>Không đăng tải nội dung vi phạm pháp luật, bản quyền hoặc thuần phong mỹ tục.</li>
-                                          <li>Không sử dụng dịch vụ để phát tán phần mềm độc hại.</li>
-                                          <li>Chịu trách nhiệm về mọi hoạt động diễn ra dưới tài khoản của mình.</li>
-                                    </ul>
-                              </Section>
-
-                              <Section
-                                    title="4. Quyền và nghĩa vụ của NovelNest"
-                                    isOpen={openSections['section-4']}
-                                    onToggle={() => toggleSection('section-4')}
-                              >
-                                    <ul className="list-disc list-inside space-y-1 text-[13px]">
-                                          <li>Cung cấp dịch vụ ổn định và bảo mật.</li>
-                                          <li>Có quyền tạm ngừng hoặc chấm dứt tài khoản vi phạm điều khoản.</li>
-                                          <li>Bảo vệ thông tin cá nhân theo Chính sách Bảo mật.</li>
-                                    </ul>
-                              </Section>
-
-                              <Section
-                                    title="5. Sở hữu trí tuệ"
-                                    isOpen={openSections['section-5']}
-                                    onToggle={() => toggleSection('section-5')}
-                              >
-                                    <p className="text-[13px]">
-                                          Mọi nội dung và tài nguyên trên NovelNest (trừ nội dung do người dùng tạo)
-                                          thuộc quyền sở hữu của NovelNest hoặc bên cấp phép, được bảo vệ bởi luật bản quyền.
-                                    </p>
-                              </Section>
-
-                              <Section
-                                    title="6. Giới hạn trách nhiệm"
-                                    isOpen={openSections['section-6']}
-                                    onToggle={() => toggleSection('section-6')}
-                              >
-                                    <p className="text-[13px]">
-                                          NovelNest không chịu trách nhiệm với thiệt hại gián tiếp, ngẫu nhiên hoặc hậu quả
-                                          phát sinh từ việc sử dụng hoặc không thể sử dụng dịch vụ.
-                                    </p>
-                              </Section>
-
-                              <Section
-                                    title="7. Chấm dứt dịch vụ"
-                                    isOpen={openSections['section-7']}
-                                    onToggle={() => toggleSection('section-7')}
-                              >
-                                    <p className="text-[13px]">
-                                          Chúng tôi có quyền chấm dứt hoặc tạm ngừng dịch vụ bất kỳ lúc nào với người dùng vi phạm.
-                                          Người dùng cũng có thể ngừng sử dụng dịch vụ bất cứ khi nào.
-                                    </p>
-                              </Section>
-
-                              <Section
-                                    title="8. Sửa đổi điều khoản"
-                                    isOpen={openSections['section-8']}
-                                    onToggle={() => toggleSection('section-8')}
-                              >
-                                    <p className="text-[13px]">
-                                          NovelNest có thể thay đổi điều khoản này. Các thay đổi sẽ được thông báo trước ít nhất 30 ngày.
-                                          Việc tiếp tục sử dụng dịch vụ đồng nghĩa với việc chấp nhận điều khoản mới.
-                                    </p>
-                              </Section>
-                        </div>
-                  </main>
+              <div className="text-xs uppercase tracking-widest text-slate-400 mb-2">
+                Cập nhật lần cuối
+              </div>
+              <p className="text-sm text-slate-600 font-medium">
+                Tháng 08, 2025
+              </p>
             </div>
-      );
-};
+          </div>
 
-const Section = ({ title, children, isOpen = false, onToggle }: SectionProps) => (
-      <div>
-            <button
-                  onClick={onToggle}
-                  className="w-full flex items-center justify-between px-3 py-3 text-left hover:bg-slate-50 transition-colors"
-            >
-                  <h3 className="text-[15px] font-semibold text-slate-800">{title}</h3>
-                  <ChevronDown
-                        className={`w-3.5 h-3.5 text-slate-400 transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                  />
-            </button>
-            {isOpen && (
-                  <div className="px-3 pb-3">
-                        <div className="text-slate-600 space-y-2">{children}</div>
+          <div className="lg:col-span-8 flex flex-col gap-24 pt-4 lg:pt-24">
+            {TERMS_SECTIONS.map((section) => (
+              <section
+                key={section.id}
+                id={`section-${section.id}`}
+                className="group">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start">
+                  <div className="text-4xl md:text-5xl font-light text-slate-200 font-serif leading-none group-hover:text-blue-200 transition-colors duration-500">
+                    {section.id}
                   </div>
-            )}
+
+                  <div className="flex-1">
+                    <h2 className="text-xl font-semibold text-slate-800 mb-6 tracking-tight">
+                      {section.title}
+                    </h2>
+                    <div className="text-slate-600 leading-relaxed text-[15px] max-w-2xl">
+                      {section.content}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
       </div>
-);
+    </div>
+  );
+};
 
 export default TermsOfServicePage;

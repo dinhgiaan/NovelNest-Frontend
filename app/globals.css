@@ -1,95 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg:          #F7F4EF;
+  --bg-alt:      #EDEAE3;
+  --surface:     #FFFFFF;
+  --ink:         #0D0D0D;
+  --ink-muted:   #5A5A5A;
+  --ink-faint:   #c85da5;
+  --accent:      #D94F3D;
+  --accent-dark: #B33B2A;
+  --accent-light:#F5C5BF;
+  --gold:        #C9993A;
+  --gold-light:  #F0DCA8;
+  --font-display:'Oswald', sans-serif;
+  --font-serif:  'Cormorant Garamond', serif;
+  --font-body:   'Be Vietnam Pro', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --bg:          #0E0E0E;
+  --bg-alt:      #161616;
+  --surface:     #1C1C1C;
+  --ink:         #F2EFE9;
+  --ink-muted:   #A8A49C;
+  --ink-faint:   #95844f;
+  --accent:      #E8614E;
+  --accent-dark: #D94F3D;
+  --accent-light:#3D1A16;
+  --gold:        #D4A84B;
+  --gold-light:  #2A2010;
+}
+
+/* ─── Base ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
+::selection { background: var(--accent); color: #fff; }
 
-.font-myFontCustom {
-  font-family: var(--myFontCustom);
-}
-
-/* Tùy chỉnh cho Webkit browsers (Chrome, Safari, newer versions of Opera) */
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 8px;
-}
-
+/* ─── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-alt); }
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 8px;
-  border: 3px solid #f1f1f1;
+  background: var(--ink-faint);
+  border-radius: 4px;
+  border: 2px solid var(--bg-alt);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+* { scrollbar-width: thin; scrollbar-color: var(--ink-faint) var(--bg-alt); }
+
+/* ─── Animations ────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(calc(-50% - 2.5rem)); }
+}
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes disco {
+  0%   { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}
+@keyframes blink {
+  from, to { border-color: transparent; }
+  50%       { border-color: var(--accent); }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
+.animate-fade-up  { animation: fadeUp 0.65s cubic-bezier(0.4,0,0.2,1) both; }
+.animate-fade-in  { animation: fadeIn 0.5s ease both; }
+.animate-marquee  { animation: marquee 10s linear infinite; }
+.animate-shimmer  { animation: shimmer 2s infinite; }
+.animate-disco    { animation: disco 1.5s linear infinite; }
+.animate-marquee:hover { animation-play-state: paused; }
 
-/* Tùy chỉnh cho Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #c1c1c1 #f1f1f1;
-}
+/* ─── Custom utilities ──────────────────────────────────── */
+@layer utilities {
+  .font-display { font-family: var(--font-display); letter-spacing: 0.02em; }
+  .font-serif   { font-family: var(--font-serif); }
+  .font-body    { font-family: var(--font-body); }
 
-/* Tùy chỉnh cho Edge và IE */
-body {
-  -ms-overflow-style: none;
-  scrollbar-width: thin;
-}
+  .text-ink       { color: var(--ink); }
+  .text-ink-muted { color: var(--ink-muted); }
+  .text-ink-faint { color: var(--ink-faint); }
+  .text-accent    { color: var(--accent); }
+  .text-gold      { color: var(--gold); }
+  .bg-surface     { background: var(--surface); }
+  .bg-base        { background: var(--bg); }
+  .bg-alt         { background: var(--bg-alt); }
 
-/* Tùy chỉnh cho dark mode */
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-track {
-    background: #2d2d2d;
+  .text-accent-gradient {
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  ::-webkit-scrollbar-thumb {
-    background: #666;
-    border: 3px solid #2d2d2d;
-  }
+  .stagger-1 { animation-delay: 80ms; }
+  .stagger-2 { animation-delay: 180ms; }
+  .stagger-3 { animation-delay: 280ms; }
+  .stagger-4 { animation-delay: 380ms; }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: #808080;
-  }
-
-  * {
-    scrollbar-color: #666 #2d2d2d;
-  }
+  .will-change-transform { will-change: transform; }
 }
 
-.animate-marquee:hover {
-  animation-play-state: paused;
+/* ─── Skeleton loader ───────────────────────────────────── */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-alt);
+  border-radius: 4px;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%);
+  animation: shimmer 1.8s infinite;
 }
 
-.will-change-transform {
-  will-change: transform;
-}
+.font-myFontCustom { font-family: var(--myFontCustom); }
 
 .transition-all {
-  transition-property: transform, opacity, box-shadow;
+  transition-property: transform, opacity, box-shadow, background-color, color, border-color;
 }

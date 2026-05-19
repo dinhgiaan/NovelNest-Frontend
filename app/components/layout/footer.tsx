@@ -1,139 +1,133 @@
-import { Facebook, Github, Linkedin, Mail, MapPinned, Phone } from 'lucide-react';
-import Link from 'next/link';
+import { Facebook, Github, Linkedin, Feather, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const Footer = () => {
-      const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
 
-      const socialLinks = [
-            {
-                  href: 'https://www.facebook.com/dgiaan04',
-                  icon: Facebook,
-                  label: 'Facebook',
-                  hoverColor: 'hover:text-blue-500'
-            },
-            {
-                  href: 'https://github.com/dinhgiaan',
-                  icon: Github,
-                  label: 'GitHub',
-                  hoverColor: 'hover:text-gray-300'
-            },
-            {
-                  href: 'https://www.linkedin.com/in/dinhgiaan',
-                  icon: Linkedin,
-                  label: 'LinkedIn',
-                  hoverColor: 'hover:text-blue-400'
-            },
-      ];
+  const socialLinks = [
+    {
+      href: "https://www.facebook.com/dgiaan04",
+      icon: Facebook,
+      label: "Facebook",
+    },
+    { href: "https://github.com/dinhgiaan", icon: Github, label: "GitHub" },
+    {
+      href: "https://www.linkedin.com/in/dinhgiaan",
+      icon: Linkedin,
+      label: "LinkedIn",
+    },
+  ];
 
-      const footerLinks = [
-            { href: '/privacy', label: 'Chính sách bảo mật' },
-            { href: '/terms', label: 'Điều khoản dịch vụ' },
-            { href: '/about', label: 'Về chúng tôi' },
-      ];
+  // Đã cập nhật chính xác các page bạn đang có
+  const footerLinks = [
+    { href: "/book", label: "Tủ sách NovelNest" },
+    { href: "/privacy", label: "Chính sách bảo mật" },
+    { href: "/terms", label: "Điều khoản dịch vụ" },
+  ];
 
-      return (
-            <footer className="bg-[#0F111A] text-gray-300">
-                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+  return (
+    <footer className="bg-[#030303] text-zinc-400 relative overflow-hidden flex flex-col justify-between min-h-[70vh] border-t border-zinc-900 selection:bg-zinc-800 selection:text-white">
+      <div className="relative z-10 w-full max-w-[100rem] mx-auto px-6 lg:px-12 pt-8 lg:pt-10 flex-1 flex flex-col lg:flex-row justify-between gap-20">
+        {/* Cột trái: Cảm hứng (Poetic Hook) */}
+        <div className="max-w-2xl flex flex-col items-start">
+          <div className="flex items-center gap-3 mb-8">
+            <Feather size={16} className="text-zinc-600" />
+            <span className="text-[10px] tracking-[0.3em] uppercase text-zinc-500 font-semibold">
+              Chương Cuối
+            </span>
+          </div>
 
-                              <div className="lg:col-span-5">
-                                    <div className="space-y-6">
-                                          <div>
-                                                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                                                      NovelNest
-                                                </h2>
-                                                <p className="text-gray-400 mt-3 text-[13px] leading-relaxed max-w-md">
-                                                      Nơi những câu chuyện và hành trình mới bắt đầu. Khám phá thế giới văn học đa dạng cùng cộng đồng của chúng tôi.
-                                                </p>
-                                          </div>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-light text-zinc-100 tracking-tight leading-[1.1] mb-10">
+            Mỗi cuốn sách là một <br className="hidden sm:block" />
+            <span className="italic font-serif text-zinc-500">giấc mơ</span> bạn
+            cầm trên tay.
+          </h2>
 
-                                          <div>
-                                                <p className="text-[13px] font-medium text-gray-300 mb-4">Kết nối với chúng tôi</p>
-                                                <div className="flex space-x-4">
-                                                      {socialLinks.map(({ href, icon: Icon, label, hoverColor }) => (
-                                                            <Link
-                                                                  key={label}
-                                                                  href={href}
-                                                                  className={`p-2 rounded-lg bg-gray-800/50 border border-gray-700/50 text-gray-400 transition-all duration-300 hover:bg-gray-700/50 hover:border-gray-600 ${hoverColor} hover:scale-105`}
-                                                                  aria-label={label}
-                                                            >
-                                                                  <Icon size={14} />
-                                                            </Link>
-                                                      ))}
-                                                </div>
-                                          </div>
-                                    </div>
-                              </div>
+          {/* Nút Call-to-action trỏ thẳng về trang /book */}
+          <Link
+            href="/book"
+            className="group flex items-center gap-4 text-sm text-zinc-300 hover:text-white transition-colors duration-500">
+            <span className="uppercase tracking-widest text-xs font-semibold">
+              Mở trang sách đầu tiên
+            </span>
+            <div className="w-10 h-[1px] bg-zinc-700 group-hover:w-16 group-hover:bg-white transition-all duration-500 ease-out" />
+            <ArrowRight
+              size={16}
+              className="-ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out"
+            />
+          </Link>
+        </div>
 
-                              <div className="lg:col-span-4">
-                                    <h3 className="text-lg font-semibold text-white mb-6">Thông tin liên hệ</h3>
-                                    <div className="space-y-4">
-                                          <div className="flex items-start space-x-3 group">
-                                                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20 transition-colors">
-                                                      <Phone size={14} />
-                                                </div>
-                                                <div className='-mt-1'>
-                                                      <p className="text-sm text-gray-400">Điện thoại</p>
-                                                      <a href="tel:+84856562424" className="text-gray-300 hover:text-white transition-colors text-xs">
-                                                            +84 856 562 424
-                                                      </a>
-                                                </div>
-                                          </div>
+        <div className="flex flex-col sm:flex-row gap-16 lg:gap-24 lg:pt-12">
+          <div className="flex flex-col gap-6">
+            <h3 className="text-[10px] uppercase tracking-[0.2em] text-zinc-600 font-semibold mb-2">
+              Chỉ mục
+            </h3>
+            {footerLinks.map((link, index) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="group flex items-center gap-4 text-zinc-400 hover:text-zinc-100 transition-colors duration-300">
+                <span className="text-[10px] text-zinc-700 font-mono">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="text-sm group-hover:italic transition-all duration-300">
+                  {link.label}
+                </span>
+              </Link>
+            ))}
+          </div>
 
-                                          <div className="flex items-start space-x-3 group">
-                                                <div className="p-2 rounded-lg bg-green-500/10 text-green-400 group-hover:bg-green-500/20 transition-colors">
-                                                      <Mail size={14} />
-                                                </div>
-                                                <div className='-mt-1'>
-                                                      <p className="text-sm text-gray-400">Email</p>
-                                                      <a href="mailto:novelnest@contact.com" className="text-gray-300 hover:text-white transition-colors text-xs">
-                                                            novelnest@contact.com
-                                                      </a>
-                                                </div>
-                                          </div>
+          <div className="flex flex-col gap-6">
+            <h3 className="text-[10px] uppercase tracking-[0.2em] text-zinc-600 font-semibold mb-2">
+              Kết nối
+            </h3>
+            {socialLinks.map(({ href, icon: Icon, label }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-4 text-zinc-400 hover:text-zinc-100 transition-colors duration-300">
+                <Icon
+                  size={16}
+                  strokeWidth={1.5}
+                  className="text-zinc-600 group-hover:text-zinc-100 transition-colors"
+                />
+                <span className="text-sm group-hover:italic transition-all duration-300">
+                  {label}
+                </span>
+              </a>
+            ))}
 
-                                          <div className="flex items-start space-x-3 group">
-                                                <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20 transition-colors">
-                                                      <MapPinned size={14} />
-                                                </div>
-                                                <div className='-mt-1'>
-                                                      <p className="text-sm text-gray-400">Địa chỉ</p>
-                                                      <p className="text-gray-300 text-xs leading-relaxed max-w-xs">
-                                                            Chung cư Bộ công an, Block A, Đường số 3, phường An Khánh, TP.Thủ Đức
-                                                      </p>
-                                                </div>
-                                          </div>
-                                    </div>
-                              </div>
+            <div className="mt-4 flex flex-col gap-2">
+              <span className="text-[10px] text-zinc-700 font-mono uppercase tracking-wider">
+                Hỗ trợ trực tiếp
+              </span>
+              <a
+                href="mailto:novelnest@contact.com"
+                className="text-sm text-zinc-500 hover:text-zinc-200 transition-colors border-b border-zinc-800 hover:border-zinc-400 pb-1 w-fit">
+                novelnest@contact.com
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                              <div className="lg:col-span-3">
-                                    <h3 className="text-lg font-semibold text-white mb-6">Liên kết nhanh</h3>
-                                    <nav className="space-y-3">
-                                          {footerLinks.map(({ href, label }) => (
-                                                <Link
-                                                      key={href}
-                                                      href={href}
-                                                      className="block text-sm text-gray-400 transition-all duration-500 ease-in-out transform hover:tracking-wider hover:translate-x-1 hover:text-white"
-                                                >
-                                                      {label}
-                                                </Link>
-                                          ))}
-                                    </nav>
-                              </div>
-                        </div>
-                  </div>
+      <div className="relative mt-20 lg:mt-0">
+        <div className="absolute bottom-4 left-6 right-6 flex justify-between items-end text-[10px] text-zinc-600 uppercase tracking-widest font-semibold z-20 mix-blend-difference">
+          <span>© {currentYear} ALL RIGHTS RESERVED</span>
+          <span className="hidden sm:block">SÀI GÒN, VIỆT NAM</span>
+        </div>
 
-                  <div className="border-t border-gray-800/50">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-                              <div className="justify-between items-center">
-                                    <p className="text-[12px] text-gray-500">
-                                          © {currentYear} NovelNest. All Rights Reserved
-                                    </p>
-                              </div>
-                        </div>
-                  </div>
-            </footer>
-      );
+        <div className="w-full flex justify-center items-end overflow-hidden pointer-events-none select-none">
+          <h1 className="text-[15vw] leading-[0.75] font-bold tracking-tighter text-zinc-900/50 m-0 p-0">
+            NOVELNEST.
+          </h1>
+        </div>
+      </div>
+    </footer>
+  );
 };
 
 export default Footer;

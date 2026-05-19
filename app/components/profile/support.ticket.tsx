@@ -1,65 +1,31 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { Box, Typography, Paper, Stack, Container, useTheme } from "@mui/material"
-import { MessageCircleQuestion, Clock } from "lucide-react"
+import { MessageSquarePlus } from "lucide-react";
 
 const SupportTicket = () => {
-      const theme = useTheme()
+  return (
+    <div className="w-full">
+      <div className="mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-4">
+        <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white tracking-tight">
+          Hỗ trợ khách hàng
+        </h2>
+      </div>
 
-      return (
-            <Container maxWidth="sm">
-                  <Paper
-                        elevation={0}
-                        sx={{
-                              borderRadius: 2,
-                              border: `1px solid ${theme.palette.divider}`,
-                              bgcolor: theme.palette.background.paper,
-                              p: 3,
-                        }}
-                  >
-                        <Stack spacing={2} alignItems="center" textAlign="center">
-                              <Box
-                                    sx={{
-                                          width: 48,
-                                          height: 48,
-                                          borderRadius: '50%',
-                                          bgcolor: theme.palette.primary.main + '15',
-                                          display: 'flex',
-                                          alignItems: 'center',
-                                          justifyContent: 'center',
-                                    }}
-                              >
-                                    <MessageCircleQuestion
-                                          size={24}
-                                          color={theme.palette.primary.main}
-                                    />
-                              </Box>
-
-                              <Stack spacing={1} alignItems="center">
-                                    <Typography variant="h6" fontWeight={600}>
-                                          Hỗ trợ khách hàng
-                                    </Typography>
-
-                                    <Stack direction="row" alignItems="center" spacing={0.5}>
-                                          <Clock size={14} color={theme.palette.text.secondary} />
-                                          <Typography variant="body2" color="text.secondary">
-                                                Sắp ra mắt
-                                          </Typography>
-                                    </Stack>
-                              </Stack>
-
-                              <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    sx={{ maxWidth: 300 }}
-                              >
-                                    Chúng tôi đang phát triển hệ thống hỗ trợ để phục vụ bạn tốt hơn.
-                              </Typography>
-                        </Stack>
-                  </Paper>
-            </Container>
-      )
-}
+      <div className="bg-white dark:bg-[#111111] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
+        <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-6">
+          <MessageSquarePlus size={28} className="text-zinc-400" />
+        </div>
+        <h3 className="text-lg font-medium text-zinc-900 dark:text-white mb-2">
+          Trung tâm hỗ trợ sắp ra mắt
+        </h3>
+        <p className="text-sm text-zinc-500 max-w-md mx-auto">
+          Chúng tôi đang nỗ lực hoàn thiện hệ thống gửi ticket hỗ trợ để giúp
+          bạn giải quyết các vấn đề liên quan đến tài khoản và mua hàng nhanh
+          chóng hơn.
+        </p>
+      </div>
+    </div>
+  );
+};
 
 export default SupportTicket;

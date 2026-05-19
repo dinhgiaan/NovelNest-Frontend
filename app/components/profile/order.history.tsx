@@ -1,517 +1,249 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { Box, Tabs, Tab, Typography, Card, CardContent, Chip, Avatar, Alert, CircularProgress, Paper, Stack, Divider, Container, useTheme }
-      from "@mui/material"
-import { BookOpen, Star, CreditCard, BadgeCheck } from "lucide-react"
-import useSWR from "swr"
-import { orderService } from "@/app/lib/api/order"
-import type { AuthContextType } from "@/app/context/auth.context"
-import formatPrice from "@/app/utils/convert.price"
+import { useState } from "react";
+import useSWR from "swr";
+import { orderService } from "@/app/lib/api/order";
+import type { AuthState } from "@/app/context/auth.context";
+import formatPrice from "@/app/utils/convert.price";
+import { Loader2, Receipt, SearchX } from "lucide-react";
+import Image from "next/image";
 
+// ... (Giữ nguyên các Interfaces: OrderDetail, Order, OrderResponse, IProps, fetcher như cũ của bạn)
 interface OrderDetail {
-      _id: string
-      title: string
-      author: string
-      quantity: number
-      totalPrice: number
-      rating?: number
-      thumbnail?: {
-            url: string
-      }
+  _id: string;
+  title: string;
+  author: string;
+  quantity: number;
+  totalPrice: number;
+  thumbnail?: { url: string };
 }
-
 interface Order {
-      _id: string
-      orderCode: string
-      paymentStatus: "paid" | "failed" | "pending"
-      totalAmount: number
-      createdAt: string
-      orderDetails: OrderDetail[]
+  _id: string;
+  orderCode: string;
+  paymentStatus: "paid" | "failed" | "pending";
+  totalAmount: number;
+  createdAt: string;
+  orderDetails: OrderDetail[];
 }
-
 interface OrderResponse {
-      orders: Order[]
-      summary?: {
-            orderCounts?: {
-                  all: number
-                  paid: number
-                  failed: number
-            }
-            totalPaidAmount: number
-      }
+  orders: Order[];
+  summary?: {
+    orderCounts?: { all: number; paid: number; failed: number };
+    totalPaidAmount: number;
+  };
 }
-
 interface IProps {
-      userInfo: AuthContextType
-}
-
-interface TabPanelProps {
-      children?: React.ReactNode
-      index: number
-      value: number
-}
-
-function TabPanel(props: TabPanelProps) {
-      const { children, value, index, ...other } = props
-      return (
-            <div
-                  role="tabpanel"
-                  hidden={value !== index}
-                  id={`order-tabpanel-${index}`}
-                  aria-labelledby={`order-tab-${index}`}
-                  {...other}
-            >
-                  {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
-            </div>
-      )
+  userInfo: AuthState;
 }
 
 const fetcher = async (filter: string): Promise<OrderResponse> => {
-      try {
-            const result = await orderService.getHistoryOrder(filter)
-            if (!result || !Array.isArray(result.orders)) {
-                  throw new Error("Invalid API response structure")
-            }
-            return result
-      } catch (error) {
-            throw error
-      }
-}
+  const result = await orderService.getHistoryOrder(filter);
+  if (!result || !Array.isArray(result.orders))
+    throw new Error("Invalid API response");
+  return result;
+};
 
 const OrderHistory = ({ userInfo }: IProps) => {
-      const theme = useTheme()
-      const _id = userInfo.user?._id
-      const [value, setValue] = useState(0)
+  const _id = userInfo.user?._id;
+  const [activeTab, setActiveTab] = useState<
+    "all" | "paid" | "failed" | "summary"
+  >("all");
 
-      const {
-            data: allOrders,
-            error: allError,
-            isLoading: allLoading,
-      } = useSWR(_id ? "orders-all" : null, () => fetcher("all"), {
-            revalidateIfStale: true,
-            revalidateOnFocus: false,
-            revalidateOnReconnect: true,
-            shouldRetryOnError: false,
-      })
+  const { data: allOrders, isLoading: allLoading } = useSWR(
+    _id ? "orders-all" : null,
+    () => fetcher("all"),
+  );
+  const { data: paidOrders, isLoading: paidLoading } = useSWR(
+    _id ? "orders-paid" : null,
+    () => fetcher("paid"),
+  );
+  const { data: failedOrders, isLoading: failedLoading } = useSWR(
+    _id ? "orders-failed" : null,
+    () => fetcher("failed"),
+  );
 
-      const {
-            data: paidOrders,
-            error: paidError,
-            isLoading: paidLoading,
-      } = useSWR(_id ? "orders-paid" : null, () => fetcher("paid"), {
-            revalidateIfStale: true,
-            revalidateOnFocus: false,
-            revalidateOnReconnect: true,
-            shouldRetryOnError: false,
-      })
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
-      const {
-            data: failedOrders,
-            error: failedError,
-            isLoading: failedLoading,
-      } = useSWR(_id ? "orders-failed" : null, () => fetcher("failed"), {
-            revalidateIfStale: true,
-            revalidateOnFocus: false,
-            revalidateOnReconnect: true,
-            shouldRetryOnError: false,
-      })
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case "paid":
+        return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+      case "failed":
+        return "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400";
+      default:
+        return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
+    }
+  };
 
-      const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-            setValue(newValue)
-      }
-
-      const formatDate = (dateString: string) => {
-            const date = new Date(dateString);
-            const datePart = date.toLocaleDateString("vi-VN", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-            });
-            const timePart = date.toLocaleTimeString("vi-VN", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-            });
-            return `${datePart} lúc ${timePart}`;
-      };
-
-      const renderOrderList = (
-            orders: Order[],
-            loading: boolean,
-            error: Error | null,
-            filterType: string,
-      ) => {
-            if (loading) {
-                  return (
-                        <Box display="flex" justifyContent="center" alignItems="center" py={4}>
-                              <Stack alignItems="center" spacing={1}>
-                                    <CircularProgress size={32} />
-                                    <Typography variant="body2" color="text.secondary">
-                                          Đang tải...
-                                    </Typography>
-                              </Stack>
-                        </Box>
-                  )
-            }
-            console.log('-->check orders: ', orders)
-            if (error) {
-                  return (
-                        <Alert severity="error" sx={{ my: 2, borderRadius: 1 }}>
-                              <Typography variant="body2" fontWeight={600}>
-                                    Không thể tải dữ liệu
-                              </Typography>
-                              <Typography variant="caption">
-                                    {error?.message || "Đã xảy ra lỗi khi tải danh sách đơn hàng"}
-                              </Typography>
-                        </Alert>
-                  )
-            }
-
-            if (!orders || !Array.isArray(orders) || orders.length === 0) {
-                  return (
-                        <Paper
-                              sx={{
-                                    py: 4,
-                                    px: 2,
-                                    textAlign: "center",
-                                    bgcolor: theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50',
-                                    borderRadius: 2,
-                                    border: `1px dashed ${theme.palette.divider}`,
-                              }}
-                        >
-                              <Typography variant="subtitle1" color="text.primary" gutterBottom fontWeight={600}>
-                                    Chưa có đơn hàng nào
-                              </Typography>
-                              <Typography variant="body2" color="text.secondary">
-                                    {filterType === "all"
-                                          ? "Bạn chưa thực hiện đơn hàng nào"
-                                          : `Không có đơn hàng "${filterType === 'paid' ? 'đã thanh toán' : 'thất bại'}"`}
-                              </Typography>
-                        </Paper>
-                  )
-            }
-
-            return (
-                  <Box
-                        sx={{
-                              maxHeight: '60vh',
-                              overflowY: 'auto',
-                              pr: 0.5,
-                              '&::-webkit-scrollbar': {
-                                    width: '4px',
-                              },
-                              '&::-webkit-scrollbar-track': {
-                                    background: 'transparent',
-                              },
-                              '&::-webkit-scrollbar-thumb': {
-                                    background: theme.palette.primary.main,
-                                    borderRadius: '2px',
-                                    opacity: 0.6,
-                              },
-                              '&::-webkit-scrollbar-thumb:hover': {
-                                    opacity: 1,
-                              },
-                        }}
-                  >
-                        <Stack spacing={1.5}>
-                              {orders.map((order: Order) => (
-                                    <Card
-                                          key={order._id}
-                                          sx={{
-                                                borderRadius: 1.5,
-                                                border: `1px solid ${theme.palette.divider}`,
-                                                boxShadow: 'none',
-                                                '&:hover': {
-                                                      boxShadow: theme.palette.mode === 'dark'
-                                                            ? '0 2px 8px rgba(0,0,0,0.2)'
-                                                            : '0 2px 8px rgba(0,0,0,0.06)',
-                                                      borderColor: theme.palette.primary.main,
-                                                },
-                                                transition: 'all 0.15s ease',
-                                                bgcolor: theme.palette.background.paper,
-                                          }}
-                                    >
-                                          <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-                                                <Stack
-                                                      direction="row"
-                                                      justifyContent="space-between"
-                                                      alignItems="center"
-                                                      sx={{ mb: 1.5 }}
-                                                >
-                                                      <Stack spacing={0.25}>
-                                                            <Stack direction="row" alignItems="center" spacing={0.75}>
-                                                                  <Typography variant="body2" fontWeight={700} color="primary">
-                                                                        #{order.orderCode}
-                                                                  </Typography>
-                                                                  <Chip
-                                                                        label={
-                                                                              order.paymentStatus === "paid"
-                                                                                    ? "Thành công"
-                                                                                    : order.paymentStatus === "failed"
-                                                                                          ? "Thất bại"
-                                                                                          : "Chờ"
-                                                                        }
-                                                                        color={
-                                                                              order.paymentStatus === "paid"
-                                                                                    ? "success"
-                                                                                    : order.paymentStatus === "failed"
-                                                                                          ? "error"
-                                                                                          : "warning"
-                                                                        }
-                                                                        size="small"
-                                                                        sx={{
-                                                                              height: 18,
-                                                                              fontSize: '0.65rem',
-                                                                              fontWeight: 600,
-                                                                              '& .MuiChip-label': { px: 0.75 }
-                                                                        }}
-                                                                  />
-                                                            </Stack>
-                                                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                                                                  {formatDate(order.createdAt)}
-                                                            </Typography>
-                                                      </Stack>
-
-                                                      <Typography variant="subtitle1" color="primary" fontWeight={700}>
-                                                            {formatPrice(order.totalAmount)}
-                                                      </Typography>
-                                                </Stack>
-                                                <Stack spacing={6}>
-                                                      {order.orderDetails && order.orderDetails.length > 0 ? (
-                                                            order.orderDetails.map((detail: OrderDetail, index: number) => (
-                                                                  <Box
-                                                                        key={detail._id || index}
-                                                                        sx={{
-                                                                              p: 1,
-                                                                              bgcolor: theme.palette.mode === 'dark'
-                                                                                    ? 'rgba(255,255,255,0.02)'
-                                                                                    : 'rgba(0,0,0,0.015)',
-                                                                              borderRadius: 1,
-                                                                              border: `1px solid ${theme.palette.divider}`,
-                                                                        }}
-                                                                  >
-                                                                        <Stack direction="row" spacing={1} alignItems="center">
-                                                                              <Avatar
-                                                                                    src={detail.thumbnail?.url}
-                                                                                    alt={detail.title}
-                                                                                    sx={{
-                                                                                          width: 36,
-                                                                                          height: 36,
-                                                                                          borderRadius: 1,
-                                                                                    }}
-                                                                                    variant="rounded"
-                                                                              >
-                                                                                    <BookOpen size={16} />
-                                                                              </Avatar>
-
-                                                                              <Box flex={1} minWidth={0}>
-                                                                                    <Typography
-                                                                                          variant="caption"
-                                                                                          fontWeight={600}
-                                                                                          sx={{
-                                                                                                overflow: 'hidden',
-                                                                                                textOverflow: 'ellipsis',
-                                                                                                whiteSpace: 'nowrap',
-                                                                                                display: 'block',
-                                                                                                mb: 0.25,
-                                                                                                fontSize: '0.75rem',
-                                                                                                lineHeight: 1.2
-                                                                                          }}
-                                                                                    >
-                                                                                          {detail.title}
-                                                                                    </Typography>
-                                                                                    <Stack direction="row" alignItems="center" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
-                                                                                          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
-                                                                                                {detail.author}
-                                                                                          </Typography>
-                                                                                          {detail.rating && (
-                                                                                                <Stack direction="row" alignItems="center" spacing={0.25}>
-                                                                                                      <Star size={10} fill="gold" color="gold" />
-                                                                                                      <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>
-                                                                                                            {detail.rating}
-                                                                                                      </Typography>
-                                                                                                </Stack>
-                                                                                          )}
-                                                                                    </Stack>
-                                                                              </Box>
-
-                                                                              <Stack alignItems="flex-end" spacing={0.25}>
-                                                                                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
-                                                                                          x{detail.quantity}
-                                                                                    </Typography>
-                                                                                    <Typography variant="caption" fontWeight={700} color="primary" sx={{ fontSize: '0.75rem' }}>
-                                                                                          {formatPrice(detail.totalPrice)}
-                                                                                    </Typography>
-                                                                              </Stack>
-                                                                        </Stack>
-                                                                  </Box>
-                                                            ))
-                                                      ) : (
-                                                            <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic', textAlign: 'center', py: 1 }}>
-                                                                  Không có thông tin chi tiết
-                                                            </Typography>
-                                                      )}
-                                                </Stack>
-                                          </CardContent>
-                                    </Card>
-                              ))}
-                        </Stack>
-                  </Box>
-            )
-      }
-
+  const renderOrderList = (orders: Order[], loading: boolean) => {
+    if (loading)
       return (
-            <Container maxWidth="md">
-                  <Paper
-                        elevation={0}
-                        sx={{
-                              borderRadius: 2,
-                              border: `1px solid ${theme.palette.divider}`,
-                              overflow: 'hidden',
-                              bgcolor: theme.palette.background.paper
-                        }}
-                  >
-                        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                              <Tabs
-                                    value={value}
-                                    onChange={handleChange}
-                                    variant="scrollable"
-                                    scrollButtons="auto"
-                                    sx={{
-                                          px: 1,
-                                          '& .MuiTab-root': {
-                                                minHeight: 50,
-                                                fontWeight: 600,
-                                                fontSize: '0.875rem',
-                                                px: 2
-                                          }
-                                    }}
-                              >
-                                    <Tab
-                                          label={
-                                                <Stack direction="row" alignItems="center" spacing={1}>
-                                                      <Typography>Tất cả</Typography>
-                                                      {(allOrders?.summary?.orderCounts?.all ?? 0) > 0 && (
-                                                            <Chip
-                                                                  label={allOrders?.summary?.orderCounts?.all}
-                                                                  size="small"
-                                                                  color="primary"
-                                                                  sx={{ height: 18, fontSize: '0.7rem', minWidth: 'auto' }}
-                                                            />
-                                                      )}
-                                                </Stack>
-                                          }
-                                    />
-                                    <Tab
-                                          label={
-                                                <Stack direction="row" alignItems="center" spacing={1}>
-                                                      <Typography>Đã thanh toán</Typography>
-                                                      {(allOrders?.summary?.orderCounts?.paid ?? 0) > 0 && (
-                                                            <Chip
-                                                                  label={allOrders?.summary?.orderCounts?.paid}
-                                                                  size="small"
-                                                                  color="success"
-                                                                  sx={{ height: 18, fontSize: '0.7rem', minWidth: 'auto' }}
-                                                            />
-                                                      )}
-                                                </Stack>
-                                          }
-                                    />
-                                    <Tab
-                                          label={
-                                                <Stack direction="row" alignItems="center" spacing={1}>
-                                                      <Typography>Thất bại</Typography>
-                                                      {(allOrders?.summary?.orderCounts?.failed ?? 0) > 0 && (
-                                                            <Chip
-                                                                  label={allOrders?.summary?.orderCounts?.failed}
-                                                                  size="small"
-                                                                  color="error"
-                                                                  sx={{ height: 18, fontSize: '0.7rem', minWidth: 'auto' }}
-                                                            />
-                                                      )}
-                                                </Stack>
-                                          }
-                                    />
-                                    <Tab
-                                          label={
-                                                <Stack direction="row" alignItems="center" spacing={1}>
-                                                      <CreditCard size={16} />
-                                                      <Typography>Tổng tiền</Typography>
-                                                </Stack>
-                                          }
-                                    />
-                              </Tabs>
-                        </Box>
+        <div className="py-20 flex justify-center">
+          <Loader2 className="animate-spin text-zinc-400" size={24} />
+        </div>
+      );
+    if (!orders || orders.length === 0)
+      return (
+        <div className="py-20 text-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl mt-4">
+          <SearchX size={32} className="mx-auto text-zinc-300 mb-3" />
+          <p className="text-sm text-zinc-500">Không tìm thấy đơn hàng nào.</p>
+        </div>
+      );
 
-                        <TabPanel value={value} index={0}>
-                              {renderOrderList(allOrders?.orders || [], allLoading, allError, "all")}
-                        </TabPanel>
+    return (
+      <div className="space-y-4 mt-6">
+        {orders.map((order) => (
+          <div
+            key={order._id}
+            className="bg-white dark:bg-[#111111] border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-sm">
+            <div className="flex flex-wrap items-center justify-between mb-4 gap-2">
+              <div>
+                <span className="font-mono text-sm font-medium text-zinc-900 dark:text-zinc-100 mr-3">
+                  #{order.orderCode}
+                </span>
+                <span
+                  className={`text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${getStatusStyle(order.paymentStatus)}`}>
+                  {order.paymentStatus === "paid"
+                    ? "Thành công"
+                    : order.paymentStatus === "failed"
+                      ? "Thất bại"
+                      : "Đang xử lý"}
+                </span>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-bold text-zinc-900 dark:text-white">
+                  {formatPrice(order.totalAmount)}
+                </p>
+                <p className="text-xs text-zinc-500">
+                  {formatDate(order.createdAt)}
+                </p>
+              </div>
+            </div>
 
-                        <TabPanel value={value} index={1}>
-                              {renderOrderList(paidOrders?.orders || [], paidLoading, paidError, "paid")}
-                        </TabPanel>
+            <div className="space-y-3 bg-zinc-50 dark:bg-zinc-800/30 rounded-lg p-3">
+              {order.orderDetails.map((detail, idx) => (
+                <div
+                  key={detail._id || idx}
+                  className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded bg-zinc-200 relative overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-700">
+                    {detail.thumbnail?.url && (
+                      <Image
+                        src={detail.thumbnail.url}
+                        alt={detail.title}
+                        fill
+                        className="object-cover"
+                        sizes="40px"
+                      />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
+                      {detail.title}
+                    </p>
+                    <p className="text-xs text-zinc-500 truncate">
+                      {detail.author}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                      {formatPrice(detail.totalPrice)}
+                    </p>
+                    <p className="text-xs text-zinc-500">x{detail.quantity}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
-                        <TabPanel value={value} index={2}>
-                              {renderOrderList(failedOrders?.orders || [], failedLoading, failedError, "failed")}
-                        </TabPanel>
+  return (
+    <div className="w-full max-w-4xl">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-4 gap-4">
+        <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white tracking-tight">
+          Lịch sử giao dịch
+        </h2>
+      </div>
 
-                        <TabPanel value={value} index={3}>
-                              <Box display="flex" justifyContent="center" py={3}>
-                                    <Paper
-                                          elevation={0}
-                                          sx={{
-                                                p: 3,
-                                                maxWidth: 360,
-                                                width: "100%",
-                                                borderRadius: 2,
-                                                border: `2px solid ${theme.palette.primary.main}`,
-                                                bgcolor: theme.palette.mode === 'dark'
-                                                      ? 'rgba(144, 202, 249, 0.05)'
-                                                      : 'rgba(25, 118, 210, 0.02)',
-                                          }}
-                                    >
-                                          <Stack spacing={2} alignItems="center" textAlign="center">
-                                                <Box
-                                                      sx={{
-                                                            width: 60,
-                                                            height: 60,
-                                                            borderRadius: '50%',
-                                                            bgcolor: 'primary.main',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            color: 'white'
-                                                      }}
-                                                >
-                                                      <BadgeCheck size={32} />
-                                                </Box>
+      {/* Tabs (Custom Tailwind) */}
+      <div className="flex overflow-x-auto scrollbar-hide border-b border-zinc-200 dark:border-zinc-800">
+        {[
+          {
+            id: "all",
+            label: "Tất cả",
+            count: allOrders?.summary?.orderCounts?.all,
+          },
+          {
+            id: "paid",
+            label: "Đã thanh toán",
+            count: allOrders?.summary?.orderCounts?.paid,
+          },
+          {
+            id: "failed",
+            label: "Thất bại",
+            count: allOrders?.summary?.orderCounts?.failed,
+          },
+          { id: "summary", label: "Tổng quan", count: null },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as unknown as typeof activeTab)}
+            className={`whitespace-nowrap py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === tab.id
+                ? "border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
+                : "border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+            }`}>
+            {tab.label}{" "}
+            {tab.count ? (
+              <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-xs text-zinc-600 dark:text-zinc-400">
+                {tab.count}
+              </span>
+            ) : null}
+          </button>
+        ))}
+      </div>
 
-                                                <Stack spacing={0.5} alignItems="center">
-                                                      <Typography variant="h4" color="primary" fontWeight={700}>
-                                                            {allOrders?.summary?.totalPaidAmount
-                                                                  ? formatPrice(allOrders.summary.totalPaidAmount)
-                                                                  : formatPrice(0)}
-                                                      </Typography>
-                                                      <Typography variant="subtitle1" color="text.secondary">
-                                                            Tổng số tiền đã thanh toán
-                                                      </Typography>
-                                                </Stack>
+      {/* Tab Panels */}
+      <div>
+        {activeTab === "all" &&
+          renderOrderList(allOrders?.orders || [], allLoading)}
+        {activeTab === "paid" &&
+          renderOrderList(paidOrders?.orders || [], paidLoading)}
+        {activeTab === "failed" &&
+          renderOrderList(failedOrders?.orders || [], failedLoading)}
 
-                                                <Divider sx={{ width: "80%" }} />
-
-                                                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
-                                                      Từ <strong>{allOrders?.summary?.orderCounts?.paid || 0}</strong> đơn hàng thành công
-                                                      <br />
-                                                      Cảm ơn bạn đã tin tưởng NovelNest!
-                                                </Typography>
-                                          </Stack>
-                                    </Paper>
-                              </Box>
-                        </TabPanel>
-                  </Paper>
-            </Container>
-      )
-}
+        {activeTab === "summary" && (
+          <div className="mt-6 bg-white dark:bg-[#111111] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8 text-center max-w-sm mx-auto shadow-sm">
+            <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Receipt size={32} />
+            </div>
+            <p className="text-sm text-zinc-500 uppercase tracking-widest font-semibold mb-2">
+              Tổng chi tiêu
+            </p>
+            <h3 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">
+              {formatPrice(allOrders?.summary?.totalPaidAmount || 0)}
+            </h3>
+            <div className="h-px bg-zinc-200 dark:bg-zinc-800 w-full my-4" />
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Bạn đã thực hiện thành công{" "}
+              <strong>{allOrders?.summary?.orderCounts?.paid || 0}</strong> giao
+              dịch. Cảm ơn bạn đã đồng hành cùng NovelNest!
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default OrderHistory;

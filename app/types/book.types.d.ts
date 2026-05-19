@@ -10,7 +10,6 @@ interface IBook {
       promotionPrice: number;
       description?: string;
       rating?: number;
-      // categories: string[];
       categories?: { _id: string; name: string }[] | string[]
       thumbnail?: {
             public_id?: string;
@@ -23,7 +22,8 @@ interface IBook {
       sold?: number;
       status?: string;
       isbn?: number;
-      purchaseDate?: string
+      purchaseDate?: string;
+      pages?: number;
 }
 
 interface IPaginationInfo {

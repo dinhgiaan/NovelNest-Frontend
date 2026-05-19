@@ -1,380 +1,407 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowDown, ArrowRight, Funnel, MoveRight } from "lucide-react";
-import { Slider, FormControl, Select, MenuItem, Chip, Collapse } from "@mui/material";
-import useSWR from 'swr';
+import { SlidersHorizontal, X, ChevronDown, Star } from "lucide-react";
+import { Slider } from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
+import useSWR from "swr";
 import { bookService, Category, FilterParams } from "../../lib/api/book";
 
 interface FilterProps {
-      onFilterChange?: (filters: FilterParams) => void;
-      className?: string;
+  onFilterChange?: (filters: FilterParams) => void;
+  className?: string;
 }
 
+const FilterTag = ({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) => (
+  <motion.button
+    onClick={onClick}
+    whileHover={{ scale: 1.04 }}
+    whileTap={{ scale: 0.95 }}
+    className={`
+      px-3.5 py-1.5 rounded-sm font-body text-[0.72rem] tracking-[0.06em] cursor-pointer transition-all duration-200 border
+      ${
+        active
+          ? "bg-accent/10 border-accent text-accent font-semibold"
+          : "bg-transparent border-white/40 text-ink-muted font-normal hover:border-ink/40 hover:text-ink"
+      }
+    `}>
+    {label}
+  </motion.button>
+);
+
+const FilterSection = ({ label }: { label: string }) => (
+  <div className="flex items-center gap-3 mb-3">
+    <span className="font-display text-[0.65rem] tracking-[0.22em] text-accent uppercase">
+      {label}
+    </span>
+    <div className="flex-1 h-px bg-ink/10" />
+  </div>
+);
+
 const Filter = ({ onFilterChange, className = "" }: FilterProps) => {
-      const router = useRouter();
-      const searchParams = useSearchParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-      const [isExpanded, setIsExpanded] = useState(false);
-      const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-      const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
-      const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
-      const [selectedRating, setSelectedRating] = useState<number | null>(null);
-      const [sortBy, setSortBy] = useState<string>('newest');
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    0, 1_000_000,
+  ]);
+  const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
+  const [sortBy, setSortBy] = useState("newest");
 
-      const { data: categoriesData } = useSWR<Category[]>('categories', () => bookService.getCategories());
-      const { data: priceRangeData } = useSWR('price-range', () => bookService.getPriceRange());
-      const { data: publishersData } = useSWR('get-all-publishers', () => bookService.getPublishers());
+  const { data: categoriesData } = useSWR<Category[]>(
+    "books-filter-categories",
+    () => bookService.getCategories(),
+  );
+  const { data: priceRangeData } = useSWR("price-range", () =>
+    bookService.getPriceRange(),
+  );
+  const { data: publishersData } = useSWR("get-all-publishers", () =>
+    bookService.getPublishers(),
+  );
 
-      useEffect(() => {
-            const categories = searchParams.getAll('categories');
-            const publishers = searchParams.getAll('publishers');
-            const minPrice = searchParams.get('minPrice');
-            const maxPrice = searchParams.get('maxPrice');
-            const rating = searchParams.get('rating');
-            const sort = searchParams.get('sortBy');
+  useEffect(() => {
+    const cats = searchParams.getAll("categories");
+    const pubs = searchParams.getAll("publishers");
+    const min = searchParams.get("minPrice");
+    const max = searchParams.get("maxPrice");
+    const rat = searchParams.get("rating");
+    const sort = searchParams.get("sortBy");
 
-            if (categories.length) setSelectedCategories(categories);
-            if (publishers.length) setSelectedPublishers(publishers);
-            if (minPrice || maxPrice) {
-                  const minPriceLimit = priceRangeData?.data?.minPrice || 0;
-                  const maxPriceLimit = priceRangeData?.data?.maxPrice || 1000000;
-                  setPriceRange([
-                        minPrice ? parseInt(minPrice) : minPriceLimit,
-                        maxPrice ? parseInt(maxPrice) : maxPriceLimit
-                  ]);
-            }
-            if (rating) setSelectedRating(parseInt(rating));
-            if (sort) setSortBy(sort);
-      }, [searchParams, priceRangeData]);
+    if (cats.length) setSelectedCategories(cats);
+    if (pubs.length) setSelectedPublishers(pubs);
+    if (rat) setSelectedRating(parseInt(rat));
+    if (sort) setSortBy(sort);
+    if (min || max) {
+      const lo = priceRangeData?.data?.minPrice ?? 0;
+      const hi = priceRangeData?.data?.maxPrice ?? 1_000_000;
+      setPriceRange([min ? parseInt(min) : lo, max ? parseInt(max) : hi]);
+    }
+  }, [searchParams, priceRangeData]);
 
-      useEffect(() => {
-            if (priceRangeData?.data?.minPrice !== undefined && priceRangeData?.data?.maxPrice !== undefined) {
-                  const { minPrice, maxPrice } = priceRangeData.data;
-                  setPriceRange([minPrice, maxPrice]);
-            }
-      }, [priceRangeData]);
+  useEffect(() => {
+    if (priceRangeData?.data)
+      setPriceRange([
+        priceRangeData.data.minPrice,
+        priceRangeData.data.maxPrice,
+      ]);
+  }, [priceRangeData]);
 
-      const applyFilters = useCallback(() => {
-            const params = new URLSearchParams(searchParams.toString());
+  const applyFilters = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    [
+      "categories",
+      "publishers",
+      "minPrice",
+      "maxPrice",
+      "rating",
+      "sortBy",
+    ].forEach((k) => params.delete(k));
+    params.set("page", "1");
 
-            params.delete('categories');
-            params.delete('publishers');
-            params.delete('minPrice');
-            params.delete('maxPrice');
-            params.delete('rating');
-            params.delete('sortBy');
-            params.set('page', '1');
+    selectedCategories.forEach((c) => params.append("categories", c));
+    selectedPublishers.forEach((p) => params.append("publishers", p));
 
-            selectedCategories.forEach(cat => params.append('categories', cat));
-            selectedPublishers.forEach(pub => params.append('publishers', pub));
+    const lo = priceRangeData?.data?.minPrice ?? 0;
+    const hi = priceRangeData?.data?.maxPrice ?? 1_000_000;
+    if (priceRange[0] > lo) params.set("minPrice", String(priceRange[0]));
+    if (priceRange[1] < hi) params.set("maxPrice", String(priceRange[1]));
+    if (selectedRating) params.set("rating", String(selectedRating));
+    if (sortBy !== "newest") params.set("sortBy", sortBy);
 
-            const minPriceLimit = priceRangeData?.data?.minPrice || 0;
-            const maxPriceLimit = priceRangeData?.data?.maxPrice || 1000000;
+    router.push(`/books?${params.toString()}`, { scroll: false });
+    onFilterChange?.({
+      categories: selectedCategories.length ? selectedCategories : undefined,
+      publisher: selectedPublishers.length ? selectedPublishers : undefined,
+      minPrice: priceRange[0] > lo ? priceRange[0] : undefined,
+      maxPrice: priceRange[1] < hi ? priceRange[1] : undefined,
+      rating: selectedRating || undefined,
+      sortBy: sortBy as FilterParams["sortBy"],
+    });
+    setIsOpen(false);
+  }, [
+    selectedCategories,
+    selectedPublishers,
+    priceRange,
+    selectedRating,
+    sortBy,
+    searchParams,
+    router,
+    onFilterChange,
+    priceRangeData,
+  ]);
 
-            if (priceRange[0] > minPriceLimit) {
-                  params.set('minPrice', priceRange[0].toString());
-            }
-            if (priceRange[1] < maxPriceLimit) {
-                  params.set('maxPrice', priceRange[1].toString());
-            }
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setSelectedPublishers([]);
+    setSelectedRating(null);
+    setSortBy("newest");
+    if (priceRangeData?.data)
+      setPriceRange([
+        priceRangeData.data.minPrice,
+        priceRangeData.data.maxPrice,
+      ]);
+    const params = new URLSearchParams(searchParams.toString());
+    [
+      "categories",
+      "publishers",
+      "minPrice",
+      "maxPrice",
+      "rating",
+      "sortBy",
+    ].forEach((k) => params.delete(k));
+    params.set("page", "1");
+    router.push(`/books?${params.toString()}`, { scroll: false });
+  };
 
-            if (selectedRating) params.set('rating', selectedRating.toString());
-            if (sortBy !== 'newest') params.set('sortBy', sortBy);
+  const hasActive =
+    selectedCategories.length > 0 ||
+    selectedPublishers.length > 0 ||
+    selectedRating !== null ||
+    sortBy !== "newest" ||
+    (priceRangeData?.data &&
+      (priceRange[0] > priceRangeData.data.minPrice ||
+        priceRange[1] < priceRangeData.data.maxPrice));
 
-            router.push(`/books?${params.toString()}`, { scroll: false });
+  const fmt = (v: number) => new Intl.NumberFormat("vi-VN").format(v) + " đ";
 
-            if (onFilterChange) {
-                  const filterParams: FilterParams = {
-                        categories: selectedCategories.length ? selectedCategories : undefined,
-                        publisher: selectedPublishers.length ? selectedPublishers : undefined,
-                        minPrice: priceRange[0] > minPriceLimit ? priceRange[0] : undefined,
-                        maxPrice: priceRange[1] < maxPriceLimit ? priceRange[1] : undefined,
-                        rating: selectedRating || undefined,
-                        sortBy: sortBy as FilterParams['sortBy']
-                  };
-                  onFilterChange(filterParams);
-            }
-      }, [selectedCategories, selectedPublishers, priceRange, selectedRating, sortBy, searchParams, router, onFilterChange, priceRangeData]);
+  const SORT_OPTIONS = [
+    { value: "newest", label: "Mới nhất" },
+    { value: "oldest", label: "Cũ nhất" },
+    { value: "price_asc", label: "Giá thấp → cao" },
+    { value: "price_desc", label: "Giá cao → thấp" },
+    { value: "rating", label: "Đánh giá cao" },
+  ];
 
-      const clearFilters = () => {
-            setSelectedCategories([]);
-            setSelectedPublishers([]);
-            setSelectedRating(null);
-            setSortBy('newest');
-            if (priceRangeData?.data) {
-                  setPriceRange([priceRangeData.data.minPrice, priceRangeData.data.maxPrice]);
-            }
+  return (
+    <div className={className}>
+      <div
+        className={`bg-surface border rounded-sm transition-colors ${isOpen ? "border-white/40" : "border-white/30"}`}>
+        <button
+          onClick={() => setIsOpen((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 group">
+          <div className="flex items-center gap-2.5">
+            <SlidersHorizontal size={15} className="text-ink-muted" />
+            <span className="font-display text-[0.9rem] tracking-[0.12em] text-ink uppercase">
+              BỘ LỌC
+            </span>
+            {hasActive && (
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                className="bg-accent text-white font-display text-[0.65rem] tracking-[0.06em] px-2 py-0.5 rounded-sm uppercase">
+                ĐANG LỌC
+              </motion.span>
+            )}
+          </div>
 
-            const params = new URLSearchParams(searchParams.toString());
-            params.delete('categories');
-            params.delete('publishers');
-            params.delete('minPrice');
-            params.delete('maxPrice');
-            params.delete('rating');
-            params.delete('sortBy');
-            params.set('page', '1');
+          <div className="flex items-center gap-3">
+            {hasActive && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  clearFilters();
+                }}
+                className="text-accent font-body text-[0.72rem] bg-transparent border-none cursor-pointer hover:underline">
+                Xóa tất cả
+              </button>
+            )}
+            <motion.div
+              animate={{ rotate: isOpen ? 180 : 0 }}
+              transition={{ duration: 0.25 }}>
+              <ChevronDown
+                size={15}
+                className="text-ink-muted group-hover:text-ink transition-colors"
+              />
+            </motion.div>
+          </div>
+        </button>
 
-            router.push(`/books?${params.toString()}`, { scroll: false });
-      };
-
-      const hasActiveFilters = selectedCategories.length > 0 ||
-            selectedPublishers.length > 0 ||
-            selectedRating !== null ||
-            sortBy !== 'newest' ||
-            (priceRangeData?.data &&
-                  (priceRange[0] > (priceRangeData.data.minPrice || 0) ||
-                        priceRange[1] < (priceRangeData.data.maxPrice || 1000000)));
-
-      const formatPrice = (value: number) => {
-            return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
-      };
-
-      const toggleCategory = (categoryId: string) => {
-            setSelectedCategories(prev =>
-                  prev.includes(categoryId)
-                        ? prev.filter(id => id !== categoryId)
-                        : [...prev, categoryId]
-            );
-      };
-
-      const togglePublisher = (publisherName: string) => {
-            setSelectedPublishers(prev =>
-                  prev.includes(publisherName)
-                        ? prev.filter(name => name !== publisherName)
-                        : [...prev, publisherName]
-            );
-      };
-
-      return (
-            <div className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded ${className}`}>
-                  <div
-                        className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                        onClick={() => setIsExpanded(!isExpanded)}
-                  >
-                        <div className="flex items-center space-x-3">
-                              <Funnel size={16} className="text-gray-600 dark:text-gray-400" />
-                              <span className="font-medium text-gray-900 dark:text-white text-sm">Bộ lọc</span>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                              {hasActiveFilters && (
-                                    <button
-                                          onClick={(e) => {
-                                                e.stopPropagation();
-                                                clearFilters();
-                                          }}
-                                          className="text-xs text-red-800 px-2 hover:text-red-600"
-                                    >
-                                          Xóa
-                                    </button>
-                              )}
-                              <span className="">{isExpanded ? <ArrowDown size={15} /> : <ArrowRight size={15} />}</span>
-                        </div>
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              key="panel"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden border-t border-ink/10">
+              <div className="p-5 space-y-6">
+                <div>
+                  <FilterSection label="SẮP XẾP" />
+                  <div className="flex flex-wrap gap-2">
+                    {SORT_OPTIONS.map((opt) => (
+                      <FilterTag
+                        key={opt.value}
+                        label={opt.label}
+                        active={sortBy === opt.value}
+                        onClick={() => setSortBy(opt.value)}
+                      />
+                    ))}
                   </div>
+                </div>
 
-                  {/* Filter Content */}
-                  <Collapse in={isExpanded}>
-                        <div className="px-2 pb-4 pt-4 space-y-4 border-t border-gray-100 dark:border-gray-700">
+                {categoriesData && categoriesData.length > 0 && (
+                  <div>
+                    <FilterSection label="THỂ LOẠI" />
+                    <div className="flex flex-wrap gap-2">
+                      {categoriesData.map((cat) => (
+                        <FilterTag
+                          key={cat._id}
+                          label={cat.name}
+                          active={selectedCategories.includes(cat._id)}
+                          onClick={() =>
+                            setSelectedCategories((prev) =>
+                              prev.includes(cat._id)
+                                ? prev.filter((id) => id !== cat._id)
+                                : [...prev, cat._id],
+                            )
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {publishersData?.data && publishersData.data.length > 0 && (
+                  <div>
+                    <FilterSection label="NHÀ XUẤT BẢN" />
+                    <div className="flex flex-wrap gap-2">
+                      {publishersData.data.map((pub) => (
+                        <FilterTag
+                          key={pub.name}
+                          label={`${pub.name} (${pub.count})`}
+                          active={selectedPublishers.includes(pub.name)}
+                          onClick={() =>
+                            setSelectedPublishers((prev) =>
+                              prev.includes(pub.name)
+                                ? prev.filter((n) => n !== pub.name)
+                                : [...prev, pub.name],
+                            )
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-                              {/* Sort */}
-                              <div className="grid grid-cols-12 items-center gap-4">
-                                    <label className="col-span-2 lg:col-span-1 text-xs dark:text-[#e0dcdc] font-semibold text-right">Sắp xếp:</label>
-                                    <div className="col-span-10 xl:col-span-11">
-                                          <FormControl size="small" sx={{ minWidth: 200 }}>
-                                                <Select
-                                                      value={sortBy}
-                                                      onChange={(e) => setSortBy(e.target.value)}
-                                                      sx={{
-                                                            '& .MuiSelect-select': {
-                                                                  fontSize: '13px',
-                                                                  padding: '4px 8px',
-                                                                  minHeight: 'unset',
-                                                            },
-                                                            '& .MuiOutlinedInput-root': {
-                                                                  borderRadius: '4px',
-                                                                  '& fieldset': { borderColor: '#e5e7eb' },
-                                                            }
-                                                      }}
-                                                >
-                                                      <MenuItem value="newest">Mới nhất</MenuItem>
-                                                      <MenuItem value="oldest">Cũ nhất</MenuItem>
-                                                      <MenuItem value="price_asc">Giá thấp → cao</MenuItem>
-                                                      <MenuItem value="price_desc">Giá cao → thấp</MenuItem>
-                                                      <MenuItem value="rating">Đánh giá cao</MenuItem>
-                                                </Select>
-                                          </FormControl>
-                                    </div>
-                              </div>
+                {priceRangeData?.data && (
+                  <div>
+                    <FilterSection label="KHOẢNG GIÁ" />
+                    <div className="bg-base-alt rounded-sm px-5 py-4">
+                      <Slider
+                        value={priceRange}
+                        onChange={(_, v) =>
+                          setPriceRange(v as [number, number])
+                        }
+                        valueLabelDisplay="auto"
+                        valueLabelFormat={fmt}
+                        min={priceRangeData.data.minPrice || 0}
+                        max={priceRangeData.data.maxPrice || 1_000_000}
+                        step={10_000}
+                        size="small"
+                        sx={{
+                          color: "var(--accent)",
+                          height: 3,
+                          "& .MuiSlider-thumb": {
+                            width: 14,
+                            height: 14,
+                            "&:hover": {
+                              boxShadow:
+                                "0 0 0 8px color-mix(in srgb, var(--accent) 20%, transparent)",
+                            },
+                          },
+                          "& .MuiSlider-rail": {
+                            backgroundColor:
+                              "color-mix(in srgb, var(--ink) 15%, transparent)",
+                            height: 3,
+                          },
+                          "& .MuiSlider-valueLabel": {
+                            fontSize: "11px",
+                            background: "var(--ink)",
+                            borderRadius: "2px",
+                          },
+                        }}
+                      />
+                      <div className="flex justify-between mt-1">
+                        <span className="text-ink-faint font-body text-[0.72rem]">
+                          {fmt(priceRange[0])}
+                        </span>
+                        <span className="text-ink-faint font-body text-[0.72rem]">
+                          {fmt(priceRange[1])}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-                              {/* Categories */}
-                              {categoriesData && categoriesData?.length > 0 && (
-                                    <div className="grid grid-cols-12 items-center gap-4">
-                                          <label className="col-span-2 lg:col-span-1 text-xs dark:text-[#e0dcdc] font-semibold text-right">Thể loại:</label>
-                                          <div className="col-span-10 xl:col-span-11">
-                                                <div className="flex flex-wrap gap-1.5">
-                                                      {categoriesData.map((category) => (
-                                                            <Chip
-                                                                  key={category._id}
-                                                                  label={category.name}
-                                                                  clickable
-                                                                  onClick={() => toggleCategory(category._id)}
-                                                                  variant="outlined"
-                                                                  size="small"
-                                                                  sx={{
-                                                                        borderRadius: '6px',
-                                                                        height: '24px',
-                                                                        fontSize: '11px',
-                                                                        fontWeight: 500,
-                                                                        borderWidth: '0.5px',
-                                                                        borderStyle: 'solid',
-                                                                        borderColor: selectedCategories.includes(category._id)
-                                                                              ? '#6dced1'
-                                                                              : '#63666b',
-                                                                        backgroundColor: 'transparent',
-                                                                        color: selectedCategories.includes(category._id)
-                                                                              ? '#6dced1'
-                                                                              : '#91949c',
-                                                                        '& .MuiChip-label': { px: 1 },
-                                                                        '&:hover': {
-                                                                              backgroundColor: 'transparent',
-                                                                              borderColor: selectedCategories.includes(category._id)
-                                                                                    ? '#2563eb'
-                                                                                    : 'rgba(0,0,0,0.2)',
-                                                                              color: selectedCategories.includes(category._id)
-                                                                                    ? '#2563eb'
-                                                                                    : '#374151',
-                                                                        },
-                                                                  }}
-                                                            />
-                                                      ))}
-                                                </div>
-                                          </div>
-                                    </div>
-                              )}
+                <div>
+                  <FilterSection label="ĐÁNH GIÁ" />
+                  <div className="flex gap-2 flex-wrap">
+                    {[5, 4, 3, 2, 1].map((r) => {
+                      const isActive = selectedRating === r;
+                      return (
+                        <motion.button
+                          key={r}
+                          onClick={() => setSelectedRating(isActive ? null : r)}
+                          whileHover={{ scale: 1.06 }}
+                          whileTap={{ scale: 0.94 }}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-body text-[0.72rem] cursor-pointer transition-all duration-200 border ${
+                            isActive
+                              ? "border-gold bg-gold/15 text-gold"
+                              : "border-white/40 bg-transparent text-ink-muted hover:border-ink/30 hover:text-ink"
+                          }`}>
+                          <Star
+                            size={11}
+                            className={
+                              isActive ? "text-gold fill-current" : "text-gold"
+                            }
+                          />
+                          {r} sao{r < 5 ? "+" : ""}
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-                              {/* Publishers */}
-                              {publishersData?.data && publishersData.data.length > 0 && (
-                                    <div className="grid grid-cols-12 items-center gap-4">
-                                          <label className="col-span-2 lg:col-span-1 text-xs dark:text-[#e0dcdc] font-semibold text-right">Nhà xuất bản:</label>
-                                          <div className="col-span-10 xl:col-span-11">
-                                                <div className="flex flex-wrap gap-1.5">
-                                                      {publishersData.data.map((publisher) => (
-                                                            <Chip
-                                                                  key={publisher.name}
-                                                                  label={`${publisher.name} (${publisher.count})`}
-                                                                  clickable
-                                                                  onClick={() => togglePublisher(publisher.name)}
-                                                                  variant="outlined"
-                                                                  size="small"
-                                                                  sx={{
-                                                                        borderRadius: '6px',
-                                                                        height: '24px',
-                                                                        fontSize: '11px',
-                                                                        fontWeight: 500,
-                                                                        borderWidth: '0.5px',
-                                                                        borderStyle: 'solid',
-                                                                        borderColor: selectedPublishers.includes(publisher.name)
-                                                                              ? '#6dced1'
-                                                                              : '#63666b',
-                                                                        backgroundColor: 'transparent',
-                                                                        color: selectedPublishers.includes(publisher.name)
-                                                                              ? '#6dced1'
-                                                                              : '#91949c',
-                                                                        '& .MuiChip-label': { px: 1 },
-                                                                        '&:hover': {
-                                                                              backgroundColor: 'transparent',
-                                                                              borderColor: selectedPublishers.includes(publisher.name)
-                                                                                    ? '#2563eb'
-                                                                                    : 'rgba(0,0,0,0.2)',
-                                                                              color: selectedPublishers.includes(publisher.name)
-                                                                                    ? '#2563eb'
-                                                                                    : '#374151',
-                                                                        },
-                                                                  }}
-                                                            />
-                                                      ))}
-                                                </div>
-                                          </div>
-                                    </div>
-                              )}
+                <div className="flex gap-3 pt-1">
+                  <motion.button
+                    onClick={applyFilters}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="group relative overflow-hidden flex items-center gap-2 px-6 py-2.5 text-white font-medium text-xs tracking-widest uppercase bg-accent rounded-sm font-body cursor-pointer border-none">
+                    <span className="relative z-10">Áp dụng</span>
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-accent-dark"
+                    />
+                  </motion.button>
 
-                              {/* Price Range */}
-                              {priceRangeData?.data && (
-                                    <div className="grid grid-cols-12 items-center gap-4">
-                                          <label className="col-span-2 lg:col-span-1 text-xs dark:text-[#e0dcdc] font-semibold text-right">Giá:</label>
-                                          <div className="col-span-10 xl:col-span-11">
-                                                <div className="bg-gray-50 dark:bg-gray-800 rounded p-3">
-                                                      <Slider
-                                                            value={priceRange}
-                                                            onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
-                                                            valueLabelDisplay="auto"
-                                                            valueLabelFormat={formatPrice}
-                                                            min={priceRangeData.data.minPrice || 0}
-                                                            max={priceRangeData.data.maxPrice || 1000000}
-                                                            step={10000}
-                                                            size="small"
-                                                            sx={{
-                                                                  color: '#3b82f6',
-                                                                  height: 4,
-                                                                  '& .MuiSlider-thumb': { width: 16, height: 16 },
-                                                                  '& .MuiSlider-track': { height: 4 },
-                                                                  '& .MuiSlider-rail': { height: 4, backgroundColor: '#e5e7eb' },
-                                                                  '& .MuiSlider-valueLabel': { fontSize: '11px' }
-                                                            }}
-                                                      />
-                                                      <div className="flex justify-between text-xs text-gray-600 mt-2">
-                                                            <span>{formatPrice(priceRange[0])}</span>
-                                                            <span>{formatPrice(priceRange[1])}</span>
-                                                      </div>
-                                                </div>
-                                          </div>
-                                    </div>
-                              )}
-
-                              {/* Rating */}
-                              <div className="grid grid-cols-12 items-center gap-4">
-                                    <label className="col-span-2 lg:col-span-1 text-xs dark:text-[#e0dcdc] font-semibold text-right">Đánh giá:</label>
-                                    <div className="col-span-10 xl:col-span-11">
-                                          <div className="flex space-x-2">
-                                                {[5, 4, 3, 2, 1].map((rating) => (
-                                                      <button
-                                                            key={rating}
-                                                            className={`px-2 py-1 rounded-md text-xs font-medium transition-colors ${selectedRating === rating
-                                                                  ? 'bg-yellow-400 text-black'
-                                                                  : 'border border-[#797f8a] text-[#91949c] hover:bg-gray-700'
-                                                                  }`}
-                                                            onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
-                                                      >
-                                                            {rating} sao
-                                                      </button>
-                                                ))}
-                                          </div>
-                                    </div>
-                              </div>
-
-                              {/* Actions */}
-                              <div className="flex space-x-2 pt-2 pl-2 sm:pl-5">
-                                    <button
-                                          onClick={(e) => {
-                                                e.stopPropagation();
-                                                applyFilters();
-                                          }}
-                                          className="flex space-x-2 items-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-1 px-3 rounded-full transition-colors"
-                                    >
-                                          <span>Lọc kết quả</span>
-                                          <MoveRight size={15} />
-                                    </button>
-                                    <button
-                                          onClick={() => setIsExpanded(false)}
-                                          className="px-3 py-2 border border-gray-300 dark:text-white text-xs font-medium rounded-full hover:bg-gray-50 dark:hover:text-black transition-colors"
-                                    >
-                                          Đóng
-                                    </button>
-                              </div>
-                        </div>
-                  </Collapse >
-            </div >
-      );
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-1.5 px-5 py-2.5 border border-ink/15 text-ink-muted bg-transparent rounded-sm font-body text-[0.72rem] tracking-[0.1em] uppercase cursor-pointer transition-all duration-200 hover:text-ink hover:border-ink/30">
+                    <X size={11} />
+                    Đóng
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
 };
 
 export default Filter;
