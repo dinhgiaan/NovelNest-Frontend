@@ -3,12 +3,11 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { orderService } from "@/app/lib/api/order";
-import type { AuthState } from "@/app/context/auth.context";
+import type { AuthUser } from "@/app/context/auth.context";
 import formatPrice from "@/app/utils/convert.price";
 import { Loader2, Receipt, SearchX } from "lucide-react";
 import Image from "next/image";
 
-// ... (Giữ nguyên các Interfaces: OrderDetail, Order, OrderResponse, IProps, fetcher như cũ của bạn)
 interface OrderDetail {
   _id: string;
   title: string;
@@ -32,8 +31,9 @@ interface OrderResponse {
     totalPaidAmount: number;
   };
 }
+
 interface IProps {
-  userInfo: AuthState;
+  userInfo: AuthUser | null;
 }
 
 const fetcher = async (filter: string): Promise<OrderResponse> => {
@@ -44,7 +44,7 @@ const fetcher = async (filter: string): Promise<OrderResponse> => {
 };
 
 const OrderHistory = ({ userInfo }: IProps) => {
-  const _id = userInfo.user?._id;
+  const _id = userInfo?._id;
   const [activeTab, setActiveTab] = useState<
     "all" | "paid" | "failed" | "summary"
   >("all");
