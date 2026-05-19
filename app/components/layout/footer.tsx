@@ -18,9 +18,8 @@ const Footer = () => {
     },
   ];
 
-  // Đã cập nhật chính xác các page bạn đang có
   const footerLinks = [
-    { href: "/book", label: "Tủ sách NovelNest" },
+    { href: "/books", label: "Tủ sách NovelNest" },
     { href: "/privacy", label: "Chính sách bảo mật" },
     { href: "/terms", label: "Điều khoản dịch vụ" },
   ];
@@ -28,7 +27,6 @@ const Footer = () => {
   return (
     <footer className="bg-[#030303] text-zinc-400 relative overflow-hidden flex flex-col justify-between min-h-[70vh] border-t border-zinc-900 selection:bg-zinc-800 selection:text-white">
       <div className="relative z-10 w-full max-w-[100rem] mx-auto px-6 lg:px-12 pt-8 lg:pt-10 flex-1 flex flex-col lg:flex-row justify-between gap-20">
-        {/* Cột trái: Cảm hứng (Poetic Hook) */}
         <div className="max-w-2xl flex flex-col items-start">
           <div className="flex items-center gap-3 mb-8">
             <Feather size={16} className="text-zinc-600" />
@@ -43,9 +41,8 @@ const Footer = () => {
             cầm trên tay.
           </h2>
 
-          {/* Nút Call-to-action trỏ thẳng về trang /book */}
           <Link
-            href="/book"
+            href="/books"
             className="group flex items-center gap-4 text-sm text-zinc-300 hover:text-white transition-colors duration-500">
             <span className="uppercase tracking-widest text-xs font-semibold">
               Mở trang sách đầu tiên
